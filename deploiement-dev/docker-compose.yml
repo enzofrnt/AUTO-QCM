@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  amc_python:
+    container_name: auto_qcm_container
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ../auto_qcm:/app
+    ports:
+      - "8000:8000"
+
+  database:
+    container_name: auto_qcm_db
+    image: postgres:13
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database:/var/lib/postgresql/data
