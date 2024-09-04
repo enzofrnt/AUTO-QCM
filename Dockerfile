@@ -17,6 +17,9 @@ RUN rm ./requirements.txt
 
 COPY ./auto_qcm .
 
+RUN mkdir -p /amc-data
+RUN chmod 755 /amc-datacd 
+
 FROM base AS dev
 
 CMD python manage.py wait_for_db \
