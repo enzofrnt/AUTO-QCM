@@ -35,10 +35,17 @@
             {{ form.texte }}
         </div>
         
-        <!-- Champ pour les tags -->
+        <!-- Champ pour les tags existants -->
         <div class="form-group">
             {{ form.tags.label_tag }}
             {{ form.tags }}
+        </div>
+
+        <!-- Bouton pour ajouter de nouveaux tags -->
+        <div class="form-group">
+            <label for="new_tags">Ajouter de nouveaux tags :</label>
+            <div id="newTagsContainer"></div>
+            <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
         </div>
 
         <!-- Titre et bouton pour ajouter des réponses -->
@@ -89,7 +96,6 @@ $(document).ready(function() {
             $(this).attr({'name': newName, 'id': newId}).val('');
         });
 
-        // Ajouter le bouton supprimer
         newFormHtml.find('.removeReponse').show();
 
         formsetContainer.append(newFormHtml);
@@ -108,6 +114,16 @@ $(document).ready(function() {
         if ($(this).closest('.formset_row').index() === 0) {
             $(this).hide();
         }
+    });
+
+    // Gestion de l'ajout dynamique de nouveaux tags
+    $('#addNewTag').click(function() {
+        var newTagHtml = `
+            <div class="input-group mb-2">
+                <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+                <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+            </div>`;
+        $('#newTagsContainer').append(newTagHtml);
     });
 });
 </script>

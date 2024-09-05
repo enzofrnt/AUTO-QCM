@@ -15,8 +15,7 @@ class Question(models.Model):
 
     class Meta:
         verbose_name = "Question"
-        verbose_name_plural = "Questions"
-        
+        verbose_name_plural = "Questions"        
 
     def get_correct_answers(self):
         """Retourne toutes les réponses correctes associées à cette question."""
