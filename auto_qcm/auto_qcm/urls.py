@@ -14,13 +14,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
 from django.contrib import admin
 from django.urls import path
-from app.views import QuestionListView, QuestionCreateView, remove_tag
+from app.views import QuestionListView, create_question, remove_tag
+
+from django.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('list-questions/', QuestionListView.as_view(), name='question-list'),
-    path('create-questions/', QuestionCreateView.as_view(), name='question-create'),
-    path('remove-tag/<int:question_id>/<int:tag_id>/', remove_tag, name='remove-tag'),
+    path('create-questions/', create_question, name='question-create'),
+    path('remove-tag/<int:question_id>/<int:tag_id>/', remove_tag, name='remove-tag'),    
 ]
+
+if os.environ.get("env", "dev") == "dev":
+    urlpatterns.append(path("__reload__/", include("django_browser_reload.urls")))
+    

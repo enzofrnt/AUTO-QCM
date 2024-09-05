@@ -17,7 +17,7 @@
                     <label for="tags">Filtrer par tags :</label>
                     <div id="tags" class="d-flex flex-wrap">
                         {% for tag in tags %}
-                            <span class="badge tag-badge form-check-label" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">
+                            <span class="badge tag-badge form-check-label" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 8px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">
                                 {{ tag.name }}
                             </span>
                         {% endfor %}
@@ -35,7 +35,8 @@
 
     <!-- Liste des questions -->
     <div id="questions-list">
-        <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
+        <a href="{% url 'question-create' %}"
+         class="btn btn-primary mb-4">Créer une nouvelle Question</a>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -53,12 +54,9 @@
                             </div>
                             <!-- Boucle pour afficher les tags associés -->
                             {% for tag in question.tags.all %}
-                                <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer; position: relative;">
+                                <span class="badge badge-pill tag-badge" style="background-color: {{ tag.color }}; color: #fff; padding: 5px; margin-left: 5px; border-radius: 10px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
                                     {{ tag.name }}
-                                    {% if question.id and tag.id %}
-                                        <!-- Ajuster la valeur de `right` ici -->
-                                        <a href="{% url 'remove-tag' question.id tag.id %}" class="remove-tag" style="position: absolute; top: 50%; right: 4px; transform: translateY(-50%); text-decoration: none; color: inherit; font-size: 14px; display: none;">&times;</a>
-                                    {% endif %}
+                                    <a href="{% url 'remove-tag' question.id tag.id %}" class="remove-tag" style="text-decoration: none; color: inherit; display: none; margin-left: 5px;">&times;</a>
                                 </span>
                             {% endfor %}
 
@@ -163,22 +161,15 @@ $(document).ready(function() {
         }
     });
 
-    // Empêcher le clic sur la croix de suppression de dérouler la question
-    $(document).on('click', '.remove-tag', function(e) {
-        e.stopPropagation();
-    });
-
-    // JavaScript pour afficher la croix de suppression au survol uniquement pour les tags de question
-    $(document).on('mouseenter', '.question-tag', function() {
+    // JavaScript pour afficher la croix de suppression au survol
+    $(document).on('mouseenter', '.tag-badge', function() {
         $(this).find('.remove-tag').show();
-        $(this).css('padding-right', '24px'); // Augmenter la largeur du tag pour la croix
-    }).on('mouseleave', '.question-tag', function() {
+    }).on('mouseleave', '.tag-badge', function() {
         $(this).find('.remove-tag').hide();
-        $(this).css('padding-right', '12px'); // Réduire la largeur du tag lorsque la croix est masquée
     });
 
     // JavaScript pour afficher/masquer les réponses des questions
-    $(document).on('click', '.question-row', function(e) {
+    $(document).on('click', '.question-row', function() {
         const questionId = $(this).data('question-id');
         const answersList = $('#answers-' + questionId);
 

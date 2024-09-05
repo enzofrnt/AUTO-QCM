@@ -17,15 +17,13 @@ class QuestionListView(ListView):
         if nom_filtre:
             queryset = queryset.filter(texte__icontains=nom_filtre)
 
-        # Filtrer par plusieurs tags
+        # Filtrer par plusieurs tags (et logique pour avoir tous les tags)
         if tags_filtre:
-            # Utilisation de Q pour le filtrage multiple par tag
-            query = Q()
+            # Filtrer les questions qui ont tous les tags sélectionnés
             for tag in tags_filtre:
-                query |= Q(tags__name__icontains=tag)
-            queryset = queryset.filter(query).distinct()
+                queryset = queryset.filter(tags__name__icontains=tag)
 
-        return queryset
+        return queryset.distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

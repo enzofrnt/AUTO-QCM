@@ -22,12 +22,8 @@ class Command(BaseCommand):
         # Créer des questions factices
         questions = []
         for _ in range(10):
-            # Choisir un nombre aléatoire de bonnes réponses (y compris zéro)
-            number_of_correct_answers = random.choice([0, 1, 2, 3])
-
             question = Question(
-                texte=fake.sentence(),
-                number_of_correct_answers=number_of_correct_answers
+                texte=fake.sentence()
             )
             question.save()
             question.tags.set(fake.random_elements(elements=tags, unique=True))
@@ -35,9 +31,8 @@ class Command(BaseCommand):
 
         # Créer des réponses factices
         for question in questions:
-            min_answers = question.number_of_correct_answers + 1
-            total_answers = fake.random_int(min=min_answers, max=6)
-            correct_answers_needed = question.number_of_correct_answers
+            total_answers = fake.random_int(min=0, max=6)
+            correct_answers_needed = random.choice(range(total_answers + 1))  # Nombre aléatoire de bonnes réponses
             correct_answers_created = 0
 
             # Créer les bonnes réponses d'abord
@@ -57,12 +52,5 @@ class Command(BaseCommand):
                     texte=fake.sentence(),
                     is_correct=False
                 )
-
-            # Validation de la question après l'ajout des réponses
-            try:
-                question.full_clean()  # Valide l'objet pour s'assurer que le nombre de bonnes réponses est correct
-                question.save()  # Sauvegarde l'objet si la validation passe
-            except ValidationError as e:
-                self.stdout.write(self.style.ERROR(f"Erreur de validation pour la question '{question.texte}': {e}"))
 
         self.stdout.write(self.style.SUCCESS('Données factices générées avec succès.'))
