@@ -14,7 +14,41 @@ class Question(models.Model):
 
     def convertToXml(self):
         # Convertir la question au format xml
-        return self.texte
+        texte = (
+            '<question type="multichoice">'
+            + "<name>"
+            + "<text>"  # Le vrai nom
+            + self.texte
+            + "</text>"
+            + "</name>"
+            + '<questiontext format="html"><text>'
+            + '<p dir="ltr" style="text-align: left;">Emplacement texte de la question<br></p>'
+            + "</text></questiontext>"
+            + "<defaultgrade>1</defaultgrade>"
+            + "<single>"
+            + "false"
+            if self.number_of_correct_answers > 1
+            else "true"
+            + "</single>"
+            + "<shuffleanswers>true</shuffleanswers> "
+            + "<answernumbering>abc</answernumbering>"
+            + '<correctfeedback format="html">'
+            + "<text>Votre réponse est correcte.</text>"
+            + "</correctfeedback>"
+            + '<partiallycorrectfeedback format="html">'
+            + "<text>Votre réponse est partiellement correcte.</text>"
+            + "</partiallycorrectfeedback>"
+            + '<incorrectfeedback format="html">'
+            + "<text>Votre réponse est incorrecte.</text>"
+            + "</incorrectfeedback>"
+        )
+
+        for rep in self.reponses:
+            texte += rep.convertToXml()
+
+        texte += "</question>"
+
+        return texte
 
     class Meta:
         verbose_name = "Question"

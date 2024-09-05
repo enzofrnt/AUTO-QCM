@@ -10,8 +10,12 @@ class QCM(models.Model):
         return self.titre
 
     def convertToXml(self):
+        texte = "<quiz>"
+        for quest in self.questions:
+            texte += quest.convertToXml()
+        texte += "</quiz>"
 
-        return self.titre
+        return texte
 
     class Meta:
         verbose_name = "QCM"
