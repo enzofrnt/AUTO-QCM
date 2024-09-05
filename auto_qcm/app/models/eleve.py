@@ -1,8 +1,22 @@
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
 class Eleve(AbstractUser):
+    groups = models.ManyToManyField(
+        Group,
+        related_name='eleve_groups',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        verbose_name='groups',
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='eleve_user_permissions',  # Utilisez un related_name personnalisé
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name='user permissions',
+    )
+
     class Meta:
         verbose_name = "Élève"
         verbose_name_plural = "Élèves"
-    

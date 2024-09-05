@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from app.views import QuestionListView, QuestionCreateView, remove_tag
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('list-questions/', QuestionListView.as_view(), name='question-list'),
+    path('remove-tag/<int:question_id>/<int:tag_id>/', remove_tag, name='remove-tag'),
 ]
