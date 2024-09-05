@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% load color_filters %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Créer une Nouvelle Question</h2>
+    <form method="post" id="questionForm">
+        {% csrf_token %}
+        
+        <!-- Champ pour le texte de la question -->
+        <div class="form-group">
+            {{ form.texte.label_tag }} 
+            {{ form.texte }}
+        </div>
+        
+        <!-- Champ pour le nombre de bonnes réponses -->
+        <div class="form-group">
+            {{ form.number_of_correct_answers.label_tag }} 
+            {{ form.number_of_correct_answers }}
+            <small class="form-text text-muted">{{ form.number_of_correct_answers.help_text }}</small>
+        </div>
+
+        <!-- Sélection des tags avec couleurs -->
+        <div class="form-group">
+            {{ form.tags.label_tag }}
+            <div id="tags">
+                {% for tag in form.tags %}
+                    <label class="form-check-label" style="margin-right: 10px;">
+                        {{ tag.tag }}
+                        <span class="badge badge-pill" style="background-color: {{ tag.choice_label.color }}; color: #fff; padding: 5px; margin-left: 5px; border-radius: 10px; border: 2px solid {{ tag.choice_label.color|darken_color:'0.3' }};">
+                            {{ tag.choice_label }}
+                        </span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Formset pour les réponses -->
+        <h3>Réponses</h3>
+        <div id="reponseFormset">
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="formset_row">
+                    <div class="form-group">
+                        {{ form.texte.label_tag }} 
+                        {{ form.texte }}
+                    </div>
+                    <div class="form-check">
+                        {{ form.is_correct }}
+                        {{ form.is_correct.label_tag }}
+                    </div>
+                    <hr>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+// JavaScript pour gérer les interactions dans le formulaire
+$(document).ready(function() {
+    // Mettre en surbrillance le tag sélectionné
+    $('#tags input[type="checkbox"]').change(function() {
+        const label = $(this).closest('label');
+        if ($(this).is(':checked')) {
+            label.find('.badge').css('opacity', '1');
+        } else {
+            label.find('.badge').css('opacity', '0.5');
+        }
+    });
+});
+</script>
+{% endblock %}
