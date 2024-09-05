@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% load color_filters %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Liste des Questions</h2>
+    
+    <!-- Formulaire de filtre -->
+    <form method="get" class="mb-4" id="filterForm">
+        <div class="form-row align-items-center">
+            <div class="col-auto">
+                <input type="text" name="nom" class="form-control" placeholder="Filtrer par nom" value="{{ nom_filtre }}">
+            </div>
+            <div class="col-auto">
+                <div class="form-group">
+                    <label for="tags">Filtrer par tags :</label>
+                    <div id="tags">
+                        {% for tag in tags %}
+                            <label class="form-check-label" style="margin-right: 10px;">
+                                <input type="checkbox" name="tags" value="{{ tag.name }}" {% if tag.name in tag_filtre %}checked{% endif %} class="form-check-input">
+                                <span class="badge badge-pill" style="background-color: {{ tag.color }}; color: #fff; padding: 5px; margin-left: 5px; border-radius: 10px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
+                                    {{ tag.name }}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+                <a href="{% url 'question-list' %}" class="btn btn-secondary">Réinitialiser</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Liste des questions -->
+    <div id="questions-list">
+        <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Texte de la Question et Tags</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question in questions %}
+                    <tr class="question-row" data-question-id="{{ question.id }}" style="cursor: pointer;">
+                        <td>
+                            <div class="question-header">
+                                {{ question.texte }}
+                                <!-- Bouton pour afficher/masquer les réponses -->
+                                <button class="btn btn-link toggle-answers" data-question-id="{{ question.id }}" style="display: none;">Voir les réponses</button>
+                            </div>
+                            <!-- Boucle pour afficher les tags associés -->
+                            {% for tag in question.tags.all %}
+                                <span class="badge badge-pill tag-badge" style="background-color: {{ tag.color }}; color: #fff; padding: 5px; margin-left: 5px; border-radius: 10px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
+                                    {{ tag.name }}
+                                    <a href="{% url 'remove-tag' question.id tag.id %}" class="remove-tag" style="text-decoration: none; color: inherit; display: none; margin-left: 5px;">&times;</a>
+                                </span>
+                            {% endfor %}
+
+                            <!-- Section des réponses à afficher/cacher -->
+                            <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
+                                <ul class="list-group">
+                                    <p>Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b></p>
+                                    
+                                    {% for reponse in question.reponses.all %}
+                                        <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
+                                            {{ reponse.texte }}
+                                            {% if reponse.is_correct %}
+                                                <span class="badge badge-success">Bonne réponse</span>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td>Aucune question disponible.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+// JavaScript pour utiliser AJAX pour filtrer sans recharger la page
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('filterForm');
+
+    // Fonction de debouncing
+    function debounce(func, delay) {
+        let debounceTimeout;
+        return function() {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(func, delay);
+        };
+    }
+
+    // Fonction pour soumettre le formulaire via AJAX
+    function submitFormAJAX() {
+        $.ajax({
+            url: filterForm.action,
+            type: 'GET',
+            data: $(filterForm).serialize(),
+            success: function(response) {
+                $('#questions-list').html($(response).find('#questions-list').html());
+            }
+        });
+    }
+
+    // Appliquer le debouncing à la saisie dans la barre de recherche
+    const debouncedSubmit = debounce(submitFormAJAX, 300);
+    filterForm.querySelector('input[name="nom"]').addEventListener('input', debouncedSubmit);
+
+    // Déclencher l'envoi du formulaire AJAX lorsque l'utilisateur coche/décoche une case
+    filterForm.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', submitFormAJAX);
+    });
+
+    // JavaScript pour afficher la croix de suppression au survol
+    $(document).on('mouseenter', '.tag-badge', function() {
+        $(this).find('.remove-tag').show();
+    }).on('mouseleave', '.tag-badge', function() {
+        $(this).find('.remove-tag').hide();
+    });
+
+    // JavaScript pour afficher/masquer les réponses des questions
+    $(document).on('click', '.question-row', function() {
+        const questionId = $(this).data('question-id');
+        const answersList = $('#answers-' + questionId);
+
+        if (answersList.is(':visible')) {
+            answersList.slideUp();
+            $(this).find('.toggle-answers').text('Voir les réponses');
+        } else {
+            answersList.slideDown();
+            $(this).find('.toggle-answers').text('Masquer les réponses');
+        }
+    });
+
+    // Ajouter un effet de survol pour indiquer que la question est cliquable
+    $(document).on('mouseenter', '.question-row', function() {
+        $(this).css('background-color', '#f9f9f9');
+    }).on('mouseleave', '.question-row', function() {
+        $(this).css('background-color', '');
+    });
+});
+</script>
+{% endblock %}
