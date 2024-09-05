@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<quiz>
+    <question type="multichoice">
+        <name>
+            <text>Nom de la question</text>
+        </name>
+        <questiontext format="html">
+            <text>Quelle est la réponse à cette question?</text>
+        </questiontext>
+        <answer fraction="100">
+            <text>The correct answer</text>
+            <feedback>
+                <text>Correct!</text>
+            </feedback>
+        </answer>
+        <answer fraction="0">
+            <text>A distractor</text>
+            <feedback>
+                <text>Ooops!</text>
+            </feedback>
+        </answer>
+        <answer fraction="0">
+            <text>Another distractor</text>
+            <feedback>
+                <text>Ooops!</text>
+            </feedback>
+        </answer>
+        <shuffleanswers>1</shuffleanswers>
+        <single>true</single>
+        <answernumbering>abc</answernumbering>
+    </question>
+</quiz>
