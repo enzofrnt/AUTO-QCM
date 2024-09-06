@@ -1,32 +1,36 @@
-<?xml version="1.0"?>
+'<?xml version="1.0"?>
 <quiz>
     <question type="multichoice">
         <name>
-            <text>Nom de la question</text>
+            <text>Salut</text>
         </name>
         <questiontext format="html">
-            <text>Quelle est la réponse à cette question?</text>
+            <text><![CDATA[<p dir="ltr" style="text-align: left;">Emplacement texte de la question<br></p>]]></text>
         </questiontext>
-        <answer fraction="100">
-            <text>The correct answer</text>
-            <feedback>
-                <text>Correct!</text>
-            </feedback>
-        </answer>
-        <answer fraction="0">
-            <text>A distractor</text>
-            <feedback>
-                <text>Ooops!</text>
-            </feedback>
-        </answer>
-        <answer fraction="0">
-            <text>Another distractor</text>
-            <feedback>
-                <text>Ooops!</text>
-            </feedback>
-        </answer>
-        <shuffleanswers>1</shuffleanswers>
+        <defaultgrade>1</defaultgrade>
         <single>true</single>
+        <shuffleanswers>true</shuffleanswers>
         <answernumbering>abc</answernumbering>
+        <correctfeedback format="html">
+            <text>Votre réponse est correcte.</text>
+        </correctfeedback>
+        <partiallycorrectfeedback format="html">
+            <text>Votre réponse est partiellement correcte.</text>
+        </partiallycorrectfeedback>
+        <incorrectfeedback format="html">
+            <text>Votre réponse est incorrecte.</text>
+        </incorrectfeedback>
+        <answer fraction="100" format="html">
+            <text>Vrai</text>
+            <feedback format="html">
+                <text />
+            </feedback>
+        </answer>
+        <answer fraction="0" format="html">
+            <text>Faux</text>
+            <feedback format="html">
+                <text />
+            </feedback>
+        </answer>
     </question>
-</quiz>
+</quiz>'

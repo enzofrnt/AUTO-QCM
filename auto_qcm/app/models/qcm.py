@@ -10,8 +10,8 @@ class QCM(models.Model):
         return self.titre
 
     def convertToXml(self):
-        texte = "<quiz>"
-        for quest in self.questions:
+        texte = '<?xml version="1.0"?><quiz>'
+        for quest in self.questions.all():
             texte += quest.convertToXml()
         texte += "</quiz>"
 

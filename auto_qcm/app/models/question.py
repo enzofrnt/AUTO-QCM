@@ -22,13 +22,11 @@ class Question(models.Model):
             + "</text>"
             + "</name>"
             + '<questiontext format="html"><text>'
-            + '<p dir="ltr" style="text-align: left;">Emplacement texte de la question<br></p>'
+            + '<![CDATA[<p dir="ltr" style="text-align: left;">Emplacement texte de la question<br></p>]]>'
             + "</text></questiontext>"
             + "<defaultgrade>1</defaultgrade>"
             + "<single>"
-            + "false"
-            if self.number_of_correct_answers > 1
-            else "true"
+            + ("false" if self.number_of_correct_answers > 1 else "true")
             + "</single>"
             + "<shuffleanswers>true</shuffleanswers> "
             + "<answernumbering>abc</answernumbering>"
@@ -43,7 +41,7 @@ class Question(models.Model):
             + "</incorrectfeedback>"
         )
 
-        for rep in self.reponses:
+        for rep in self.reponses.all():
             texte += rep.convertToXml()
 
         texte += "</question>"
