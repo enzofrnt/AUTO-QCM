@@ -26,6 +26,7 @@ class Command(BaseCommand):
             number_of_correct_answers = random.choice([0, 1, 2, 3])
 
             question = Question(
+                nom = fake.word(),
                 texte=fake.sentence(),
                 number_of_correct_answers=number_of_correct_answers
             )

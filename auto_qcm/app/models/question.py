@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 
 
 class Question(models.Model):
+    nom = models.CharField(max_length=50)
     texte = models.CharField(max_length=255)
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
     number_of_correct_answers = models.IntegerField(
@@ -18,11 +19,13 @@ class Question(models.Model):
             '<question type="multichoice">'
             + "<name>"
             + "<text>"  # Le vrai nom
-            + self.texte
+            + self.nom
             + "</text>"
             + "</name>"
             + '<questiontext format="html"><text>'
-            + '<![CDATA[<p dir="ltr" style="text-align: left;">Emplacement texte de la question<br></p>]]>'
+            + '<![CDATA[<p dir="ltr" style="text-align: left;">'
+            + self.texte
+            + "<br></p>]]>"
             + "</text></questiontext>"
             + "<defaultgrade>1</defaultgrade>"
             + "<single>"

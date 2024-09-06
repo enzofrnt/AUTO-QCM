@@ -1,14 +1,14 @@
-'<?xml version="1.0"?>
+<?xml version="1.0"?>
 <quiz>
     <question type="multichoice">
         <name>
-            <text>Salut</text>
+            <text>QuestionTest1</text>
         </name>
         <questiontext format="html">
-            <text><![CDATA[<p dir="ltr" style="text-align: left;">Emplacement texte de la question<br></p>]]></text>
+            <text><![CDATA[<p dir="ltr" style="text-align: left;">Quels nombres sont impairs ?<br></p>]]></text>
         </questiontext>
         <defaultgrade>1</defaultgrade>
-        <single>true</single>
+        <single>false</single>
         <shuffleanswers>true</shuffleanswers>
         <answernumbering>abc</answernumbering>
         <correctfeedback format="html">
@@ -20,17 +20,68 @@
         <incorrectfeedback format="html">
             <text>Votre réponse est incorrecte.</text>
         </incorrectfeedback>
-        <answer fraction="100" format="html">
-            <text>Vrai</text>
+        <answer fraction="0" format="html">
+            <text>2</text>
             <feedback format="html">
                 <text />
             </feedback>
         </answer>
-        <answer fraction="0" format="html">
-            <text>Faux</text>
+        <answer fraction="50.0" format="html">
+            <text>1</text>
+            <feedback format="html">
+                <text />
+            </feedback>
+        </answer>
+        <answer fraction="50.0" format="html">
+            <text>5</text>
             <feedback format="html">
                 <text />
             </feedback>
         </answer>
     </question>
-</quiz>'
+    <question type="multichoice">
+        <name>
+            <text>QuestionTest2</text>
+        </name>
+        <questiontext format="html">
+            <text><![CDATA[<p dir="ltr" style="text-align: left;">Quels nombres sont pairs ?<br></p>]]></text>
+        </questiontext>
+        <defaultgrade>1</defaultgrade>
+        <single>false</single>
+        <shuffleanswers>true</shuffleanswers>
+        <answernumbering>abc</answernumbering>
+        <correctfeedback format="html">
+            <text>Votre réponse est correcte.</text>
+        </correctfeedback>
+        <partiallycorrectfeedback format="html">
+            <text>Votre réponse est partiellement correcte.</text>
+        </partiallycorrectfeedback>
+        <incorrectfeedback format="html">
+            <text>Votre réponse est incorrecte.</text>
+        </incorrectfeedback>
+        <answer fraction="0" format="html">
+            <text>5</text>
+            <feedback format="html">
+                <text />
+            </feedback>
+        </answer>
+        <answer fraction="0" format="html">
+            <text>1</text>
+            <feedback format="html">
+                <text />
+            </feedback>
+        </answer>
+        <answer fraction="50.0" format="html">
+            <text>10</text>
+            <feedback format="html">
+                <text />
+            </feedback>
+        </answer>
+        <answer fraction="50.0" format="html">
+            <text>26</text>
+            <feedback format="html">
+                <text />
+            </feedback>
+        </answer>
+    </question>
+</quiz>
