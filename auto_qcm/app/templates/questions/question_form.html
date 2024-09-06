@@ -6,67 +6,136 @@
     <!-- Champ pour le nom de la question -->
     <div class="form-group">{{ form.nom.label_tag }} {{ form.nom }}</div>
 
-    <!-- Champ pour le texte de la question -->
-    <div class="form-group">{{ form.texte.label_tag }} {{ form.texte }}</div>
+{% block content %}
+<div class="container mt-4">
+    <h2>Créer une Nouvelle Question</h2>
 
-    <!-- Champ pour le nombre de bonnes réponses -->
-    <div class="form-group">
-      {{ form.number_of_correct_answers.label_tag }} 
-      {{ form.number_of_correct_answers }}
-      <small class="form-text text-muted">{{ form.number_of_correct_answers.help_text }}</small>
-    </div>
-
-    <!-- Sélection des tags avec couleurs -->
-    <div class="form-group">
-      {{ form.tags.label_tag }}
-      <div id="tags">
-        {% for tag in form.tags %}
-        <label class="form-check-label" style="margin-right: 10px">
-          {{ tag.tag }}
-          <span
-            class="badge badge-pill"
-            style="background-color: {{ tag.choice_label.color }}; color: #fff; padding: 5px; margin-left: 5px; border-radius: 10px; border: 2px solid {{ tag.choice_label.color|darken_color:'0.3' }};"
-          >
-            {{ tag.choice_label }}
-          </span>
-        </label>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Formset pour les réponses -->
-    <h3>Réponses</h3>
-    <div id="reponseFormset">
-      {{ formset.management_form }} {% for form in formset %}
-      <div class="formset_row">
-        <div class="form-group">
-          {{ form.texte.label_tag }} {{ form.texte }}
+    <!-- Affichage des erreurs -->
+    {% if form.errors or formset.errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+                
+                {% for form in formset %}
+                    {% for error in form.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
         </div>
-        <div class="form-check">
-          {{ form.is_correct }} {{ form.is_correct.label_tag }}
+    {% endif %}
+
+    <form method="post" id="questionForm">
+        {% csrf_token %}
+        
+        <!-- Champ pour le texte de la question -->
+        <div class="form-group">
+            {{ form.texte.label_tag }} 
+            {{ form.texte }}
+        </div>
+        
+        <!-- Champ pour les tags existants -->
+        <div class="form-group">
+            {{ form.tags.label_tag }}
+            {{ form.tags }}
+        </div>
+
+        <!-- Bouton pour ajouter de nouveaux tags -->
+        <div class="form-group">
+            <label for="new_tags">Ajouter de nouveaux tags :</label>
+            <div id="newTagsContainer"></div>
+            <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
+        </div>
+
+        <!-- Titre et bouton pour ajouter des réponses -->
+        <div class="d-flex align-items-center mb-2">
+            <h3>Réponses</h3>
+            <button type="button" id="addReponse" class="btn btn-sm btn-outline-primary ml-2">+</button>
+        </div>
+
+        <!-- Formset pour les réponses -->
+        <div id="reponseFormset">
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="formset_row border rounded p-3 mb-3 position-relative">
+                    <div class="form-group">
+                        {{ form.texte.label_tag }} 
+                        {{ form.texte }}
+                    </div>
+                    <div class="form-check">
+                        {{ form.is_correct }}
+                        {{ form.is_correct.label_tag }}
+                    </div>
+                    <!-- Bouton pour supprimer une réponse -->
+                    <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute" style="top: 5px; right: 5px;">&times;</button>
+                </div>
+            {% endfor %}
         </div>
         <hr />
       </div>
       {% endfor %}
     </div>
-
-    <button type="submit" class="btn btn-success">Enregistrer</button>
-  </form>
+        <!-- Bouton pour soumettre le formulaire -->
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+    </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  // JavaScript pour gérer les interactions dans le formulaire
-  $(document).ready(function () {
-    // Mettre en surbrillance le tag sélectionné
-    $('#tags input[type="checkbox"]').change(function () {
-      const label = $(this).closest("label");
-      if ($(this).is(":checked")) {
-        label.find(".badge").css("opacity", "1");
-      } else {
-        label.find(".badge").css("opacity", "0.5");
-      }
+
+$(document).ready(function() {
+    var formsetPrefix = "{{ formset.prefix }}";
+    var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS');
+    var formsetContainer = $('#reponseFormset');
+
+    // Gestion de l'ajout dynamique de réponses
+    $('#addReponse').click(function() {
+        var formCount = parseInt(totalForms.val());
+        var newFormHtml = formsetContainer.find('.formset_row:first').clone();
+
+        newFormHtml.find('input, select, textarea').each(function() {
+            var newId = $(this).attr('id').replace('-0-', '-' + formCount + '-');
+            var newName = $(this).attr('name').replace('-0-', '-' + formCount + '-');
+            $(this).attr({'name': newName, 'id': newId}).val('');
+        });
+
+        newFormHtml.find('.removeReponse').show();
+
+        formsetContainer.append(newFormHtml);
+        totalForms.val(formCount + 1);
     });
-  });
+
+    // Gestion de la suppression de réponses
+    $(document).on('click', '.removeReponse', function() {
+        $(this).closest('.formset_row').remove();
+        var formCount = formsetContainer.find('.formset_row').length;
+        totalForms.val(formCount);
+    });
+
+    // Initialiser le bouton supprimer
+    $('.removeReponse').each(function() {
+        if ($(this).closest('.formset_row').index() === 0) {
+            $(this).hide();
+        }
+    });
+
+    // Gestion de l'ajout dynamique de nouveaux tags
+    $('#addNewTag').click(function() {
+        var newTagHtml = `
+            <div class="input-group mb-2">
+                <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+                <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+            </div>`;
+        $('#newTagsContainer').append(newTagHtml);
+    });
+});
+
 </script>
 {% endblock %}
