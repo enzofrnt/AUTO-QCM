@@ -20,7 +20,11 @@ class Reponse(models.Model):
     def convertToXml(self):
         texteReponse = (
             '<answer fraction="'
-            + ("100" if self.is_correct else "0")
+            + (
+                str(100 / self.question.reponses.filter(is_correct=True).count())
+                if self.is_correct
+                else "0"
+            )
             + '" format="html">'
             + "<text>"
             + self.texte
