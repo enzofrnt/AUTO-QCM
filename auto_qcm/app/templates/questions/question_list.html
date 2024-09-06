@@ -50,9 +50,9 @@
                                 <div class="question-header">
                                     {{ question.texte }}
                                 </div>
-                                <!-- Bouton pour supprimer la question -->
-                                <button class="btn delete-question-btn" style="background-color: red; color: white; width: 40px; height: 40px; border-radius: 5px; border: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: none;">
-                                    <i class="fas fa-trash-alt"></i>
+                                <!-- Modifier ici : Ajout de la classe 'delete-question-btn' et masquage par défaut -->
+                                <button type="button" class="btn btn-danger btn-sm delete-question-btn position-absolute" style="top: 5px; right: 5px; display: none;">
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </div>
 
@@ -94,7 +94,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Inclure FontAwesome pour l'icône de poubelle -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> 
 <script>
 $(document).ready(function() {
     const filterForm = $('#filterForm');
