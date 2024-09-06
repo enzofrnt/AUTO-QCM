@@ -17,7 +17,7 @@ Including another URLconf
 import os
 from django.contrib import admin
 from django.urls import path
-from app.views import QuestionListView, create_question, remove_tag
+from app.views import QuestionListView, create_question, remove_tag, delete_question
 
 from django.urls import include
 
@@ -25,7 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('list-questions/', QuestionListView.as_view(), name='question-list'),
     path('create-questions/', create_question, name='question-create'),
-    path('remove-tag/<int:question_id>/<int:tag_id>/', remove_tag, name='remove-tag'),    
+    path('remove-tag/<int:question_id>/<int:tag_id>/', remove_tag, name='remove-tag'),
+    path('delete-question/<int:question_id>/', delete_question, name='delete-question'),
 ]
 
 if os.environ.get("env", "dev") == "dev":

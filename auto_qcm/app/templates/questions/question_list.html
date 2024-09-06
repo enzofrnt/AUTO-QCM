@@ -44,19 +44,23 @@
             </thead>
             <tbody>
                 {% for question in questions %}
-                    <tr class="question-row" data-question-id="{{ question.id }}" style="cursor: pointer;">
+                    <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer; position: relative;">
                         <td>
-                            <div class="question-header">
-                                {{ question.texte }}
-                                <!-- Bouton pour afficher/masquer les réponses -->
-                                <button class="btn btn-link toggle-answers" data-question-id="{{ question.id }}" style="display: none;">Voir les réponses</button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="question-header">
+                                    {{ question.texte }}
+                                </div>
+                                <!-- Bouton pour supprimer la question -->
+                                <button class="btn delete-question-btn" style="background-color: red; color: white; width: 40px; height: 40px; border-radius: 5px; border: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: none;">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
                             </div>
+
                             <!-- Boucle pour afficher les tags associés -->
                             {% for tag in question.tags.all %}
                                 <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer; position: relative;">
                                     {{ tag.name }}
                                     {% if question.id and tag.id %}
-                                        <!-- Ajuster la valeur de `right` ici -->
                                         <a href="{% url 'remove-tag' question.id tag.id %}" class="remove-tag" style="position: absolute; top: 50%; right: 4px; transform: translateY(-50%); text-decoration: none; color: inherit; font-size: 14px; display: none;">&times;</a>
                                     {% endif %}
                                 </span>
@@ -90,6 +94,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Inclure FontAwesome pour l'icône de poubelle -->
 <script>
 $(document).ready(function() {
     const filterForm = $('#filterForm');
@@ -177,6 +182,25 @@ $(document).ready(function() {
         $(this).css('padding-right', '12px'); // Réduire la largeur du tag lorsque la croix est masquée
     });
 
+    // Afficher le bouton poubelle au survol de la ligne de question
+    $(document).on('mouseenter', '.question-row', function() {
+        $(this).find('.delete-question-btn').css('display', 'inline-block'); // Utiliser 'inline-block' pour une visibilité correcte
+    }).on('mouseleave', '.question-row', function() {
+        $(this).find('.delete-question-btn').css('display', 'none');
+    });
+
+    // Confirmation de suppression avant de supprimer la question
+    $(document).on('click', '.delete-question-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const questionRow = $(this).closest('.question-row');
+        const questionId = questionRow.data('question-id');
+        
+        if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
+            window.location.href = "{% url 'delete-question' question_id=0 %}".replace('0', questionId);
+        }
+    });
+
     // JavaScript pour afficher/masquer les réponses des questions
     $(document).on('click', '.question-row', function(e) {
         const questionId = $(this).data('question-id');
@@ -191,12 +215,6 @@ $(document).ready(function() {
         }
     });
 
-    // Ajouter un effet de survol pour indiquer que la question est cliquable
-    $(document).on('mouseenter', '.question-row', function() {
-        $(this).css('background-color', '#f9f9f9');
-    }).on('mouseleave', '.question-row', function() {
-        $(this).css('background-color', '');
-    });
 });
 </script>
 {% endblock %}
