@@ -1,3 +1,4 @@
+from .profile import Profile
 from .eleve import Eleve
 from .qcm import QCM
 from .question import Question

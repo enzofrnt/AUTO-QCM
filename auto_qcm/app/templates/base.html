@@ -31,15 +31,8 @@
             </button>
         </div>
         <main class="content">
-            <div class="pp">
-                <p class="texteUser">Bienvenue, {{ user.username }} !</p>
-                <div class="pp-btn">
-                  <a href="{% url 'login' %}" style="color: white"><i class="bi bi-person-circle"></i></a>
-                </div>
-              </div>
-            {% block content %}
-           
-            {% endblock %}
+          {% include 'pp.html' %}
+          {% block content %} {% endblock %}
         </main>
     </div>
     <script src="{% static 'js/scripts.js' %}"></script>

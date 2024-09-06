@@ -53,37 +53,6 @@ body {
     display: none;
 }
 
-.pp-img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
-
-.pp {
-  width: 100%;
-  /* mettre tout les element enfant a droite */
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-  padding: 10px;
-}
-
-.texteUser {
-  float: left;
-  display: flex;
-  margin-right: 10px;
-  margin-top: 10px;
-  font-size: 20px;
-}
-
-.pp-btn {
-  display: flex;
-  justify-content: flex-end;
-
-  font-size: 35px;
-  color: white;
-}
-
 .toggle-btn{
     color: aliceblue;
     background: none;
