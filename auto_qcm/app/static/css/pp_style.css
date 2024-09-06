@@ -1,0 +1,58 @@
+.pp {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  padding: 10px;
+  font-size: 35px;
+}
+
+.pp-btn {
+  position: relative;
+  display: inline-block;
+}
+
+.user-hover-box {
+    display: none;
+    position: absolute;
+    top: 60px;  /* Position verticale pour être en dessous de l'icône */
+    right: 0;   /* Position horizontale alignée à droite */
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    width: 150px;  /* Largeur compacte */
+    z-index: 100;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);  /* Ombre discrète */
+}
+
+.pp-btn:hover .user-hover-box {
+    display: block;
+}
+
+.user-icon-hover {
+    font-size: 40px;  /* Taille de l'icône dans la fenêtre de survol */
+    margin-bottom: 10px;
+}
+
+.user-info {
+    font-size: 14px;  /* Taille du texte pour le nom d'utilisateur */
+    margin: 5px 0;
+}
+
+.user-type {
+    font-size: 12px;
+    color: #ccc;  /* Couleur plus discrète pour le type d'utilisateur */
+}
+
+/* Ajout d'un petit espacement entre l'icône principale et le reste */
+.pp-btn i {
+    margin-right: 5px;
+}
+
+.texteUser{
+    margin-right: 15px;
+    margin-top: 7px;
+    font-size: 25px;
+}

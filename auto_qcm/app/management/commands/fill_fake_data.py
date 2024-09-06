@@ -4,6 +4,7 @@ from app.models import Question, Tag, Reponse
 import random
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from app.models.profile import Profile
 
 class Command(BaseCommand):
     help = 'Remplit la base de données avec des données factices.'
@@ -16,23 +17,12 @@ class Command(BaseCommand):
         moquette = User.objects.create_user('Moquette', 'moquette@gmail.com','Moquette31')
         alex = User.objects.create_user('Alexi','alexi@gmail.com','LPBLPM81')
         
-        lois.profile.user_type = 'student' 
-        lois.profile.save()
-
-        nath.profile.user_type = 'teacher'
-        nath.profile.save()
-
-        enzo.profile.user_type = 'student'
-        enzo.profile.save()
-
-        kilian.profile.user_type = 'teacher'
-        kilian.profile.save()
-
-        moquette.profile.user_type = 'student'
-        moquette.profile.save()
-
-        alex.profile.user_type = 'teacher'
-        alex.profile.save()
+        Profile.objects.create(user=lois, user_type='Etudiant')
+        Profile.objects.create(user=nath, user_type='Enseignant')
+        Profile.objects.create(user=enzo, user_type='Etudiant')
+        Profile.objects.create(user=kilian, user_type='Enseignant')
+        Profile.objects.create(user=moquette, user_type='Etudiant')
+        Profile.objects.create(user=alex, user_type='Enseignant')
 
         User.objects.create_superuser(
             username='admin',

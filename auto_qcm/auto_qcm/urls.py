@@ -18,6 +18,7 @@ import os
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
+from django.contrib.auth import views as auth_views
 from app.views import QuestionListView, create_question, remove_tag, delete_question, home, CustomLoginView
 
 
@@ -28,8 +29,8 @@ urlpatterns = [
     path('create-questions/', create_question, name='question-create'),
     path('remove-tag/<int:question_id>/<int:tag_id>/', remove_tag, name='remove-tag'),
     path('login/', CustomLoginView.as_view(), name='login') , 
-    
     path('delete-question/<int:question_id>/', delete_question, name='delete-question'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 ]
 
 if os.environ.get("env", "dev") == "dev":
