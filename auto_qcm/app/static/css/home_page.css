@@ -1,0 +1,35 @@
+
+.button {
+    display: inline-block;
+    padding: 30px 30px;
+    margin: 5px;
+    background-color: #333;
+    /* mettre la bordure en grise */
+    border: 1px solid #555;
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+}
+  
+.button:hover {
+    background-color: #666;
+    /* empecher l'hypertexte bleu */
+    text-decoration: none;
+    color: white;
+}
+
+  
+.buttons {
+    /* margin-top: 120px; */
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding-inline: 20%;
+
+}
+
+.main-content {
+   
+    padding: 40px;
+    
+  }
