@@ -45,3 +45,28 @@
     <script src="{% static 'js/scripts.js' %}"></script>
   </body>
 </html>
+
+<script>
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            // Effectue un appel HTTP de type HEAD à la racine du serveur
+            fetch('/', {
+                method: 'HEAD'
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    break;
+                } else if (response.redirected) {
+                    // Si le serveur renvoie une redirection, on redirige
+                    window.location.href = response.url;
+                } else {
+                    // Si autre chose que 200 ou redirection, log 'hessoule'
+                    console.log('Hessoule');
+                }
+            })
+            .catch(error => {
+                console.log('Erreur lors de la requête:', error);
+            });
+        }
+    };
+</script>
