@@ -5,11 +5,12 @@ from app.models import Question, Reponse
 from app.forms import QuestionForm, ReponseFormSet
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.contrib.auth.mixins import LoginRequiredMixin  # Import LoginRequiredMixin
 from logging import getLogger
 
 logger = getLogger(__name__)
 
-class QuestionCreateView(CreateView):
+class QuestionCreateView(LoginRequiredMixin,CreateView):
     model = Question
     form_class = QuestionForm
     template_name = 'questions/question_form.html'
