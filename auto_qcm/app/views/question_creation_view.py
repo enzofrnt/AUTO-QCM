@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from app.models import Question, Reponse, Tag
 from app.forms import QuestionForm, ReponseFormSet
 
+@login_required(login_url='login')
 def create_question(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST)
