@@ -17,15 +17,18 @@ Including another URLconf
 import os
 from django.contrib import admin
 from django.urls import path
-from app.views import QuestionListView, create_question, remove_tag, delete_question
+from django.urls.conf import include
+from app.views import QuestionListView, create_question, remove_tag, delete_question, home, CustomLoginView
 
-from django.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'), 
     path('list-questions/', QuestionListView.as_view(), name='question-list'),
     path('create-questions/', create_question, name='question-create'),
     path('remove-tag/<int:question_id>/<int:tag_id>/', remove_tag, name='remove-tag'),
+    path('login/', CustomLoginView.as_view(), name='login') , 
+    
     path('delete-question/<int:question_id>/', delete_question, name='delete-question'),
 ]
 

@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from app.models import Question, Tag
 from django.db.models import Q
 
-class QuestionListView(ListView):
+class QuestionListView(LoginRequiredMixin, ListView):
     model = Question
     template_name = 'questions/question_list.html'
     context_object_name = 'questions'
