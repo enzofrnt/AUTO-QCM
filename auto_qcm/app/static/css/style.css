@@ -1,11 +1,12 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  background-color: #333;
-  color: white;
-  width: 100%;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #333;
+    color: white;
+    width: 100%;
+    height: 100vh;
 }
 
 .content {
@@ -13,6 +14,7 @@ body {
   flex-direction: column;
   width: 100%;
 }
+
 
 .sidebar {
   background-color: #2b2b2b;
@@ -36,13 +38,6 @@ body {
   text-decoration: none;
 }
 
-.main-content {
-  flex-grow: 1;
-  padding: 40px;
-  background-color: #333;
-  color: white;
-  width: 100%;
-}
 
 .main-content h1 {
   font-size: 80px;
@@ -52,35 +47,10 @@ body {
   font-size: 30px;
 }
 
-.buttons {
-  margin-top: 120px;
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  padding-inline: 20%;
-}
-
-.button {
-  display: inline-block;
-  padding: 30px 30px;
-  margin: 5px;
-  background-color: #333;
-  /* mettre la bordure en grise */
-  border: 1px solid #555;
-  color: white;
-  text-decoration: none;
-  border-radius: 30px;
-}
-
-.button:hover {
-  background-color: #666;
-  /* empecher l'hypertexte bleu */
-  text-decoration: none;
-  color: white;
-}
 
 .sidebar.collapsed {
-  transform: translateX(-250px);
+    /* transform: translateX(-250px); */
+    display: none;
 }
 
 .pp-img {
@@ -112,4 +82,17 @@ body {
 
   font-size: 35px;
   color: white;
+}
+
+.toggle-btn{
+    color: aliceblue;
+    background: none;
+    border: none;
+    height: 40px;
+}
+
+/* quand le toggle-btn est selectionné je ne veux pas qu'il y ai de border */
+
+.toggle-btn:focus {
+    outline: none;
 }

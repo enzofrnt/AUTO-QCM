@@ -3,12 +3,14 @@
 
 {% block content %}
 <div class="main-content">
-    <h1>Auto-QCM</h1>
-    <p>Des quiz express, pour un succès qui progresse</p>
+    <div class="home-text"> <h1>Auto-QCM</h1>
+    <p>Des quiz express, pour un succès qui progresse</p></div>
+   
     <div class="buttons">
-        <a href="#" class="button">Créer ou consulter une question</a>
-        <a href="#" class="button">Générer un QCM</a>
-        <a href="#" class="button">Consulter son tableau de bord</a>
+        <a href="#" class="button"> <i class="bi bi-card-checklist"></i>  Créer ou consulter une question</a>
+        <a href="{% url 'question-create' %}" class="button"><i class="bi bi-question-square"></i>  Générer un QCM</a>
+        <a href="#" class="button"><i class="bi bi-clipboard-data"></i>   Consulter son tableau de bord</a>
     </div>
 </div>
 {% endblock %}
+
