@@ -1,13 +1,5 @@
 {% extends "base.html" %} {% load color_filters %} {% block content %}
 <div class="container mt-4">
-  <h2>Créer une Nouvelle Question</h2>
-  <form method="post" id="questionForm">
-    {% csrf_token %}
-    <!-- Champ pour le nom de la question -->
-    <div class="form-group">{{ form.nom.label_tag }} {{ form.nom }}</div>
-
-{% block content %}
-<div class="container mt-4">
     <h2>Créer une Nouvelle Question</h2>
 
     <!-- Affichage des erreurs -->
@@ -35,6 +27,8 @@
     <form method="post" id="questionForm">
         {% csrf_token %}
         
+        <div class="form-group">{{ form.nom.label_tag }} {{ form.nom }}</div>
+
         <!-- Champ pour le texte de la question -->
         <div class="form-group">
             {{ form.texte.label_tag }} 
@@ -77,11 +71,8 @@
                     <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute" style="top: 5px; right: 5px;">&times;</button>
                 </div>
             {% endfor %}
+        
         </div>
-        <hr />
-      </div>
-      {% endfor %}
-    </div>
         <!-- Bouton pour soumettre le formulaire -->
         <button type="submit" class="btn btn-success">Enregistrer</button>
     </form>
