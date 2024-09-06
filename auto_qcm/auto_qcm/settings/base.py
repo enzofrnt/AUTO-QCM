@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'root',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': 'database',  # Cela fait référence au nom du service de la base de données dans Docker Compose
+        'HOST': 'auto_qcm_database',  # Cela fait référence au nom du service de la base de données dans Docker Compose
         'PORT': '5432',
     }
 }
@@ -117,6 +117,9 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = 'home'  # Par exemple, pour rediriger vers la vue 'home'
+LOGOUT_REDIRECT_URL = 'login'  # Rediriger vers login après déconnexion
+LOGIN_URL = 'login'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
