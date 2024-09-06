@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.shortcuts import redirect  
-from app.views import QuestionListView, QuestionCreateView, remove_tag, CustomLoginView
+from app.views import QuestionListView, QuestionCreateView, remove_tag, home, CustomLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'), 
     path('list-questions/', QuestionListView.as_view(), name='question-list'),
     path('create-questions/', QuestionCreateView.as_view(), name='question-create'),
     path('remove-tag/<int:question_id>/<int:tag_id>/', remove_tag, name='remove-tag'),
