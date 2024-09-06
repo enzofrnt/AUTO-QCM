@@ -9,13 +9,31 @@ class Command(BaseCommand):
     help = 'Remplit la base de données avec des données factices.'
 
     def handle(self, *args, **kwargs):
-        User.objects.create_user('Lois', 'lois@gmail.com', 'LoisLeBeau31')
-        User.objects.create_user('Nathan', 'nath@gmail.com', 'TheBest31')
-        User.objects.create_user('Enzo', 'enzo@gmail.com', 'AppleNul12')
-        User.objects.create_user('Kilian', 'kiki@gmail.com', 'BoisUnVerre31')
-        User.objects.create_user('Moquette', 'moquette@gmail.com','Moquette31')
-        User.objects.create_user('Alexi','alexi@gmail.com','LPBLPM81')
+        lois = User.objects.create_user('Lois', 'lois@gmail.com', 'LoisLeBeau31')
+        nath = User.objects.create_user('Nathan', 'nath@gmail.com', 'TheBest31')
+        enzo = User.objects.create_user('Enzo', 'enzo@gmail.com', 'AppleNul12')
+        kilian = User.objects.create_user('Kilian', 'kiki@gmail.com', 'BoisUnVerre31')
+        moquette = User.objects.create_user('Moquette', 'moquette@gmail.com','Moquette31')
+        alex = User.objects.create_user('Alexi','alexi@gmail.com','LPBLPM81')
         
+        lois.profile.user_type = 'student' 
+        lois.profile.save()
+
+        nath.profile.user_type = 'teacher'
+        nath.profile.save()
+
+        enzo.profile.user_type = 'student'
+        enzo.profile.save()
+
+        kilian.profile.user_type = 'teacher'
+        kilian.profile.save()
+
+        moquette.profile.user_type = 'student'
+        moquette.profile.save()
+
+        alex.profile.user_type = 'teacher'
+        alex.profile.save()
+
         User.objects.create_superuser(
             username='admin',
             email='admin@example.com',
