@@ -51,6 +51,45 @@ class Question(models.Model):
 
         return texte
 
+    def convertToXmlSingle(self):
+        """Convertit la question en xml pour télécharger directement"""
+        texte = (
+            '<?xml version="1.0"?><quiz>'
+            + '<question type="multichoice">'
+            + "<name>"
+            + "<text>"
+            + self.nom
+            + "</text>"
+            + "</name>"
+            + '<questiontext format="html"><text>'
+            + '<![CDATA[<p dir="ltr" style="text-align: left;">'
+            + self.texte
+            + "<br></p>]]>"
+            + "</text></questiontext>"
+            + "<defaultgrade>1</defaultgrade>"
+            + "<single>"
+            + ("false" if self.number_of_correct_answers > 1 else "true")
+            + "</single>"
+            + "<shuffleanswers>true</shuffleanswers> "
+            + "<answernumbering>abc</answernumbering>"
+            + '<correctfeedback format="html">'
+            + "<text>Votre réponse est correcte.</text>"
+            + "</correctfeedback>"
+            + '<partiallycorrectfeedback format="html">'
+            + "<text>Votre réponse est partiellement correcte.</text>"
+            + "</partiallycorrectfeedback>"
+            + '<incorrectfeedback format="html">'
+            + "<text>Votre réponse est incorrecte.</text>"
+            + "</incorrectfeedback>"
+        )
+
+        for rep in self.reponses.all():
+            texte += rep.convertToXml()
+
+        texte += "</question></quiz>"
+
+        return texte
+
     class Meta:
         verbose_name = "Question"
         verbose_name_plural = "Questions"

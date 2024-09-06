@@ -73,20 +73,27 @@
           style="cursor: pointer"
         >
           <td>
-            <div class="question-header">
-              {{ question.nom }}
-              <!-- Bouton pour afficher/masquer les réponses -->
-              <button
+            <div class="question-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>{{ question.nom }}</span>
+                
+                <span style="align-items:right;">
+                    <a href="{% url 'export-moodle-xml' question.id %}" class="btn btn-link">Export Moodle XML</a>
+                </span>
+
+            </div>
+
+            <button
                 class="btn btn-link toggle-answers"
                 data-question-id="{{ question.id }}"
                 style="display: none"
-              >
+            >
                 Voir les réponses
-              </button>
+            </button>
+            <div class="question-header">
+                {{ question.texte }}
             </div>
-            <div class="question-header">{{ question.texte }}</div>
             <!-- Boucle pour afficher les tags associés -->
-            {% for tag in question.tags.all %}
+            {% for tag in question.tags.all %}  
             <span
               class="badge badge-pill tag-badge"
               style="background-color: {{ tag.color }}; color: #fff; padding: 5px; margin-left: 5px; border-radius: 10px; border: 2px solid {{ tag.color|darken_color:'0.3' }};"
