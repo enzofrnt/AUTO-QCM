@@ -6,7 +6,9 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile
-      target: dev
+      target: ${env}
+    env_file:
+      - .env
     volumes:
       - ../auto_qcm:/app
     ports:

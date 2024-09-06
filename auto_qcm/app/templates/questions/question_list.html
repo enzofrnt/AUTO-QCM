@@ -7,7 +7,7 @@
     <h2>Liste des Questions</h2>
     
     <!-- Formulaire de filtre -->
-    <form method="get" class="mb-4" id="filterForm">
+    <form method="get" class="mb-4" id="filterForm" action="{% url 'question-list' %}">
         <div class="form-row align-items-center">
             <div class="col-auto">
                 <input type="text" name="nom" class="form-control" placeholder="Filtrer par nom" value="{{ nom_filtre }}">
@@ -15,14 +15,11 @@
             <div class="col-auto">
                 <div class="form-group">
                     <label for="tags">Filtrer par tags :</label>
-                    <div id="tags">
+                    <div id="tags" class="d-flex flex-wrap">
                         {% for tag in tags %}
-                            <label class="form-check-label" style="margin-right: 10px;">
-                                <input type="checkbox" name="tags" value="{{ tag.name }}" {% if tag.name in tag_filtre %}checked{% endif %} class="form-check-input">
-                                <span class="badge badge-pill" style="background-color: {{ tag.color }}; color: #fff; padding: 5px; margin-left: 5px; border-radius: 10px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
-                                    {{ tag.name }}
-                                </span>
-                            </label>
+                            <span class="badge tag-badge form-check-label" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">
+                                {{ tag.name }}
+                            </span>
                         {% endfor %}
                     </div>
                 </div>
@@ -32,6 +29,8 @@
                 <a href="{% url 'question-list' %}" class="btn btn-secondary">Réinitialiser</a>
             </div>
         </div>
+        <!-- Champs cachés pour les tags sélectionnés -->
+        <div id="selected-tags-container"></div>
     </form>
 
     <!-- Liste des questions -->
@@ -45,18 +44,25 @@
             </thead>
             <tbody>
                 {% for question in questions %}
-                    <tr class="question-row" data-question-id="{{ question.id }}" style="cursor: pointer;">
+                    <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer; position: relative;">
                         <td>
-                            <div class="question-header">
-                                {{ question.texte }}
-                                <!-- Bouton pour afficher/masquer les réponses -->
-                                <button class="btn btn-link toggle-answers" data-question-id="{{ question.id }}" style="display: none;">Voir les réponses</button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="question-header">
+                                    {{ question.texte }}
+                                </div>
+                                <!-- Bouton pour supprimer la question -->
+                                <button class="btn delete-question-btn" style="background-color: red; color: white; width: 40px; height: 40px; border-radius: 5px; border: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: none;">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
                             </div>
+
                             <!-- Boucle pour afficher les tags associés -->
                             {% for tag in question.tags.all %}
-                                <span class="badge badge-pill tag-badge" style="background-color: {{ tag.color }}; color: #fff; padding: 5px; margin-left: 5px; border-radius: 10px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
+                                <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer; position: relative;">
                                     {{ tag.name }}
-                                    <a href="{% url 'remove-tag' question.id tag.id %}" class="remove-tag" style="text-decoration: none; color: inherit; display: none; margin-left: 5px;">&times;</a>
+                                    {% if question.id and tag.id %}
+                                        <a href="{% url 'remove-tag' question.id tag.id %}" class="remove-tag" style="position: absolute; top: 50%; right: 4px; transform: translateY(-50%); text-decoration: none; color: inherit; font-size: 14px; display: none;">&times;</a>
+                                    {% endif %}
                                 </span>
                             {% endfor %}
 
@@ -88,10 +94,11 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Inclure FontAwesome pour l'icône de poubelle -->
 <script>
-// JavaScript pour utiliser AJAX pour filtrer sans recharger la page
-document.addEventListener('DOMContentLoaded', function() {
-    const filterForm = document.getElementById('filterForm');
+$(document).ready(function() {
+    const filterForm = $('#filterForm');
+    const selectedTagsContainer = $('#selected-tags-container');
 
     // Fonction de debouncing
     function debounce(func, delay) {
@@ -105,9 +112,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fonction pour soumettre le formulaire via AJAX
     function submitFormAJAX() {
         $.ajax({
-            url: filterForm.action,
+            url: filterForm.attr('action'),
             type: 'GET',
-            data: $(filterForm).serialize(),
+            data: filterForm.serialize(),
             success: function(response) {
                 $('#questions-list').html($(response).find('#questions-list').html());
             }
@@ -116,22 +123,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Appliquer le debouncing à la saisie dans la barre de recherche
     const debouncedSubmit = debounce(submitFormAJAX, 300);
-    filterForm.querySelector('input[name="nom"]').addEventListener('input', debouncedSubmit);
+    filterForm.find('input[name="nom"]').on('input', debouncedSubmit);
 
-    // Déclencher l'envoi du formulaire AJAX lorsque l'utilisateur coche/décoche une case
-    filterForm.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
-        checkbox.addEventListener('change', submitFormAJAX);
+    // Interaction pour sélectionner/désélectionner les tags
+    $('#tags .tag-badge').click(function() {
+        const tagName = $(this).data('tag-name');
+        
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected').css('opacity', '0.6');
+            removeTagFromFilter(tagName);
+        } else {
+            $(this).addClass('selected').css('opacity', '1');
+            addTagToFilter(tagName);
+        }
+
+        updateURLAndSubmit();
     });
 
-    // JavaScript pour afficher la croix de suppression au survol
-    $(document).on('mouseenter', '.tag-badge', function() {
+    // Fonction pour ajouter un tag au filtre
+    function addTagToFilter(tagName) {
+        selectedTagsContainer.append('<input type="hidden" name="tags" value="' + tagName + '">');
+    }
+
+    // Fonction pour supprimer un tag du filtre
+    function removeTagFromFilter(tagName) {
+        selectedTagsContainer.find('input[value="' + tagName + '"]').remove();
+    }
+
+    // Fonction pour mettre à jour l'URL et soumettre le formulaire
+    function updateURLAndSubmit() {
+        const queryString = filterForm.serialize();
+        const baseUrl = filterForm.attr('action') || window.location.pathname; // Utilisez le chemin de l'URL si l'action est indéfinie
+        const newUrl = baseUrl + '?' + queryString;
+        window.history.pushState({}, '', newUrl);
+        submitFormAJAX();
+    }
+
+    // Initialiser les tags sélectionnés
+    $('#tags .tag-badge').each(function() {
+        if (selectedTagsContainer.find('input[value="' + $(this).data('tag-name') + '"]').length > 0) {
+            $(this).addClass('selected').css('opacity', '1');
+        } else {
+            $(this).css('opacity', '0.6');
+        }
+    });
+
+    // Empêcher le clic sur la croix de suppression de dérouler la question
+    $(document).on('click', '.remove-tag', function(e) {
+        e.stopPropagation();
+    });
+
+    // JavaScript pour afficher la croix de suppression au survol uniquement pour les tags de question
+    $(document).on('mouseenter', '.question-tag', function() {
         $(this).find('.remove-tag').show();
-    }).on('mouseleave', '.tag-badge', function() {
+        $(this).css('padding-right', '24px'); // Augmenter la largeur du tag pour la croix
+    }).on('mouseleave', '.question-tag', function() {
         $(this).find('.remove-tag').hide();
+        $(this).css('padding-right', '12px'); // Réduire la largeur du tag lorsque la croix est masquée
+    });
+
+    // Afficher le bouton poubelle au survol de la ligne de question
+    $(document).on('mouseenter', '.question-row', function() {
+        $(this).find('.delete-question-btn').css('display', 'inline-block'); // Utiliser 'inline-block' pour une visibilité correcte
+    }).on('mouseleave', '.question-row', function() {
+        $(this).find('.delete-question-btn').css('display', 'none');
+    });
+
+    // Confirmation de suppression avant de supprimer la question
+    $(document).on('click', '.delete-question-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const questionRow = $(this).closest('.question-row');
+        const questionId = questionRow.data('question-id');
+        
+        if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
+            window.location.href = "{% url 'delete-question' question_id=0 %}".replace('0', questionId);
+        }
     });
 
     // JavaScript pour afficher/masquer les réponses des questions
-    $(document).on('click', '.question-row', function() {
+    $(document).on('click', '.question-row', function(e) {
         const questionId = $(this).data('question-id');
         const answersList = $('#answers-' + questionId);
 
@@ -144,12 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Ajouter un effet de survol pour indiquer que la question est cliquable
-    $(document).on('mouseenter', '.question-row', function() {
-        $(this).css('background-color', '#f9f9f9');
-    }).on('mouseleave', '.question-row', function() {
-        $(this).css('background-color', '');
-    });
 });
 </script>
 {% endblock %}

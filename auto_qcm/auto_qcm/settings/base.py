@@ -117,6 +117,9 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = 'home'  # Par exemple, pour rediriger vers la vue 'home'
+LOGOUT_REDIRECT_URL = 'login'  # Rediriger vers login après déconnexion
+LOGIN_URL = 'login'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
