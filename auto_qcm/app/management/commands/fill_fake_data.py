@@ -15,6 +15,7 @@ class Command(BaseCommand):
         user = User.objects.create_user('Kilian', 'kiki@gmail.com', 'BoisUnVerre31')
         user = User.objects.create_user('Moquette', 'moquette@gmail.com','Moquette31')
         user = User.objects.create_user('Alexi','alexi@gmail.com','LPBLPM81')
+        self.stdout.write(self.style.SUCCESS('Utilisateurs créés avec succès.'))
 
         fake = Faker()
 
