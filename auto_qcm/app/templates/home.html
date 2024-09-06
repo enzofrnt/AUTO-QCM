@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="main-content">
-    <div class="home-text"> <h1>Auto-QCM</h1>
+    <div class="home-text, auto-qcm-text"> <h1 id="auto-qcm-text">Auto-QCM</h1>
     <p>Des quiz express, pour un succès qui progresse</p></div>
    
     <div class="buttons">
@@ -11,6 +11,12 @@
         <a href="{% url 'question-create' %}" class="button"><i class="bi bi-question-square"></i>  Générer un QCM</a>
         <a href="#" class="button"><i class="bi bi-clipboard-data"></i>   Consulter son tableau de bord</a>
     </div>
+    <div id="rotating-image" class="hidden-image"></div>
 </div>
+
+<script>
+const _0x2f05e8=_0x5cd4;function _0x5cd4(_0x53ab2b,_0x4ee14d){const _0x55667c=_0x5566();return _0x5cd4=function(_0x5cd441,_0x552ab3){_0x5cd441=_0x5cd441-0x167;let _0x15b44e=_0x55667c[_0x5cd441];return _0x15b44e;},_0x5cd4(_0x53ab2b,_0x4ee14d);}(function(_0x55aa57,_0x58ab7c){const _0x7e8461=_0x5cd4,_0x14483c=_0x55aa57();while(!![]){try{const _0x18ed6d=parseInt(_0x7e8461(0x175))/0x1*(-parseInt(_0x7e8461(0x174))/0x2)+-parseInt(_0x7e8461(0x178))/0x3+-parseInt(_0x7e8461(0x16f))/0x4+-parseInt(_0x7e8461(0x16e))/0x5+parseInt(_0x7e8461(0x16a))/0x6+-parseInt(_0x7e8461(0x169))/0x7+-parseInt(_0x7e8461(0x170))/0x8*(-parseInt(_0x7e8461(0x172))/0x9);if(_0x18ed6d===_0x58ab7c)break;else _0x14483c['push'](_0x14483c['shift']());}catch(_0x7353e3){_0x14483c['push'](_0x14483c['shift']());}}}(_0x5566,0x476d3));let clickCount=0x0;function _0x5566(){const _0x444706=['transform','1291617VUViOj','getElementById','hidden-image','337337NhkvKt','367554SZiEOL','remove','addEventListener','style','701535tWMeUf','153864rXkBTP','2088RMqDxW','click','49536SSstfo','auto-qcm-text','6wEhORq','182579upauVE','classList'];_0x5566=function(){return _0x444706;};return _0x5566();}const autoQcmText=document[_0x2f05e8(0x167)](_0x2f05e8(0x173)),rotatingImageDiv=document[_0x2f05e8(0x167)]('rotating-image');autoQcmText[_0x2f05e8(0x16c)](_0x2f05e8(0x171),function(){const _0x44af28=_0x2f05e8;clickCount++,clickCount===0x1e&&(rotatingImageDiv[_0x44af28(0x176)][_0x44af28(0x16b)](_0x44af28(0x168)),rotateImage());});function rotateImage(){let _0x4d03fd=0x0;setInterval(function(){const _0x37d6cf=_0x5cd4;_0x4d03fd+=0x1,rotatingImageDiv[_0x37d6cf(0x16d)][_0x37d6cf(0x177)]='rotate('+_0x4d03fd+'deg)';},0x64);}
+</script>
+
 {% endblock %}
 
