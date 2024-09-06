@@ -3,33 +3,24 @@ from django.forms import inlineformset_factory
 from .models import Question, Reponse, Tag
 
 class QuestionForm(forms.ModelForm):
-    number_of_correct_answers = forms.IntegerField(
-        required=True,
-        min_value=0,
-        help_text="Nombre de bonnes réponses possibles.",
-        label="Nombre de bonnes réponses"
+    # Champ pour ajouter de nouveaux tags
+    new_tags = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Ajouter des tags séparés par des virgules'}),
+        help_text="Vous pouvez ajouter plusieurs tags séparés par des virgules."
     )
 
     class Meta:
         model = Question
-        fields = ['texte', 'tags', 'number_of_correct_answers']
+        fields = ['texte', 'tags', 'new_tags']
         widgets = {
-            'tags': forms.CheckboxSelectMultiple,
+            'tags': forms.CheckboxSelectMultiple(),  # Affichage des tags existants en tant que checkboxes
         }
-    
-    def __init__(self, *args, **kwargs):
-        super(QuestionForm, self).__init__(*args, **kwargs)
-        self.fields['tags'].queryset = Tag.objects.all()
-        self.fields['tags'].widget.attrs.update({'class': 'form-check-input'})
 
-# Formulaire pour les réponses sans champ de tag
-class ReponseForm(forms.ModelForm):
-    class Meta:
-        model = Reponse
-        fields = ['texte', 'is_correct']
-
-# Inline formset pour gérer plusieurs réponses dans le formulaire de question
+# Formset pour gérer les réponses associées à une question
 ReponseFormSet = inlineformset_factory(
-    Question, Reponse, form=ReponseForm,
-    fields=['texte', 'is_correct'], extra=2, can_delete=True
+    Question, Reponse, 
+    fields=['texte', 'is_correct'],
+    extra=1,  # Nombre de formulaires de réponse vierges à afficher par défaut
+    can_delete=True  # Permettre de supprimer des réponses
 )
