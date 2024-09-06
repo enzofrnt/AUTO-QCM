@@ -21,7 +21,7 @@ class Reponse(models.Model):
         texteReponse = (
             '<answer fraction="'
             + (
-                str(100 / self.question.reponses.filter(is_correct=True).count())
+                str(100 / self.question.number_of_correct_answers)
                 if self.is_correct
                 else "0"
             )

@@ -53,34 +53,7 @@
       </div>
     </div>
   </form>
-
-  <!-- Liste des questions -->
-  <div id="questions-list">
-    <a href="{% url 'question-create' %}" class="btn btn-primary mb-4"
-      >Créer une nouvelle Question</a
-    >
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Texte de la Question et Tags</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for question in questions %}
-        <tr
-          class="question-row"
-          data-question-id="{{ question.id }}"
-          style="cursor: pointer"
-        >
-          <td>
-            <div class="question-header" style="display: flex; justify-content: space-between; align-items: center;">
-                <span>{{ question.nom }}</span>
-                
-                <span style="align-items:right;">
-                    <a href="{% url 'export-moodle-xml' question.id %}" class="btn btn-link">Export Moodle XML</a>
-                </span>
-
-{% block content %}
+ 
 <div class="container mt-4">
     <h2>Liste des Questions</h2>
     
@@ -135,6 +108,9 @@
                                 <div class="question-header">
                                     {{ question.texte }}
                                 </div>
+                                <span style="align-items:right;">
+                                  <a href="{% url 'export-moodle-xml' question.id %}" class="btn btn-link">Export Moodle XML</a>
+                                </span>
                                 <!-- Bouton pour supprimer la question -->
                                 <button class="btn delete-question-btn" style="background-color: red; color: white; width: 40px; height: 40px; border-radius: 5px; border: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: none;">
                                     <i class="fas fa-trash-alt"></i>
@@ -151,29 +127,32 @@
                                 </span>
                             {% endfor %}
 
-                {% for reponse in question.reponses.all %}
-                <li
-                  class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}"
-                >
-                  {{ reponse.texte }} {% if reponse.is_correct %}
-                  <span class="badge badge-success">Bonne réponse</span>
-                  {% endif %}
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td>Aucune question disponible.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+                            <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
+                                <ul class="list-group">
+                                    <p>Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b></p>
+                                    
+                                    {% for reponse in question.reponses.all %}
+                                        <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
+                                            {{ reponse.texte }}
+                                            {% if reponse.is_correct %}
+                                                <span class="badge badge-success">Bonne réponse</span>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                      </td>
+                    </tr>
+                      {% empty %}
+                      <tr>
+                        <td>Aucune question disponible.</td>
+                      </tr>
+                      {% endfor %}
+              </tbody>
+          </table>
+      </div>
+    </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Inclure FontAwesome pour l'icône de poubelle -->
 <script>
