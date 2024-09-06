@@ -3,11 +3,19 @@ from faker import Faker
 from app.models import Question, Tag, Reponse
 import random
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 class Command(BaseCommand):
     help = 'Remplit la base de données avec des données factices.'
 
     def handle(self, *args, **kwargs):
+        user = User.objects.create_user('Lois', 'lois@gmail.com', 'LoisLeBeau31')
+        user = User.objects.create_user('Nathan', 'nath@gmail.com', 'TheBest31')
+        user = User.objects.create_user('Enzo', 'enzo@gmail.com', 'AppleNul12')
+        user = User.objects.create_user('Kilian', 'kiki@gmail.com', 'BoisUnVerre31')
+        user = User.objects.create_user('Moquette', 'moquette@gmail.com','Moquette31')
+        user = User.objects.create_user('Alexi','alexi@gmail.com','LPBLPM81')
+
         fake = Faker()
 
         # Créer des tags factices
