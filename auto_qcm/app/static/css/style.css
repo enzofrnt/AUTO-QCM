@@ -3,11 +3,19 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    background-color: #333;
-    color: white;
+    background-color: #e4e4e4;
+    color: rgb(13, 13, 13);
     width: 100%;
     height: 100vh;
 }
+
+/* Dark mode styles */
+body.dark-mode {
+  background-color: #333;
+  color: #ffffff;
+}
+
+
 
 .content {
   display: flex;
@@ -17,11 +25,16 @@ body {
 
 
 .sidebar {
-  background-color: #2b2b2b;
-  color: white;
+  background-color: #adadad;
+  color: rgb(35, 35, 35);
   width: 250px;
   height: 100vh;
   padding: 20px;
+}
+
+.sidebar.dark-mode{
+  background-color: #2d2d2d;
+  color: #ccc;
 }
 
 .sidebar ul {
@@ -34,7 +47,12 @@ body {
 }
 
 .sidebar ul li a {
-  color: white;
+  color: rgb(21, 21, 21);
+  text-decoration: none;
+}
+
+.sidebar ul li a.dark-mode {
+  color: rgb(203, 203, 203);
   text-decoration: none;
 }
 
@@ -54,7 +72,7 @@ body {
 }
 
 .toggle-btn{
-    color: aliceblue;
+   
     background: none;
     border: none;
     height: 40px;
@@ -86,3 +104,59 @@ body {
 .hidden-image {
   display: none;
 }
+
+.nav-list{
+    display: flex;
+    flex-direction: column;
+   
+    align-items: left;
+    height: 100%;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
