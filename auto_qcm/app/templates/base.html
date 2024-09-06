@@ -14,18 +14,25 @@
 <body>
     <div class="" style="display: flex; width: 100%;">
         <div style="display: flex; align-items: center;" >
-            <nav class="sidebar">
-                
-                <ul class="nav-list">
-                    <li><a href="{% url 'home' %}">Accueil</a></li>
-                    <li><a href="{% url 'question-list' %}"> <i class="bi bi-card-checklist"></i>   Liste des questions</a></li>
-                    <li><a href="{% url 'question-create' %}">Genener un QCM</a></li>
-                    <li><a href="{% url 'question-create' %}">Tableau de bord</a></li>
-                    <li><a href="{% url 'question-create' %}">Support & documentation</a></li>
-
-                    <!-- On ajoute ici d'autres liens de navigation si besoin -->
-                </ul>
-            </nav>
+          <nav class="sidebar">
+            <ul class="nav-list">
+              <!-- Dark Mode Switch Button -->
+              <li>
+                <label class="switch">
+                  <input type="checkbox" id="theme-switch">
+                  <span class="slider round"></span>
+                  Dark Mode
+                </label>
+              </li>
+              
+              <!-- Navigation Links -->
+              <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-house-door"></i> Accueil</a></li>
+              <li><a class="nav-item" href="{% url 'question-list' %}"> <i class="bi bi-card-checklist"></i> Liste des questions</a></li>
+              <li><a class="nav-item" href="{% url 'question-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a></li>
+              <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-speedometer2"></i> Tableau de bord</a></li>
+              <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-info-circle"></i> Support & documentation</a></li>
+            </ul>
+          </nav>
             <button class="toggle-btn" onclick="toggleSidebar()">
                 <i class="bi bi-caret-left"></i> <!-- Icône initiale -->
             </button>
