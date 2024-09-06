@@ -1,9 +1,6 @@
 FROM python:3.10-slim AS base
 
-# Installer les dépendances nécessaires pour AMC et PostgreSQL
 RUN apt-get update && \
-    apt-get install -y \
-    auto-multiple-choice && \
     apt-get install -y gcc python3-dev libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
@@ -19,6 +16,12 @@ COPY ./auto_qcm .
 
 FROM base AS dev
 
+COPY ./requirements.dev.txt .
+
+RUN pip install --no-cache-dir -r requirements.dev.txt
+
+RUN rm ./requirements.dev.txt
+
 CMD python manage.py wait_for_db \
     && python manage.py makemigrations \
     && python manage.py migrate --noinput \
@@ -31,6 +34,6 @@ COPY ./requirements.pro.txt .
 
 RUN pip install --no-cache-dir -r requirements.prod.txt
 
-RUN rm ./requirements.pro.txt
+RUN rm ./requirements.prod.txt
 
-CMD [ "gunicorn", "auto_qcm.wsgi:application", "--bind", "0.0.0.0:8000" ]  # Correction de la commande gunicorn
+CMD [ "gunicorn", "auto_qcm.wsgi:application", "--bind", "0.0.0.0:8000" ]
