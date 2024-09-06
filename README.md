@@ -7,6 +7,8 @@ Ce projet a pour objectif de répondre aux besoins de l’IUT de Blagnac en faci
 
 ***Seul un serveru de dev est disponible pour le moment***
 
+Cloner le repository sur votre machine.
+
 Rendez-vous dans le dossier `deploiement-dev` et lancez la commande `docker-compose up -d --build`.
 
 Ensuite rendez vous dans un terminal dans le conteneur python dans le repertoire `/app` puis lancez les commandes suivantes :
