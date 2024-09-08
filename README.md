@@ -1,11 +1,11 @@
-CE PROJET EST EN COURS DE DEVELOPPEMENT ET N'EST PAS ENCORE COMPLETEMENT FONCTIONNEL
+⚠️ CE PROJET EST EN COURS DE DEVELOPPEMENT ET N'EST PAS ENCORE COMPLETEMENT FONCTIONNEL
 
 # AUTO-QCM
 Ce projet a pour objectif de répondre aux besoins de l’IUT de Blagnac en facilitant la création de QCM afin de simplifier le processus d’évaluation des étudiants.
 
 ## Installation
 
-***Seul un serveru de dev est disponible pour le moment***
+***Seul un serveur de dev est disponible pour le moment***
 
 Cloner le repository sur votre machine.
 
