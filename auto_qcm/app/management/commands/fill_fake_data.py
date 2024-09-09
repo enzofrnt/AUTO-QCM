@@ -4,18 +4,26 @@ from app.models import Question, Tag, Reponse
 import random
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from app.models.profile import Profile
 
 class Command(BaseCommand):
     help = 'Remplit la base de données avec des données factices.'
 
     def handle(self, *args, **kwargs):
-        User.objects.create_user('Lois', 'lois@gmail.com', 'LoisLeBeau31')
-        User.objects.create_user('Nathan', 'nath@gmail.com', 'TheBest31')
-        User.objects.create_user('Enzo', 'enzo@gmail.com', 'AppleNul12')
-        User.objects.create_user('Kilian', 'kiki@gmail.com', 'BoisUnVerre31')
-        User.objects.create_user('Moquette', 'moquette@gmail.com','Moquette31')
-        User.objects.create_user('Alexi','alexi@gmail.com','LPBLPM81')
+        lois = User.objects.create_user('Lois', 'lois@gmail.com', 'LoisLeBeau31')
+        nath = User.objects.create_user('Nathan', 'nath@gmail.com', 'TheBest31')
+        enzo = User.objects.create_user('Enzo', 'enzo@gmail.com', 'AppleNul12')
+        kilian = User.objects.create_user('Kilian', 'kiki@gmail.com', 'BoisUnVerre31')
+        moquette = User.objects.create_user('Moquette', 'moquette@gmail.com','Moquette31')
+        alex = User.objects.create_user('Alexi','alexi@gmail.com','LPBLPM81')
         
+        Profile.objects.create(user=lois, user_type='Etudiant')
+        Profile.objects.create(user=nath, user_type='Enseignant')
+        Profile.objects.create(user=enzo, user_type='Etudiant')
+        Profile.objects.create(user=kilian, user_type='Enseignant')
+        Profile.objects.create(user=moquette, user_type='Etudiant')
+        Profile.objects.create(user=alex, user_type='Enseignant')
+
         User.objects.create_superuser(
             username='admin',
             email='admin@example.com',

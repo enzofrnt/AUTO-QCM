@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import redirect
+from django.contrib.auth import logout
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -13,7 +13,13 @@ class CustomLoginView(LoginView):
 
     def form_valid(self, form):
         """Gérer les actions supplémentaires après un login réussi."""
-        logger.info(f"Utilisateur connecté: {form.get_user().username}")
+        # Déconnecter l'utilisateur actuel s'il existe
+        if self.request.user.is_authenticated:
+            logout(self.request)
+        
+        # Connexion du nouvel utilisateur
+        user = form.get_user()
+        logger.info(f"Utilisateur connecté: {user.username}")
         return super().form_valid(form)
 
     def form_invalid(self, form):
