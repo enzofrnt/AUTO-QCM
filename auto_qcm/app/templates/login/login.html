@@ -4,24 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-		{% load static %}
-		<link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+    <!-- Inclusion de Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css">
+</head>
 <body>
     <div class="login-container">
         <div class="login-box">
             <h2>Connexion</h2>
+            {% if messages %}
+                <div class="alert-box">
+                    {% for message in messages %}
+                        <div class="alert alert-danger" style="color: red;">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <form method="post">
                 {% csrf_token %}
                 <div class="input-group">
                     <input type="text" name="username" placeholder="Nom d'utilisateur" required>
                 </div>
                 <div class="input-group">
-                    <input type="password" name="password" placeholder="Mot de passe" required>
+                    <input type="password" name="password" id="password" placeholder="Mot de passe" required>
+                    <span class="password-toggle">
+                        <i class="bi bi-eye-slash" id="toggleIcon" onclick="togglePassword()"></i>
+                    </span>
                 </div>
                 <button type="submit" class="login-button">Se connecter</button>
             </form>
         </div>
     </div>
+    
+    <script>
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            }
+        }
+    </script>
 </body>
 </html>
-
