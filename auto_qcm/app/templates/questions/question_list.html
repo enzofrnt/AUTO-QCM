@@ -53,7 +53,7 @@
 
                                 <div class="button-list" style="display:none; align-items:center; flex-direction:row;">
                                     <!--Bouton export d'une question uniquement-->
-                                    <button type="button" class="btn btn-info btn-sm delete-question-btn">
+                                    <button type="button" class="btn btn-info btn-sm export-question-btn">
                                         <i class="bi bi-arrow-bar-down"></i>
                                     </button>
                                     <!-- Modifier ici : Ajout de la classe 'delete-question-btn' et masquage par défaut -->
@@ -209,6 +209,15 @@ $(document).ready(function() {
         if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
             window.location.href = "{% url 'delete-question' question_id=0 %}".replace('0', questionId);
         }
+    });
+
+    //Export question
+    $(document).on('click','.export-question-btn',function(e){
+         e.preventDefault();
+        e.stopPropagation();
+        const questionRow = $(this).closest('.question-row');
+        const questionId = questionRow.data('question-id');
+        window.location.href = "{% url 'export-question' question_id=0 %}".replace('0', questionId);
     });
 
     // JavaScript pour afficher/masquer les réponses des questions
