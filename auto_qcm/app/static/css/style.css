@@ -85,7 +85,7 @@ body.dark-mode {
 }
 
  /* Pour éviter que la souris se transforme en pointeur lors du survol */
- #auto-qcm-text {
+#auto-qcm-text {
   cursor: default; /* La souris restera une flèche par défaut */
 }
 

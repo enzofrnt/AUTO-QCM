@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   amc_python:
     container_name: auto_qcm_container
