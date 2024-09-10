@@ -1,5 +1,5 @@
 
-.button {
+.button-home {
     display: inline-block;
     padding: 30px 30px;
     margin: 5px;
@@ -9,19 +9,22 @@
     color: rgb(0, 0, 0);
     text-decoration: none;
     border-radius: 30px;
+    transition: all 0.3s; 
 }
 
-.button.dark-mode {
+.button-home.dark-mode {
     background-color: #333;
     border: 1px solid #555;
     color: white;
+    transition: all 0.3s; 
 }
   
-.button:hover {
+.button-home:hover {
     background-color: #666;
     /* empecher l'hypertexte bleu */
     text-decoration: none;
     color: white;
+    transition: all 0.3s; 
 }
 
   

@@ -1,0 +1,106 @@
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Styles pour les badges */
+.tag-badge {
+    color: #fff;
+    margin: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: inline-block;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.tag-badge.selected {
+    opacity: 1 !important;
+}
+
+.tag-badge:not(.selected) {
+    opacity: 0.6;
+}
+
+.question-tag {
+    position: relative;
+    padding-right: 12px;
+    transition: all 0.2s;
+}
+
+/* Crois de suppression sur les tags */
+.remove-tag {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    text-decoration: none;
+    color: inherit;
+    font-size: 14px;
+    display: none;
+}
+
+/* Table des questions */
+.table {
+    margin-top: 20px;
+}
+
+.table-bordered th, .table-bordered td {
+    border: 1px solid #dee2e6;
+}
+
+.question-row {
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.question-row:hover {
+    background-color: #f1f1f1;
+}
+
+/* Bouton de suppression de question */
+.delete-question-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: none;
+}
+
+/* Animation d'affichage des réponses */
+.answers-list {
+    margin-top: 10px;
+    display: none;
+}
+
+.list-group-item {
+    padding: 10px 15px;
+}
+
+.list-group-item-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.question-row:hover .delete-question-btn {
+    display: inline-block;
+}
+
+#questions-list {
+    color: #007bff;
+}
