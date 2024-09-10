@@ -5,3 +5,5 @@ from .remove_tags_view import remove_tag
 from .delete_question_view import delete_question
 from .home_view import home
 from .export_question_view import export_question
+from .support_doc_view import support_doc
+from .dashboard_view import dashboard
