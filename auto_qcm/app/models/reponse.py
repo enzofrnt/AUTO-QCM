@@ -11,3 +11,22 @@ class Reponse(models.Model):
     class Meta:
         verbose_name = "Réponse"
         verbose_name_plural = "Réponses"
+    
+    def convertToXml(self):
+        texteReponse = (
+            '<answer fraction="'
+            + (
+                str(100 / self.question.number_of_correct_answers)
+                if self.is_correct
+                else "0"
+            )
+            + '" format="html">'
+            + "<text>"
+            + self.texte
+            + "</text>"
+            + '<feedback format="html">'
+            + "<text/>"
+            + "</feedback>"
+            + "</answer>"
+        )
+        return texteReponse

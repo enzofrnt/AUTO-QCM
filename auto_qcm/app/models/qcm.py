@@ -11,3 +11,11 @@ class QCM(models.Model):
     class Meta:
         verbose_name = "QCM"
         verbose_name_plural = "QCMs"
+
+    def convertToXml(self):
+        texte = '<?xml version="1.0"?><quiz>'
+        for quest in self.questions.all():
+            texte += quest.convertToXml()
+        texte += "</quiz>"
+
+        return texte
