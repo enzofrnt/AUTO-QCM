@@ -1,6 +1,7 @@
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 from django.contrib.auth import logout
 from logging import getLogger
 
@@ -24,6 +25,7 @@ class CustomLoginView(LoginView):
 
     def form_invalid(self, form):
         """Gérer les erreurs lors de la validation du formulaire."""
+        messages.error(self.request, "Nom d'utilisateur ou mot de passe incorrect.")
         logger.warning("Échec de la tentative de connexion.")
         return super().form_invalid(form)
 

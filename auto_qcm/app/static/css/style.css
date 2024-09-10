@@ -7,12 +7,14 @@ body {
     color: rgb(13, 13, 13);
     width: 100%;
     height: 100vh;
+    transition: all 0.3s; 
 }
 
 /* Dark mode styles */
 body.dark-mode {
   background-color: #333;
   color: #ffffff;
+  transition: all 0.3s; 
 }
 
 
@@ -28,13 +30,16 @@ body.dark-mode {
   background-color: #adadad;
   color: rgb(35, 35, 35);
   width: 250px;
+  
   height: 100vh;
   padding: 20px;
+  transition: all 0.3s; 
 }
 
 .sidebar.dark-mode{
   background-color: #2d2d2d;
   color: #ccc;
+  transition: all 0.3s; 
 }
 
 .sidebar ul {
@@ -49,11 +54,17 @@ body.dark-mode {
 .sidebar ul li a {
   color: rgb(21, 21, 21);
   text-decoration: none;
+  transition: all 0.3s; 
 }
 
 .sidebar ul li a.dark-mode {
   color: rgb(203, 203, 203);
   text-decoration: none;
+  transition: all 0.3s; 
+}
+
+.main-content{
+  padding-inline: 40px;
 }
 
 
@@ -67,25 +78,25 @@ body.dark-mode {
 
 
 .sidebar.collapsed {
-    /* transform: translateX(-250px); */
-    display: none;
+  transform: translateX(-250px);
+  transition: all 0.5;
+  /* display: none; */
 }
 
 .toggle-btn{
-   
-    background: none;
-    border: none;
-    height: 40px;
+  background: none;
+  border: none;
+  height: 40px;
 }
 
 /* quand le toggle-btn est selectionné je ne veux pas qu"il y ai de border */
 
 .toggle-btn:focus {
-    outline: none;
+  outline: none;
 }
 
  /* Pour éviter que la souris se transforme en pointeur lors du survol */
- #auto-qcm-text {
+#auto-qcm-text {
   cursor: default; /* La souris restera une flèche par défaut */
 }
 
