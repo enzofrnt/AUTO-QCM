@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Créer un Nouveau QCM</h2>
+
+    <!-- Affichage des erreurs -->
+    {% if form.errors or formset.errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+                
+                {% for form in formset %}
+                    {% for error in form.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post" id="qcmForm">
+        {% csrf_token %}
+        
+        <!-- Champ pour le texte de la question -->
+        <div class="form-group">
+            {{ form.texte.label_tag }} 
+            {{ form.texte }}
+        </div>
+        
+        <!-- Bouton pour soumettre le formulaire -->
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
