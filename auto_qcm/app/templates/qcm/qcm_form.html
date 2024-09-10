@@ -31,10 +31,16 @@
         
         <!-- Champ pour le texte de la question -->
         <div class="form-group">
-            {{ form.texte.label_tag }} 
-            {{ form.texte }}
+            {{ form.titre.label_tag }} 
+            {{ form.titre }}
         </div>
-        
+
+        <!-- Champ pour le texte de la question -->
+        <div class="form-group">
+            {{ form.description.label_tag }} 
+            {{ form.description }}
+        </div>
+
         <!-- Bouton pour soumettre le formulaire -->
         <button type="submit" class="btn btn-success">Enregistrer</button>
     </form>

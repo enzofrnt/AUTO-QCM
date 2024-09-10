@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Question, Reponse, Tag
+from .models import Question, Reponse, Tag, QCM
 
 
 class QuestionForm(forms.ModelForm):
@@ -29,3 +29,8 @@ ReponseFormSet = inlineformset_factory(
     extra=1,  # Nombre de formulaires de réponse vierges à afficher par défaut
     can_delete=True,  # Permettre de supprimer des réponses
 )
+
+class QcmForm(forms.ModelForm):
+    class Meta:
+        model = QCM
+        fields = ["titre","description"]
