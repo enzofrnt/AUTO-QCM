@@ -10,10 +10,13 @@
     <link rel="icon" href="{% static 'img/logo.ico' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/home_page.css' %}">
+    <link rel="stylesheet" href="{% static 'css/question_list.css' %}">
 </head>
 <body>
     <div class="" style="display: flex; width: 100%;">
-        <div style="display: flex; align-items: center;" >
+      <div style="width: 300px;">
+        <div style="height: 100%; position: fixed;" >
+          <div style="display: flex; align-items: center;">
           <nav class="sidebar">
             <ul class="nav-list">
               <!-- Dark Mode Switch Button -->
@@ -21,7 +24,7 @@
                 <label class="switch">
                   <input type="checkbox" id="theme-switch">
                   <span class="slider round"></span>
-                  Dark Mode
+                  DarkMode
                 </label>
               </li>
               
@@ -32,11 +35,14 @@
               <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-speedometer2"></i> Tableau de bord</a></li>
               <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-info-circle"></i> Support & documentation</a></li>
             </ul>
-          </nav>
-            <button class="toggle-btn" onclick="toggleSidebar()">
-                <i class="bi bi-caret-left"></i> <!-- Icône initiale -->
-            </button>
+          
+          
         </div>
+        <button class="toggle-btn" onclick="toggleSidebar()"></button>
+            <i class="bi bi-caret-left"></i> <!-- Icône initiale -->
+        </button></nav>
+        </div>
+      </div>
         <main class="content">
           {% include 'pp.html' %}
           {% block content %} {% endblock %}
