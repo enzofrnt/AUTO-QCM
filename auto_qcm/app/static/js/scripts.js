@@ -16,43 +16,47 @@ function toggleSidebar() {
     console.log('toggled');
 }
 
+if (sessionStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark-mode');
+  document.body.querySelector('.sidebar').classList.add('dark-mode');
+  document.body.querySelectorAll('.nav-item').forEach(element => {
+      element.classList.add('dark-mode');
+  });
+  document.body.querySelector('.main-content').querySelectorAll('.button-home').forEach(element => {
+      element.classList.add('dark-mode');
+  });
+
+  document.getElementById('theme-switch').checked = true; // Assurez-vous que le bouton de basculement est en mode "activé"
+}
+
 document.getElementById('theme-switch').addEventListener('change', function() {
-    console.log('changed');
-    if (this.checked) {
+  if (this.checked) {
+      // Applique le thème sombre
       document.body.classList.add('dark-mode');
-      
       document.body.querySelector('.sidebar').classList.add('dark-mode');
-      listItem=document.body.querySelectorAll('.nav-item');
-      document.body.querySelector('.nav-item').classList.add('dark-mode');
-      console.log("listitem",listItem);
+      document.body.querySelectorAll('.nav-item').forEach(element => {
+          element.classList.add('dark-mode');
+      });
       
-      listItem.forEach(element => {
-        element.classList.add('dark-mode');
+      document.body.querySelector('.main-content').querySelectorAll('.button-home').forEach(element => {
+          element.classList.add('dark-mode');
       });
 
-
-      
-      var listButton = document.body.querySelector('.main-content').querySelectorAll('.button');
-      listButton.forEach(element => {
-        element.classList.add('dark-mode');
-      });
-
-      console.log(listButton);
-      // document.body.querySelector('.navbar').classList.add('dark-mode');
       console.log('dark mode');
-    } else {
+      sessionStorage.setItem('theme', 'dark');
+  } else {
+      // Retire le thème sombre
       document.body.classList.remove('dark-mode');
       document.body.querySelector('.sidebar').classList.remove('dark-mode');
-      document.body.querySelector('.main-content').querySelector('.button').classList.remove('dark-mode');
-      test = document.body.querySelector('.main-content').querySelectorAll('.button');
-      test.forEach(element => {
-        element.classList.remove('dark-mode');
+      document.body.querySelectorAll('.nav-item').forEach(element => {
+          element.classList.remove('dark-mode');
+      });
+      document.body.querySelector('.main-content').querySelectorAll('.button-home').forEach(element => {
+          element.classList.remove('dark-mode');
       });
 
-      listItem=document.body.querySelectorAll('.nav-item');
-      listItem.forEach(element => {
-        element.classList.remove('dark-mode');
-      }); 
-      
-    }
-  });
+      // Retire le thème du sessionStorage
+      console.log('light mode');
+      sessionStorage.removeItem('theme');
+  }
+});
