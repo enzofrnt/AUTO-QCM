@@ -65,3 +65,45 @@ input[type="password"]::placeholder {
 .login-button:hover {
   background-color: #333333;
 }
+
+.input-group {
+    position: relative; /* Positionnement relatif du parent pour que l'icône puisse être placée à l'intérieur */
+    width: 100%; /* Assurer que l'input prenne toute la largeur du conteneur */
+}
+
+.input-group input {
+    width: 100%;
+    padding-right: 40px; /* Espace réservé à droite pour l'icône */
+    height: 40px; /* Hauteur de l'input pour garantir que l'icône sera bien alignée */
+    box-sizing: border-box; /* Assurer que le padding et la bordure sont inclus dans la largeur totale */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px; /* Positionné à droite de l'input */
+    top: 50%; /* Centré verticalement */
+    transform: translateY(-50%); /* Ajustement pour le centrer parfaitement */
+    cursor: pointer;
+    color: #888; /* Couleur de l'icône */
+}
+
+.password-toggle i {
+    font-size: 18px;
+}
+
+.alert-box {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: red; /* Texte en blanc */
+    background-color: #dc3545; /* Rouge vif pour l'alerte */
+}
+
+.alert-danger {
+    background-color: #dc3545; /* Rouge Bootstrap */
+    color: red; /* Texte en blanc */
+}
