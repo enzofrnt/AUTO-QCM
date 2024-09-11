@@ -31,7 +31,8 @@ from app.views import (
     support_doc,
     dashboard,
     QcmListView, 
-    create_qcm
+    create_qcm,
+    delete_qcm
 )
 
 
@@ -52,7 +53,8 @@ urlpatterns = [
         name="export-question",
     ),
     path('create-qcm/',create_qcm, name="qcm-create"),
-    path('list-qcm/',QcmListView.as_view(),name='qcm-list')
+    path('list-qcm/',QcmListView.as_view(),name='qcm-list'),
+    path('delete-qcm/<int:qcm_id>/',delete_qcm,name="delete-qcm")
 ]
 
 if os.environ.get("env", "dev") == "dev":
