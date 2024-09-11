@@ -35,7 +35,7 @@
 
     <!-- Liste des questions -->
     <div id="questions-list">
-        <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
+        <a href="{% url 'create-question' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -44,19 +44,23 @@
             </thead>
             <tbody>
                 {% for question in questions %}
-                    <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer; position: relative;">
+                    <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
                         <td>
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center question-container">
                                 <div class="question-header">
                                     {{ question.nom }}
                                 </div>
 
-                                <div class="button-list" style="display:none; align-items:center; flex-direction:row;">
-                                    <!--Bouton export d'une question uniquement-->
+                                <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
+                                <div class="button-list  align-items-center" style="gap: 10px; display: none;">
                                     <button type="button" class="btn btn-info btn-sm export-question-btn">
                                         <i class="bi bi-arrow-bar-down"></i>
                                     </button>
-                                    <!-- Modifier ici : Ajout de la classe 'delete-question-btn' et masquage par défaut -->
+
+                                    <button type="button" class="btn btn-warning btn-sm edit-question-btn">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+
                                     <button type="button" class="btn btn-danger btn-sm delete-question-btn">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -65,22 +69,16 @@
 
                             <!-- Boucle pour afficher les tags associés -->
                             {% for tag in question.tags.all %}
-                                <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer; position: relative;">
+                                <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
                                     {{ tag.name }}
-                                    {% if question.id and tag.id %}
-                                        <a href="{% url 'remove-tag' question.id tag.id %}" class="remove-tag" style="position: absolute; top: 50%; right: 4px; transform: translateY(-50%); text-decoration: none; color: inherit; font-size: 14px; display: none;">&times;</a>
-                                    {% endif %}
                                 </span>
                             {% endfor %}
 
                             <!-- Section des réponses à afficher/cacher -->
                             <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
-                                <div>
-                                    {{question.texte}}
-                                </div>
+                                <div>{{ question.texte }}</div>
                                 <ul class="list-group">
                                     <p>Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b></p>
-                                    
                                     {% for reponse in question.reponses.all %}
                                         <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
                                             {{ reponse.texte }}
@@ -104,7 +102,6 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-{% comment %} <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>  {% endcomment %}
 <script>
 $(document).ready(function() {
     const filterForm = $('#filterForm');
@@ -163,7 +160,7 @@ $(document).ready(function() {
     // Fonction pour mettre à jour l'URL et soumettre le formulaire
     function updateURLAndSubmit() {
         const queryString = filterForm.serialize();
-        const baseUrl = filterForm.attr('action') || window.location.pathname; // Utilisez le chemin de l'URL si l'action est indéfinie
+        const baseUrl = filterForm.attr('action') || window.location.pathname;
         const newUrl = baseUrl + '?' + queryString;
         window.history.pushState({}, '', newUrl);
         submitFormAJAX();
@@ -178,23 +175,9 @@ $(document).ready(function() {
         }
     });
 
-    // Empêcher le clic sur la croix de suppression de dérouler la question
-    $(document).on('click', '.remove-tag', function(e) {
-        e.stopPropagation();
-    });
-
-    // JavaScript pour afficher la croix de suppression au survol uniquement pour les tags de question
-    $(document).on('mouseenter', '.question-tag', function() {
-        $(this).find('.remove-tag').show();
-        $(this).css('padding-right', '24px'); // Augmenter la largeur du tag pour la croix
-    }).on('mouseleave', '.question-tag', function() {
-        $(this).find('.remove-tag').hide();
-        $(this).css('padding-right', '12px'); // Réduire la largeur du tag lorsque la croix est masquée
-    });
-
-    // Afficher les boutons
+    // Afficher les boutons sur le survol
     $(document).on('mouseenter', '.question-row', function() {
-        $(this).find('.button-list').css('display', 'flex'); // Utiliser 'inline-block' pour une visibilité correcte
+        $(this).find('.button-list').css('display', 'flex');
     }).on('mouseleave', '.question-row', function() {
         $(this).find('.button-list').css('display', 'none');
     });
@@ -211,16 +194,25 @@ $(document).ready(function() {
         }
     });
 
-    //Export question
-    $(document).on('click','.export-question-btn',function(e){
-         e.preventDefault();
+    // Exporter la question en XML
+    $(document).on('click', '.export-question-btn', function(e) {
+        e.preventDefault();
         e.stopPropagation();
         const questionRow = $(this).closest('.question-row');
         const questionId = questionRow.data('question-id');
         window.location.href = "{% url 'export-question' question_id=0 %}".replace('0', questionId);
     });
 
-    // JavaScript pour afficher/masquer les réponses des questions
+    // Rediriger vers la page de modification de la question
+    $(document).on('click', '.edit-question-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const questionRow = $(this).closest('.question-row');
+        const questionId = questionRow.data('question-id');
+        window.location.href = "{% url 'edit-question' pk=0 %}".replace('0', questionId);
+    });
+
+    // Afficher/masquer les réponses des questions
     $(document).on('click', '.question-row', function(e) {
         const questionId = $(this).data('question-id');
         const answersList = $('#answers-' + questionId);
@@ -233,7 +225,6 @@ $(document).ready(function() {
             $(this).find('.toggle-answers').text('Masquer les réponses');
         }
     });
-
 });
 </script>
 {% endblock %}
