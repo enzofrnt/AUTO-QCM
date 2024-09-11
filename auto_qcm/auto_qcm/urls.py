@@ -22,7 +22,7 @@ from django.urls.conf import include
 from django.contrib.auth import views as auth_views
 from app.views import (
     QuestionListView,
-    create_question,
+    create_or_edit_question,
     remove_tag,
     delete_question,
     home,
@@ -39,7 +39,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", home, name="home"),
     path("list-questions/", QuestionListView.as_view(), name="question-list"),
-    path("create-questions/", create_question, name="question-create"),
+    path('question/create/', create_or_edit_question, name='create-question'),
+    path('question/edit/<int:pk>/', create_or_edit_question, name='edit-question'),
     path("etudiant-dashboard/", etudiant_dashboard, name="etudiant-dashboard"),
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
