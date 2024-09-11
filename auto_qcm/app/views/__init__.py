@@ -9,3 +9,4 @@ from .qcm_list_view import QcmListView
 from .export_question_view import export_question
 from .support_doc_view import support_doc
 from .dashboard_view import dashboard
+from  .delete_qcm_view import delete_qcm

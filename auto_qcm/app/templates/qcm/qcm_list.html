@@ -8,7 +8,7 @@
 
     <!-- Liste des qcm -->
     <div id="qcm-list">
-      <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer un nouveau qcm</a>
+      <a href="{% url 'qcm-create' %}" class="btn btn-primary mb-4">Créer un nouveau qcm</a>
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -30,7 +30,7 @@
                 </div>
 
                 <!-- Section des questions du qcm à afficher/cacher -->
-                <div class="question-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
+                <div class="qcm-list" id="answers-{{ qcm.id }}" style="display: none; margin-top: 10px;">
                   <p>{{ qcm.description }}</p>
                   <ul class="list-group">
                     <p>
