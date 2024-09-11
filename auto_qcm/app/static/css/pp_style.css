@@ -15,14 +15,14 @@
 .user-hover-box {
     display: none;
     position: absolute;
-    top: 60px;  /* Position verticale pour être en dessous de l'icône */
+    top: 50px;  /* Position verticale pour être en dessous de l'icône */
     right: 0;   /* Position horizontale alignée à droite */
     background-color: rgba(0, 0, 0, 0.9);
     color: white;
     padding: 10px;
     border-radius: 10px;
     width: 150px;  /* Largeur compacte */
-    z-index: 100;
+    z-index: 1000;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);  /* Ombre discrète */
 }
