@@ -3,7 +3,9 @@
 <div class="pp">
     {% if request.path == '/' %}
     <div class="profile-header">
-        <p class="texteUser">Bienvenue, {{ user.username }} ! </p>
+        {% if user.username %}
+            <p class="texteUser">Bienvenue, {{ user.username }} ! </p>
+        {% endif %}
     </div>
     {% endif %}
     <div class="pp-btn">
