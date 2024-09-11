@@ -29,7 +29,9 @@ from app.views import (
     CustomLoginView,
     export_question,
     support_doc,
-    dashboard
+    dashboard,
+    QcmListView, 
+    create_qcm
 )
 
 
@@ -49,6 +51,8 @@ urlpatterns = [
         export_question,
         name="export-question",
     ),
+    path('create-qcm/',create_qcm, name="qcm-create"),
+    path('list-qcm/',QcmListView.as_view(),name='qcm-list')
 ]
 
 if os.environ.get("env", "dev") == "dev":
