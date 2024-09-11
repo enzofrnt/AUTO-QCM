@@ -8,4 +8,4 @@ from .qcm_creation_view import create_qcm
 from .qcm_list_view import QcmListView
 from .export_question_view import export_question
 from .support_doc_view import support_doc
-from .dashboard_view import dashboard
+from .etudiant_dashboard_view import etudiant_dashboard
