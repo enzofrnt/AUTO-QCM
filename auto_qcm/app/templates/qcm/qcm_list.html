@@ -1,1 +1,142 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% load color_filters %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Liste des QCM</h2>
+
+    <!-- Liste des qcm -->
+    <div id="qcm-list">
+      <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer un nouveau qcm</a>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Nom des qcms</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for qcm in qcms %}
+            <tr class="qcm-row position-relative" data-qcm-id="{{ qcm.id }}" style="cursor: pointer; position: relative;">
+              <td>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="qcm-header">{{ qcm.titre }}</div>
+
+                  <div class="button-list" style="display:none; align-items:center; flex-direction:row;">
+                    <!-- Bouton export d'une qcm -->
+                    <button type="button" class="btn btn-info btn-sm export-qcm-btn"><i class="bi bi-arrow-bar-down"></i></button>
+                    <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button>
+                  </div>
+                </div>
+
+                <!-- Section des questions du qcm à afficher/cacher -->
+                <div class="question-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
+                  <p>{{ qcm.description }}</p>
+                  <ul class="list-group">
+                    <p>
+                      Nombre de questions : <b>{{ qcm.number_of_questions }}</b>
+                    </p>
+
+                    {% for question in qcm.questions.all %}
+                      <li class="list-group-item">{{ question.nom }}
+                        {{ question.texte }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td>Aucun qcm disponible.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function () {
+      const filterForm = $('#filterForm')
+      const selectedTagsContainer = $('#selected-tags-container')
+    
+      // Fonction de debouncing
+      function debounce(func, delay) {
+        let debounceTimeout
+        return function () {
+          clearTimeout(debounceTimeout)
+          debounceTimeout = setTimeout(func, delay)
+        }
+      }
+    
+      // Fonction pour soumettre le formulaire via AJAX
+      function submitFormAJAX() {
+        $.ajax({
+          url: filterForm.attr('action'),
+          type: 'GET',
+          data: filterForm.serialize(),
+          success: function (response) {
+            $('#qcm-list').html($(response).find('#qcm-list').html())
+          }
+        })
+      }
+    
+      // Appliquer le debouncing à la saisie dans la barre de recherche
+      const debouncedSubmit = debounce(submitFormAJAX, 300)
+      filterForm.find('input[name="nom"]').on('input', debouncedSubmit)
+    
+      // Empêcher le clic sur la croix de suppression de dérouler la question
+      $(document).on('click', '.remove-tag', function (e) {
+        e.stopPropagation()
+      })
+    
+      // JavaScript pour afficher la croix de suppression au survol uniquement pour les tags de question
+      $(document)
+        .on('mouseenter', '.question-tag', function () {
+          $(this).find('.remove-tag').show()
+          $(this).css('padding-right', '24px') // Augmenter la largeur du tag pour la croix
+        })
+        .on('mouseleave', '.question-tag', function () {
+          $(this).find('.remove-tag').hide()
+          $(this).css('padding-right', '12px') // Réduire la largeur du tag lorsque la croix est masquée
+        })
+    
+      // Afficher les boutons
+      $(document)
+        .on('mouseenter', '.qcm-row', function () {
+          $(this).find('.button-list').css('display', 'flex')
+        })
+        .on('mouseleave', '.qcm-row', function () {
+          $(this).find('.button-list').css('display', 'none')
+        })
+    
+      // Confirmation de suppression avant de supprimer le qcm
+      $(document).on('click', '.delete-qcm-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const qcmRow = $(this).closest('.qcm-row')
+        const qcmId = questionRow.data('qcm-id')
+    
+        if (confirm('Voulez-vous vraiment supprimer ce qcm ?')) {
+          window.location.href = "{% url 'delete-qcm' qcm_id=0 %}".replace('0', qcmId)
+        }
+      })
+    
+      // JavaScript pour afficher/masquer les réponses des questions
+      $(document).on('click', '.qcm-row', function (e) {
+        const qcmId = $(this).data('qcm-id')
+        const answersList = $('#answers-' + questionId)
+    
+        if (answersList.is(':visible')) {
+          answersList.slideUp()
+          $(this).find('.toggle-answers').text('Voir les réponses')
+        } else {
+          answersList.slideDown()
+          $(this).find('.toggle-answers').text('Masquer les réponses')
+        }
+      })
+    })
+  </script>
+{% endblock %}
