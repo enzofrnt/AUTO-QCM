@@ -29,7 +29,7 @@ from app.views import (
     CustomLoginView,
     export_question,
     support_doc,
-    dashboard,
+    etudiant_dashboard,
     QcmListView, 
     create_qcm
 )
@@ -40,7 +40,7 @@ urlpatterns = [
     path("", home, name="home"),
     path("list-questions/", QuestionListView.as_view(), name="question-list"),
     path("create-questions/", create_question, name="question-create"),
-    path("dashboard/", dashboard, name="dashboard"),
+    path("etudiant-dashboard/", etudiant_dashboard, name="etudiant-dashboard"),
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
     path("login/", CustomLoginView.as_view(), name="login"),
