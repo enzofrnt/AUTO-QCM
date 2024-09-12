@@ -17,6 +17,11 @@ class QCM(models.Model):
         verbose_name = "QCM"
         verbose_name_plural = "QCMs"
 
+    @property
+    def number_of_questions(self):
+        """Retourne le nombre de questions associées à ce qcm."""
+        return self.questions.count()
+
     def convertToXml(self):
         texte = '<?xml version="1.0"?><quiz>'
         for quest in self.questions.all():

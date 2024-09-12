@@ -1,4 +1,4 @@
-from app.models import Question, Tag, Reponse, QCM  # Importer le modèle QCM
+from app.models import Question, Tag, Reponse, QCM
 from app.models import Profile
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand

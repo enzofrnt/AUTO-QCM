@@ -10,28 +10,17 @@ def create_qcm(request):
         formset = ReponseFormSet(request.POST)
         
         if form.is_valid() and formset.is_valid():
-            question = form.save(commit=False)
-            question.save()
+            qcm = form.save(commit=False)
+            qcm.save()
 
-            # Sauvegarder les tags existants
-            form.save_m2m()
-
-            # Traiter les nouveaux tags et leurs couleurs
-            new_tags = request.POST.getlist('new_tags[]')
-            new_tag_colors = request.POST.getlist('new_tag_colors[]')
-            for tag_name, tag_color in zip(new_tags, new_tag_colors):
-                if tag_name:  # Vérifier que le tag n'est pas vide
-                    tag, created = Tag.objects.update_or_create(name=tag_name.strip(), color=tag_color)
-                    question.tags.add(tag)
-
-            formset.instance = question
+            formset.instance = qcm
             formset.save()
 
-            return redirect('question-list')
+            return redirect('qcm-list')
         else:
             print(form.errors, formset.errors)
     else:
-        form = QuestionForm()
+        form = QcmForm()
         formset = ReponseFormSet()
 
-    return render(request, 'questions/question_form.html', {'form': form, 'formset': formset})
+    return render(request, 'qcm/qcm_form.html', {'form': form, 'formset': formset})
