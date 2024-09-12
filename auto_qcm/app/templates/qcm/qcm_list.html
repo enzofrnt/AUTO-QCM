@@ -30,7 +30,7 @@
                 </div>
 
                 <!-- Section des questions du qcm à afficher/cacher -->
-                <div class="qcm-list" id="answers-{{ qcm.id }}" style="display: none; margin-top: 10px;">
+                <div class="qcm-list" id="questions-{{ qcm.id }}" style="display: none; margin-top: 10px;">
                   <p>{{ qcm.description }}</p>
                   <ul class="list-group">
                     <p>
@@ -86,22 +86,6 @@
       // Appliquer le debouncing à la saisie dans la barre de recherche
       const debouncedSubmit = debounce(submitFormAJAX, 300)
       filterForm.find('input[name="nom"]').on('input', debouncedSubmit)
-    
-      // Empêcher le clic sur la croix de suppression de dérouler la question
-      $(document).on('click', '.remove-tag', function (e) {
-        e.stopPropagation()
-      })
-    
-      // JavaScript pour afficher la croix de suppression au survol uniquement pour les tags de question
-      $(document)
-        .on('mouseenter', '.question-tag', function () {
-          $(this).find('.remove-tag').show()
-          $(this).css('padding-right', '24px') // Augmenter la largeur du tag pour la croix
-        })
-        .on('mouseleave', '.question-tag', function () {
-          $(this).find('.remove-tag').hide()
-          $(this).css('padding-right', '12px') // Réduire la largeur du tag lorsque la croix est masquée
-        })
     
       // Afficher les boutons
       $(document)
