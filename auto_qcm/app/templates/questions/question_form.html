@@ -37,6 +37,12 @@
     <form method="post" id="questionForm">
         {% csrf_token %}
         
+        <!-- Champ pour le nom de la question -->
+        <div class="form-group">
+            {{ form.nom.label_tag }} 
+            {{ form.nom }}
+        </div>
+
         <!-- Champ pour le texte de la question -->
         <div class="form-group">
             {{ form.texte.label_tag }} 

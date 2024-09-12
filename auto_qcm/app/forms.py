@@ -15,7 +15,7 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ["texte", "tags", "new_tags"]
+        fields = ["nom", "texte", "tags", "new_tags"]
         widgets = {
             "tags": forms.CheckboxSelectMultiple(),  # Affichage des tags existants en tant que checkboxes
         }
