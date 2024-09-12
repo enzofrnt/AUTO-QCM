@@ -107,8 +107,8 @@ https://github.com/enzofrnt/AUTO-QCM/labels/user%20story
 
 La documentation du projet se trouve dans l’onglet [Wiki](https://github.com/enzofrnt/AUTO-QCM/wiki) de GitHub !
 
-- (https://github.com/enzofrnt/AUTO-QCM/wiki/Documentation-technique)[Documentation Technique]
-- (https://github.com/enzofrnt/AUTO-QCM/wiki/Documentation-utilisateur)[Documentation Utilisateur]
-- (https://github.com/enzofrnt/AUTO-QCM/wiki/Cahier-de-Test)[Cahier de Test]
-- (https://github.com/enzofrnt/AUTO-QCM/wiki/Gestion-de-Projet)[Gestion de Projet]
-- (https://github.com/enzofrnt/AUTO-QCM/wiki/Remerciement)[Remerciement]
+- [Documentation Technique](https://github.com/enzofrnt/AUTO-QCM/wiki/Documentation-technique)
+- [Documentation Utilisateur](https://github.com/enzofrnt/AUTO-QCM/wiki/Documentation-utilisateur)
+- [Cahier de Test](https://github.com/enzofrnt/AUTO-QCM/wiki/Cahier-de-Test)
+- [Gestion de Projet](https://github.com/enzofrnt/AUTO-QCM/wiki/Gestion-de-Projet)
+- [Remerciement](https://github.com/enzofrnt/AUTO-QCM/wiki/Remerciement)
