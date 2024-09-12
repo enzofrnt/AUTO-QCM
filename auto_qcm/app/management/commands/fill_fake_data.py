@@ -48,22 +48,14 @@ class Command(BaseCommand):
 
         # Créer des réponses factices
         for question in questions:
-            total_answers = fake.random_int(min=0, max=6)
-            correct_answers_needed = random.choice(
-                range(total_answers + 1)
-            )  # Nombre aléatoire de bonnes réponses
-            correct_answers_created = 0
-
             # Créer les bonnes réponses d'abord
-            for _ in range(correct_answers_needed):
+            for _ in range(random.randint(1, 3)):
                 Reponse.objects.create(
                     question=question, texte=fake.sentence(), is_correct=True
                 )
-                correct_answers_created += 1
 
             # Créer les réponses restantes comme incorrectes
-            remaining_answers = total_answers - correct_answers_created
-            for _ in range(remaining_answers):
+            for _ in range(random.randint(1, 3)):
                 Reponse.objects.create(
                     question=question, texte=fake.sentence(), is_correct=False
                 )
