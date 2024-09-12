@@ -38,8 +38,10 @@
                     </p>
 
                     {% for question in qcm.questions.all %}
-                      <li class="list-group-item">{{ question.nom }}
-                        {{ question.texte }}</li>
+                      <li class="list-group-item">
+                        {{ question.nom }} <br />
+                        {{ question.texte }}
+                      </li>
                     {% endfor %}
                   </ul>
                 </div>
@@ -62,31 +64,6 @@
       const filterForm = $('#filterForm')
       const selectedTagsContainer = $('#selected-tags-container')
     
-      // Fonction de debouncing
-      function debounce(func, delay) {
-        let debounceTimeout
-        return function () {
-          clearTimeout(debounceTimeout)
-          debounceTimeout = setTimeout(func, delay)
-        }
-      }
-    
-      // Fonction pour soumettre le formulaire via AJAX
-      function submitFormAJAX() {
-        $.ajax({
-          url: filterForm.attr('action'),
-          type: 'GET',
-          data: filterForm.serialize(),
-          success: function (response) {
-            $('#qcm-list').html($(response).find('#qcm-list').html())
-          }
-        })
-      }
-    
-      // Appliquer le debouncing à la saisie dans la barre de recherche
-      const debouncedSubmit = debounce(submitFormAJAX, 300)
-      filterForm.find('input[name="nom"]').on('input', debouncedSubmit)
-    
       // Afficher les boutons
       $(document)
         .on('mouseenter', '.qcm-row', function () {
@@ -101,24 +78,31 @@
         e.preventDefault()
         e.stopPropagation()
         const qcmRow = $(this).closest('.qcm-row')
-        const qcmId = questionRow.data('qcm-id')
+        const qcmId = qcmRow.data('qcm-id')
     
         if (confirm('Voulez-vous vraiment supprimer ce qcm ?')) {
           window.location.href = "{% url 'delete-qcm' qcm_id=0 %}".replace('0', qcmId)
         }
       })
     
-      // JavaScript pour afficher/masquer les réponses des questions
+      // Exporter la question en XML
+      $(document).on('click', '.export-qcm-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const qcmRow = $(this).closest('.qcm-row')
+        const qcmId = qcmRow.data('qcm-id')
+        window.location.href = "{% url 'export-qcm-xml' qcm_id=0 %}".replace('0', qcmId)
+      })
+    
+      // JavaScript pour afficher/masquer les questions des qcm
       $(document).on('click', '.qcm-row', function (e) {
         const qcmId = $(this).data('qcm-id')
-        const answersList = $('#answers-' + questionId)
+        const questionList = $('#questions-' + qcmId)
     
-        if (answersList.is(':visible')) {
-          answersList.slideUp()
-          $(this).find('.toggle-answers').text('Voir les réponses')
+        if (questionList.is(':visible')) {
+          questionList.slideUp()
         } else {
-          answersList.slideDown()
-          $(this).find('.toggle-answers').text('Masquer les réponses')
+          questionList.slideDown()
         }
       })
     })

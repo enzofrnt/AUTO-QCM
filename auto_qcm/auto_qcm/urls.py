@@ -27,12 +27,13 @@ from app.views import (
     delete_question,
     home,
     CustomLoginView,
-    export_question,
+    export_question_xml,
     support_doc,
     etudiant_dashboard,
     QcmListView, 
     create_qcm,
-    delete_qcm
+    delete_qcm,
+    export_qcm_xml
 )
 
 
@@ -50,12 +51,13 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
     path(
         "export-question/<int:question_id>/",
-        export_question,
+        export_question_xml,
         name="export-question",
     ),
     path('create-qcm/',create_qcm, name="qcm-create"),
     path('list-qcm/',QcmListView.as_view(),name='qcm-list'),
-    path('delete-qcm/<int:qcm_id>/',delete_qcm,name="delete-qcm")
+    path('delete-qcm/<int:qcm_id>/',delete_qcm,name="delete-qcm"),
+    path('export-qcm-xml/<int:qcm_id>/',export_qcm_xml,name="export-qcm-xml")
 ]
 
 if os.environ.get("env", "dev") == "dev":
