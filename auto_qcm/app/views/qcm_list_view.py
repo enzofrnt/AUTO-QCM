@@ -12,10 +12,5 @@ class QcmListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        nom_filtre = self.request.GET.get("nom", "")
-
-        # Filtrer par nom de question
-        if nom_filtre:
-            queryset = queryset.filter(texte__icontains=nom_filtre)
 
         return queryset.distinct()
