@@ -4,6 +4,7 @@ class Reponse(models.Model):
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='reponses')
     texte = models.CharField(max_length=255)
     is_correct = models.BooleanField(default=False, help_text="Cette réponse est-elle correcte ?")
+    creator = models.ForeignKey("auth.User", on_delete=models.CASCADE, default=1)  # 1 est l'ID d'un utilisateur par défaut
 
     def __str__(self):
         return self.texte

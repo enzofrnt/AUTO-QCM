@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <h1 class="mb-4">Tableau de bord Enseignant</h1>
+    <p>Gérez vos QCM, suivez les résultats et planifiez vos sessions</p>
+
+    <div class="row">
+        <!-- Barre de recherche pour rechercher un élève -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3>Rechercher un élève</h3>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'search-student' %}">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" placeholder="Nom ou Prénom de l'élève">
+                            <div class="input-group-append">
+                                <button class="btn btn-success" type="submit">Rechercher</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique des réponses aux QCM -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3>Historique des réponses aux QCM</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Étudiant</th>
+                                <th>QCM</th>
+                                <th>Question</th>
+                                <th>Réponse</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reponse in reponses %}
+                            <tr>
+                                <td>{{ reponse.eleve.username }}</td>
+                                <td>{{ reponse.qcm.titre }}</td>
+                                <td>{{ reponse.question.texte }}</td>
+                                <td>{{ reponse.reponse.texte }}</td>
+                                <td>{{ reponse.date_reponse }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendrier des QCM à venir -->
+        <div class="col-md-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h3>Calendrier des QCM à venir</h3>
+                </div>
+                <div class="card-body">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des questions créées par l'enseignant -->
+        <div class="col-md-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h3>Vos Questions</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for question in questions %}
+                        <li class="list-group-item">
+                            {{ question.texte }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script pour le calendrier FullCalendar -->
+<!-- Inclure FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: [
+                {% for qcm in upcoming_qcms %}
+                {
+                    title: '{{ qcm.titre }}',
+                    start: '{{ qcm.date }}'
+                },
+                {% endfor %}
+            ],
+            eventContent: function(arg) {
+                let title = arg.event.title;
+                return { html: `<div class="fc-event-title">${title}</div>` };
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

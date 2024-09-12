@@ -31,7 +31,9 @@ from app.views import (
     support_doc,
     etudiant_dashboard,
     QcmListView, 
-    create_qcm
+    create_qcm,
+    enseignant_dashboard,
+    search_student,
 )
 
 
@@ -42,6 +44,7 @@ urlpatterns = [
     path('question/create/', create_or_edit_question, name='create-question'),
     path('question/edit/<int:pk>/', create_or_edit_question, name='edit-question'),
     path("etudiant-dashboard/", etudiant_dashboard, name="etudiant-dashboard"),
+    path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name='enseignant-dashboard'),
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
     path("login/", CustomLoginView.as_view(), name="login"),
@@ -53,7 +56,8 @@ urlpatterns = [
         name="export-question",
     ),
     path('create-qcm/',create_qcm, name="qcm-create"),
-    path('list-qcm/',QcmListView.as_view(),name='qcm-list')
+    path('list-qcm/',QcmListView.as_view(),name='qcm-list'),
+    path('search-student/', search_student, name='search-student')
 ]
 
 if os.environ.get("env", "dev") == "dev":
