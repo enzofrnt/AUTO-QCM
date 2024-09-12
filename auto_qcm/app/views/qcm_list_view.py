@@ -1,11 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from app.models import QCM, Tag
 from django.db.models import Q
+from app.mixins import TeacherRequiredMixin
 
-
-class QcmListView(LoginRequiredMixin, ListView):
+class QcmListView(TeacherRequiredMixin, ListView):
     model = QCM
     template_name = "qcm/qcm_list.html"
     context_object_name = "qcm"
