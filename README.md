@@ -2,7 +2,7 @@
 # Auto-QCM
 
 <img width="100" alt="image" src="https://github.com/user-attachments/assets/436af0a7-9046-41da-a632-bf32059e6af6">
-<img width="100" alt="image" src="https://github.com/user-attachments/assets/71909bfd-2626-46bd-9789-cfe974416b62">
+<img height="100" alt="image" src="https://github.com/user-attachments/assets/71909bfd-2626-46bd-9789-cfe974416b62">
 
 
 ## Contexte
