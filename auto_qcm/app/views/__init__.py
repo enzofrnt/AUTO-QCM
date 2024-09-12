@@ -6,7 +6,7 @@ from .delete_question_view import delete_question
 from .home_view import home
 from .qcm_creation_view import create_qcm
 from .qcm_list_view import QcmListView
-from .export_question_view import export_question
+from .export_question_view import export_question_xml,export_qcm_xml
 from .support_doc_view import support_doc
 from  .delete_qcm_view import delete_qcm
 from .etudiant_dashboard_view import etudiant_dashboard
