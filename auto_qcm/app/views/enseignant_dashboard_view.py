@@ -4,7 +4,11 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.shortcuts import redirect
 from app.models import ReponseQCM, Question, QCM
+from app.decorators import self_required
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='login')
+@self_required
 def enseignant_dashboard(request, pk=None):
     enseignant = get_object_or_404(User, pk=pk)
     

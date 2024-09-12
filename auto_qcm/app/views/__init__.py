@@ -11,3 +11,4 @@ from .support_doc_view import support_doc
 from .etudiant_dashboard_view import etudiant_dashboard
 from .enseignant_dashboard_view import enseignant_dashboard
 from .search_students_view import search_student
+from .custom_permission_denied_view import custom_permission_denied_view

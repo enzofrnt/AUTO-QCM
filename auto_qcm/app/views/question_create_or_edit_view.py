@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from app.models import Question, Reponse, Tag
 from app.forms import QuestionForm, ReponseFormSet
+from app.decorators import teacher_required
 
 @login_required(login_url='login')
+@teacher_required
 def create_or_edit_question(request, pk=None):
     # Si un pk est passé, c'est une modification, sinon c'est une création
     if pk:
