@@ -44,6 +44,7 @@ urlpatterns = [
     path('question/create/', create_or_edit_question, name='create-question'),
     path('question/edit/<int:pk>/', create_or_edit_question, name='edit-question'),
     path('etudiant-dashboard/<int:pk>/', etudiant_dashboard, name="etudiant-dashboard"),
+    path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name="enseignant-dashboard"),
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
     path("login/", CustomLoginView.as_view(), name="login"),
