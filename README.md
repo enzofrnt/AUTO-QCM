@@ -60,6 +60,19 @@ Django est un framework Python idéal pour la construction d'APIs, grâce à sa 
 
 ---
 
+- **PostgreSQL**
+
+<a href="https://www.postgresql.org/">
+  <img width="100" alt="postgresql" src="https://github.com/user-attachments/assets/055be4c3-9a05-409d-a379-c58ba41592b2">
+</a>
+
+
+PostgreSQL est un système de gestion de bases de données relationnelles reconnu pour sa robustesse et sa conformité stricte aux standards SQL. Il offre des fonctionnalités avancées comme les transactions ACID, la gestion des versions de ligne, et la réplication, ce qui le rend particulièrement adapté pour des applications nécessitant une haute disponibilité et une intégrité des données. L'un des avantages majeurs de PostgreSQL réside dans son extensibilité, permettant d'ajouter des fonctions personnalisées ou des types de données complexes. 
+
+De plus, PostgreSQL se distingue par sa compatibilité avec divers langages de programmation, facilitant l'intégration avec des frameworks comme Django grâce à son support natif. Enzo a déjà une solide expérience dans la gestion de bases de données, et la familiarité avec PostgreSQL assure une mise en œuvre efficace et rapide dans notre projet, garantissant ainsi une manipulation sécurisée et optimisée des données.
+
+---
+
 - **Docker** 
 
 <a href="https://www.docker.com/">
