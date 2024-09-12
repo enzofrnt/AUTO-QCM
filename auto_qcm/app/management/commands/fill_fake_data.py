@@ -70,12 +70,13 @@ class Command(BaseCommand):
 
         # Créer un QCM avec toi en tant qu'auteur et Alexi comme nom d'utilisateur
         alexi = User.objects.get(id='6')
-        qcm = QCM.objects.create(
-            titre=fake.sentence(),
-            description=fake.paragraph(),
-            date=fake.date_time_this_year(),
-            creator=alexi  # Alexi est l'auteur du QCM
-        )
+        
+        # Creer des QCM factices
+          
+        for _ in range(10):
+            qcm = QCM(titre=fake.word(),description=fake.text(), date=fake.date_time_this_year(),creator=alexi)
+            qcm.save()
+            qcm.questions.set(fake.random_elements(elements=questions, unique=True))
 
         # Associer des questions au QCM
         qcm.questions.set(questions)
