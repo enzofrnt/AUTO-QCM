@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from faker import Faker
-from app.models import Question, Tag, Reponse
+from app.models import Question, Tag, Reponse, QCM
 import random
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
@@ -70,5 +70,12 @@ class Command(BaseCommand):
                 Reponse.objects.create(
                     question=question, texte=fake.sentence(), is_correct=False
                 )
+        
+        #Création de qcm factices
+        for _ in range(10):
+            qcm = QCM(titre=fake.word(),description=fake.text())
+            qcm.save()
+            qcm.questions.set(fake.random_elements(elements=questions,unique=True))
+            
 
         self.stdout.write(self.style.SUCCESS("Données factices générées avec succès."))
