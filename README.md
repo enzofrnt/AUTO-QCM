@@ -69,3 +69,46 @@ Django est un framework Python idéal pour la construction d'APIs, grâce à sa 
 Docker, utilisé conjointement avec Dockerfile et Docker Compose, est un outil essentiel pour le déploiement de conteneurs. Il facilite le déploiement d'applications dans des conteneurs, qui sont des environnements isolés et indépendants. Cette méthode permet de déployer des applications de manière simple, rapide et efficace, tout en assurant leur accessibilité. L'un des principaux atouts de Docker est sa capacité à déployer des applications sur divers systèmes d'exploitation, incluant Windows, Linux et MacOS. Cette polyvalence est particulièrement bénéfique pour notre projet, qui nécessite une compatibilité multiplateforme. De plus, Docker assure un déploiement sécurisé des applications, un aspect crucial pour la fiabilité de notre projet. 
 L'expérience préalable d'Enzo avec Docker représente un avantage notable, augmentant ainsi notre efficacité dans l'utilisation de cet outil. En somme, Docker apparaît comme une solution idéale pour répondre aux besoins spécifiques de notre projet.
 En outre, l'avantage supplémentaire réside dans le fait qu'Emilien a déjà une certaine expérience avec Vue.js, ce qui facilite grandement l'intégration et le développement rapide de notre projet. Sa familiarité préalable avec le framework assure une courbe d'apprentissage plus douce pour l'équipe et contribue à une mise en œuvre plus efficace de l'application.
+
+## Architecture du projet
+
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/34c9b13c-2840-4377-9a82-e7db23a97aa0">
+
+L’architecture que nous avons conçue est un modèle de déploiement moderne qui exploite la puissance et la flexibilité des conteneurs Docker, en utilisant un Dockerfile et Docker Compose pour orchestrer notre application Django et sa base de données PostgreSQL. Cette approche nous permet de gérer efficacement l’intégration entre ces deux services essentiels. Les variables d’environnement sont centralisées via un fichier .env afin de garantir une configuration uniforme et synchronisée.
+
+L’application repose sur deux conteneurs principaux : le premier est dédié à PostgreSQL, qui sert de base de données relationnelle fiable et performante pour gérer toutes les données de l’application. Le second est le conteneur Django, qui constitue le back-end de l’application web. Ce conteneur est construit à l’aide d’un Dockerfile personnalisé, qui prépare l’environnement nécessaire pour exécuter notre application.
+
+La persistance des données est assurée par des volumes Docker, ce qui permet de garantir la sauvegarde et la réutilisation des données, même en cas de redémarrage des conteneurs. Cela facilite également le développement local, car les fichiers de l’application peuvent être synchronisés entre l’hôte et le conteneur, offrant un flux de travail fluide pour les développeurs.
+
+Le fichier docker-compose.yml joue un rôle central dans cette architecture, en définissant les services (Django et PostgreSQL), en orchestrant la construction des images Docker et en gérant le démarrage des conteneurs. Il garantit également une communication transparente entre le back-end Django et la base de données PostgreSQL, assurant ainsi le bon fonctionnement de l’application.
+
+Cette architecture offre une simplicité de déploiement, une évolutivité et une séparation claire des responsabilités entre les composants, rendant le système facile à maintenir et à faire évoluer. En utilisant cette infrastructure, nous assurons une expérience de développement moderne et flexible tout en offrant une application performante et fiable pour les utilisateurs finaux.
+
+## Gestion de projet
+
+### Backlog Produit
+
+https://github.com/enzofrnt/AUTO-QCM/labels/user%20story
+- [Backlog Produit](https://github.com/enzofrnt/AUTO-QCM/labels/user%20story)
+
+### Retours d’expérience de sprints
+
+- [Sprint 1](https://github.com/enzofrnt/AUTO-QCM/wiki/Gestion-de-Projet#retour-dexp%C3%A9rience-du-sprint-1)
+
+ [Retour fin de projet](https://github.com/enzofrnt/AUTO-QCM/wiki/Gestion-de-Projet#retour-dexp%C3%A9rience-du-projet)
+
+### Backlogs de sprint
+
+- [Sprint 1](https://github.com/users/enzofrnt/projects/4)
+- [Sprint 2](https://github.com/users/enzofrnt/projects/6)
+- [Sprint 3](https://github.com/users/enzofrnt/projects/7)
+
+## Documentation
+
+La documentation du projet se trouve dans l’onglet [Wiki](https://github.com/enzofrnt/AUTO-QCM/wiki) de GitHub !
+
+- https://github.com/enzofrnt/AUTO-QCM/wiki/Documentation-technique[Documentation Technique]
+- https://github.com/enzofrnt/AUTO-QCM/wiki/Documentation-utilisateur[Documentation Utilisateur]
+- https://github.com/enzofrnt/AUTO-QCM/wiki/Cahier-de-Test[Cahier de Test]
+- https://github.com/enzofrnt/AUTO-QCM/wiki/Gestion-de-Projet[Gestion de Projet]
+- https://github.com/enzofrnt/AUTO-QCM/wiki/Remerciement[Remerciement]
