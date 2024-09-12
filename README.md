@@ -1,8 +1,7 @@
 ⚠️ CE PROJET EST EN COURS DE DEVELOPPEMENT ET N'EST PAS ENCORE COMPLETEMENT FONCTIONNEL
 # Auto-QCM
 
-<img width="100" alt="image" src="https://github.com/user-attachments/assets/436af0a7-9046-41da-a632-bf32059e6af6
-">
+<img width="100" alt="image" src="https://github.com/user-attachments/assets/436af0a7-9046-41da-a632-bf32059e6af6">
 <img width="100" alt="image" src="https://github.com/user-attachments/assets/71909bfd-2626-46bd-9789-cfe974416b62">
 
 
@@ -47,7 +46,7 @@ Si ce projet s'avère fructueux, il pourrait bien être adopté par d'autres ét
 - [Alexi Fontanilles](https://github.com/AlexiFon)
 - [Kilian Boivert](https://github.com/Kilianspore)
 
-=== • Technologies utilisées
+## Technologies utilisées
 
 ---
 
