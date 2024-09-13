@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from faker import Faker
 import random
+from datetime import datetime, timedelta
 
 class Command(BaseCommand):
     help = "Remplit la base de données avec des données factices."
@@ -64,9 +65,9 @@ class Command(BaseCommand):
         alexi = User.objects.get(id='6')
         
         # Creer des QCM factices
-          
+        demain = datetime.now() + timedelta(days=1)
         for _ in range(10):
-            qcm = QCM(titre=fake.word(),description=fake.text(), date=fake.date_time_this_year(),creator=alexi)
+            qcm = QCM(titre=fake.word(),description=fake.text(), date=demain,creator=alexi)
             qcm.save()
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
 
