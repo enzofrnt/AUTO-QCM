@@ -1,0 +1,34 @@
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from app.models import Question, QCM
+from django.http import HttpResponse
+from app.decorators import teacher_required
+
+
+@login_required(login_url="login")
+@teacher_required
+def export_question_xml(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+
+    xml_content = question.convertToXmlSingle()
+
+    response = HttpResponse(xml_content, content_type="application/xml")
+
+    response["Content-Disposition"] = (
+        f'attachment; filename="question_{question_id}.xml"'
+    )
+
+    return response
+
+def export_qcm_xml(request,qcm_id):
+    qcm = get_object_or_404(QCM,id=qcm_id)
+
+    xml_content = qcm.convertToXml()
+
+    response = HttpResponse(xml_content, content_type="application/xml")
+
+    response["Content-Disposition"] = (
+        f'attachment; filename="qcm_{qcm_id}.xml"'
+    )
+    
+    return response
