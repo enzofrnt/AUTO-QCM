@@ -44,8 +44,13 @@
       <!-- Champ pour les questions -->
       <h3>Sélectionnez les questions :</h3>
       <div class="form-group">
+        <label for="searchQuestion">Rechercher une question :</label>
+        <input type="text" class="form-control" id="searchQuestion" placeholder="Rechercher par nom de question">
+      </div>
+
+      <div class="form-group" id="questionsList">
         {% for question in questions %}
-          <div class="form-check">
+          <div class="form-check question-item">
             <input class="form-check-input" type="checkbox" name="selected_questions" value="{{ question.id }}"
               id="question_{{ question.id }}"
               {% if question in selected_questions %}checked{% endif %}>
@@ -63,4 +68,25 @@
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+  $(document).ready(function() {
+    // Écouter les événements de saisie dans la barre de recherche
+    $('#searchQuestion').on('input', function() {
+      var searchValue = $(this).val().toLowerCase();
+      // Boucle à travers chaque question pour voir si elle correspond à la recherche
+      $('#questionsList .question-item').each(function() {
+        var questionText = $(this).text().toLowerCase();
+
+        // Afficher ou masquer la question en fonction de la recherche
+        if (questionText.includes(searchValue)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}
+
+
