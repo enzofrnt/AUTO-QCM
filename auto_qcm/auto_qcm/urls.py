@@ -31,7 +31,7 @@ from app.views import (
     support_doc,
     etudiant_dashboard,
     QcmListView, 
-    create_qcm,
+    create_or_edit_qcm,
     enseignant_dashboard,
     search_student,
     delete_qcm,
@@ -42,25 +42,31 @@ from app.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", home, name="home"),
-    path("list-questions/", QuestionListView.as_view(), name="question-list"),
-    path('question/create/', create_or_edit_question, name='create-question'),
-    path('question/edit/<int:pk>/', create_or_edit_question, name='edit-question'),
-    path('etudiant-dashboard/<int:pk>/', etudiant_dashboard, name="etudiant-dashboard"),
-    path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name="enseignant-dashboard"),
+    path("login/", CustomLoginView.as_view(), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
-    path("login/", CustomLoginView.as_view(), name="login"),
-    path("delete-question/<int:question_id>/", delete_question, name="delete-question"),
-    path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
-    path(
-        "export-question/<int:question_id>/",
-        export_question_xml,
-        name="export-question",
-    ),
-    path('create-qcm/',create_qcm, name="qcm-create"),
-    path('list-qcm/',QcmListView.as_view(),name='qcm-list'),
+    #CRUD QUESTIONS
+    path("question/list/", QuestionListView.as_view(), name="list-question"),
+    path('question/create/', create_or_edit_question, name='create-question'),
+    path('question/edit/<int:pk>/', create_or_edit_question, name='edit-question'),
+    path("question/delete/<int:question_id>/", delete_question, name="delete-question"),
+    #DASHBOARD
+    path('etudiant-dashboard/<int:pk>/', etudiant_dashboard, name="etudiant-dashboard"),
+    path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name="enseignant-dashboard"),
     path('search-student/', search_student, name='search-student'),
-    path('delete-qcm/<int:qcm_id>/',delete_qcm,name="delete-qcm"),
+    #CRUD QCM
+    path('qcm/create/',create_or_edit_qcm, name="create-qcm"),
+    path('qcm/edit/<int:pk>/',create_or_edit_qcm, name='edit-qcm'),
+    path('qcm/list/',QcmListView.as_view(),name='list-qcm'),
+    path('qcm/delete/<int:qcm_id>/',delete_qcm,name="delete-qcm"),
+    
+    #Export
+    path(
+        "export-question-xml/<int:question_id>/",
+        export_question_xml,
+        name="export-question-xml",
+    ),
     path('export-qcm-xml/<int:qcm_id>/',export_qcm_xml,name="export-qcm-xml")
 ]
 
