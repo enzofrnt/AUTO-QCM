@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Résultats de la recherche</h1>
+    <p>Voici les élèves correspondant à votre recherche :</p>
+
+    {% if students %}
+    <ul class="list-group">
+        {% for student in students %}
+        <li class="list-group-item">
+            <a href="{% url 'etudiant-dashboard' student.id %}">
+                {{ student.username }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Aucun élève trouvé.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'wait_for_db',
-    'app'
+    'latexify',
+    'app',
+    
 ]
 
 MIDDLEWARE = [
@@ -81,7 +83,7 @@ DATABASES = {
         'NAME': 'root',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': 'auto_qcm_database',  # Cela fait référence au nom du service de la base de données dans Docker Compose
+        'HOST': 'auto_qcm_db',  # Cela fait référence au nom du service de la base de données dans Docker Compose
         'PORT': '5432',
     }
 }
@@ -130,3 +132,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SESSION_COOKIE_AGE = 600  # 10 minutes
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True  # Renouvelle la session à chaque requête

@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
-  amc_python:
-    container_name: auto_qcm_container
+  auto_qcm_python:
+    container_name: auto_qcm_python
     build:
       context: ../
       dockerfile: Dockerfile
@@ -12,7 +10,7 @@ services:
     ports:
       - "8000:8000"
 
-  database:
+  auto_qcm_db:
     container_name: auto_qcm_db
     image: postgres:13
     environment:
