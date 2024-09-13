@@ -12,3 +12,4 @@ from  .delete_qcm_view import delete_qcm
 from .etudiant_dashboard_view import etudiant_dashboard
 from .enseignant_dashboard_view import enseignant_dashboard
 from .search_students_view import search_student
+from .custom_permission_denied_view import custom_permission_denied_view

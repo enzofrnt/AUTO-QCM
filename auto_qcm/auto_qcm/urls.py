@@ -20,6 +20,7 @@ from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
 from django.contrib.auth import views as auth_views
+from django.conf.urls import handler403
 from app.views import (
     QuestionListView,
     create_or_edit_question,
@@ -66,3 +67,5 @@ urlpatterns = [
 
 if os.environ.get("env", "dev") == "dev":
     urlpatterns.append(path("__reload__/", include("django_browser_reload.urls")))
+
+handler403 = 'app.views.custom_permission_denied_view'
