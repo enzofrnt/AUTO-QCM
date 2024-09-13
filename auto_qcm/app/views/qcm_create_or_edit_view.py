@@ -14,12 +14,12 @@ def create_or_edit_qcm(request,pk = None):
         
         if form.is_valid():
             qcm = form.save(commit=False)
-            qcm.creator = user.id
+            print(request.user)
+            qcm.creator = request.user
             qcm.save()
 
             return redirect('qcm-list')
-        else:
-            print(form.errors)
+        print(form.errors)
     else:
         form = QcmForm(instance=qcm)
 

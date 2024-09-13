@@ -47,27 +47,27 @@ urlpatterns = [
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
     #CRUD QUESTIONS
-    path("question/list/", QuestionListView.as_view(), name="list-question"),
-    path('question/create/', create_or_edit_question, name='create-question'),
-    path('question/edit/<int:pk>/', create_or_edit_question, name='edit-question'),
-    path("question/delete/<int:question_id>/", delete_question, name="delete-question"),
+    path("question/list/", QuestionListView.as_view(), name="question-list"),
+    path('question/create/', create_or_edit_question, name='question-create'),
+    path('question/edit/<int:pk>/', create_or_edit_question, name='question-edit'),
+    path("question/delete/<int:question_id>/", delete_question, name="question-delete"),
     #DASHBOARD
     path('etudiant-dashboard/<int:pk>/', etudiant_dashboard, name="etudiant-dashboard"),
     path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name="enseignant-dashboard"),
     path('search-student/', search_student, name='search-student'),
     #CRUD QCM
-    path('qcm/create/',create_or_edit_qcm, name="create-qcm"),
-    path('qcm/edit/<int:pk>/',create_or_edit_qcm, name='edit-qcm'),
-    path('qcm/list/',QcmListView.as_view(),name='list-qcm'),
-    path('qcm/delete/<int:qcm_id>/',delete_qcm,name="delete-qcm"),
+    path('qcm/create/',create_or_edit_qcm, name="qcm-create"),
+    path('qcm/edit/<int:pk>/',create_or_edit_qcm, name='qcm-edit'),
+    path('qcm/list/',QcmListView.as_view(),name='qcm-list'),
+    path('qcm/delete/<int:qcm_id>/',delete_qcm,name="qcm-delete"),
     
     #Export
     path(
-        "export-question-xml/<int:question_id>/",
+        "question/export-xml/<int:question_id>/",
         export_question_xml,
-        name="export-question-xml",
+        name="question-export-xml",
     ),
-    path('export-qcm-xml/<int:qcm_id>/',export_qcm_xml,name="export-qcm-xml")
+    path('qcm/export-xml/<int:qcm_id>/',export_qcm_xml,name="qcm-export-xml")
 ]
 
 if os.environ.get("env", "dev") == "dev":
