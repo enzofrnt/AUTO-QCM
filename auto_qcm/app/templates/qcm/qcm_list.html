@@ -1,1 +1,110 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% load color_filters %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Liste des QCM</h2>
+
+    <!-- Liste des qcm -->
+    <div id="qcm-list">
+      <a href="{% url 'qcm-create' %}" class="btn btn-primary mb-4">Créer un nouveau qcm</a>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Nom des qcms</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for qcm in qcms %}
+            <tr class="qcm-row position-relative" data-qcm-id="{{ qcm.id }}" style="cursor: pointer; position: relative;">
+              <td>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="qcm-header">{{ qcm.titre }}</div>
+
+                  <div class="button-list" style="display:none; align-items:center; flex-direction:row;">
+                    <!-- Bouton export d'une qcm -->
+                    <button type="button" class="btn btn-info btn-sm export-qcm-btn"><i class="bi bi-arrow-bar-down"></i></button>
+                    <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button>
+                  </div>
+                </div>
+
+                <!-- Section des questions du qcm à afficher/cacher -->
+                <div class="qcm-list" id="questions-{{ qcm.id }}" style="display: none; margin-top: 10px;">
+                  <p>{{ qcm.description }}</p>
+                  <ul class="list-group">
+                    <p>
+                      Nombre de questions : <b>{{ qcm.number_of_questions }}</b>
+                    </p>
+
+                    {% for question in qcm.questions.all %}
+                      <li class="list-group-item">
+                        {{ question.nom }} <br />
+                        {{ question.texte }}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td>Aucun qcm disponible.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function () {
+      const filterForm = $('#filterForm')
+      const selectedTagsContainer = $('#selected-tags-container')
+    
+      // Afficher les boutons
+      $(document)
+        .on('mouseenter', '.qcm-row', function () {
+          $(this).find('.button-list').css('display', 'flex')
+        })
+        .on('mouseleave', '.qcm-row', function () {
+          $(this).find('.button-list').css('display', 'none')
+        })
+    
+      // Confirmation de suppression avant de supprimer le qcm
+      $(document).on('click', '.delete-qcm-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const qcmRow = $(this).closest('.qcm-row')
+        const qcmId = qcmRow.data('qcm-id')
+    
+        if (confirm('Voulez-vous vraiment supprimer ce qcm ?')) {
+          window.location.href = "{% url 'delete-qcm' qcm_id=0 %}".replace('0', qcmId)
+        }
+      })
+    
+      // Exporter la question en XML
+      $(document).on('click', '.export-qcm-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const qcmRow = $(this).closest('.qcm-row')
+        const qcmId = qcmRow.data('qcm-id')
+        window.location.href = "{% url 'export-qcm-xml' qcm_id=0 %}".replace('0', qcmId)
+      })
+    
+      // JavaScript pour afficher/masquer les questions des qcm
+      $(document).on('click', '.qcm-row', function (e) {
+        const qcmId = $(this).data('qcm-id')
+        const questionList = $('#questions-' + qcmId)
+    
+        if (questionList.is(':visible')) {
+          questionList.slideUp()
+        } else {
+          questionList.slideDown()
+        }
+      })
+    })
+  </script>
+{% endblock %}
