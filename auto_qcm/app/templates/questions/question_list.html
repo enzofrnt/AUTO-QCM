@@ -1,230 +1,222 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% load color_filters %}
 
 {% block content %}
-<div class="container mt-4">
+  <div class="container mt-4">
     <h2>Liste des Questions</h2>
-    
+
     <!-- Formulaire de filtre -->
     <form method="get" class="mb-4" id="filterForm" action="{% url 'question-list' %}">
-        <div class="form-row align-items-center">
-            <div class="col-auto">
-                <input type="text" name="nom" class="form-control" placeholder="Filtrer par nom" value="{{ nom_filtre }}">
-            </div>
-            <div class="col-auto">
-                <div class="form-group">
-                    <label for="tags">Filtrer par tags :</label>
-                    <div id="tags" class="d-flex flex-wrap">
-                        {% for tag in tags %}
-                            <span class="badge tag-badge form-check-label" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">
-                                {{ tag.name }}
-                            </span>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Filtrer</button>
-                <a href="{% url 'question-list' %}" class="btn btn-secondary">Réinitialiser</a>
-            </div>
+      <div class="form-row align-items-center">
+        <div class="col-auto">
+          <input type="text" name="nom" class="form-control" placeholder="Filtrer par nom" value="{{ nom_filtre }}" />
         </div>
-        <!-- Champs cachés pour les tags sélectionnés -->
-        <div id="selected-tags-container"></div>
+        <div class="col-auto">
+          <div class="form-group">
+            <label for="tags">Filtrer par tags :</label>
+            <div id="tags" class="d-flex flex-wrap">
+              {% for tag in tags %}
+                <span class="badge tag-badge form-check-label" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">{{ tag.name }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Filtrer</button>
+          <a href="{% url 'question-list' %}" class="btn btn-secondary">Réinitialiser</a>
+        </div>
+      </div>
+      <!-- Champs cachés pour les tags sélectionnés -->
+      <div id="selected-tags-container"></div>
     </form>
 
     <!-- Liste des questions -->
     <div id="questions-list">
-        <a href="{% url 'create-question' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Texte de la Question et Tags</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for question in questions %}
-                    <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
-                        <td>
-                            <div class="d-flex justify-content-between align-items-center question-container">
-                                <div class="question-header">
-                                    {{ question.nom }}
-                                </div>
+      <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Texte de la Question et Tags</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for question in questions %}
+            <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
+              <td>
+                <div class="d-flex justify-content-between align-items-center question-container">
+                  <div class="question-header">{{ question.nom }}</div>
 
-                                <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
-                                <div class="button-list  align-items-center" style="gap: 10px; display: none;">
-                                    <button type="button" class="btn btn-info btn-sm export-question-btn">
-                                        <i class="bi bi-arrow-bar-down"></i>
-                                    </button>
+                  <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
+                  <div class="button-list align-items-center" style="gap: 10px; display: none;">
+                    <button type="button" class="btn btn-info btn-sm export-question-btn"><i class="bi bi-arrow-bar-down"></i></button>
 
-                                    <button type="button" class="btn btn-warning btn-sm edit-question-btn">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
+                    <button type="button" class="btn btn-warning btn-sm edit-question-btn"><i class="bi bi-pencil"></i></button>
 
-                                    <button type="button" class="btn btn-danger btn-sm delete-question-btn">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
+                    <button type="button" class="btn btn-danger btn-sm delete-question-btn"><i class="bi bi-trash"></i></button>
+                  </div>
+                </div>
 
-                            <!-- Boucle pour afficher les tags associés -->
-                            {% for tag in question.tags.all %}
-                                <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
-                                    {{ tag.name }}
-                                </span>
-                            {% endfor %}
-
-                            <!-- Section des réponses à afficher/cacher -->
-                            <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
-                                <div>{{ question.texte }}</div>
-                                <ul class="list-group">
-                                    <p>Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b></p>
-                                    {% for reponse in question.reponses.all %}
-                                        <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
-                                            {{ reponse.texte }}
-                                            {% if reponse.is_correct %}
-                                                <span class="badge badge-success">Bonne réponse</span>
-                                            {% endif %}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td>Aucune question disponible.</td>
-                    </tr>
+                <!-- Boucle pour afficher les tags associés -->
+                {% for tag in question.tags.all %}
+                  <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">{{ tag.name }}</span>
                 {% endfor %}
-            </tbody>
-        </table>
+
+                <!-- Section des réponses à afficher/cacher -->
+                <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
+                  <div>{{ question.texte }}</div>
+                  <ul class="list-group">
+                    <p>
+                      Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b>
+                    </p>
+                    {% for reponse in question.reponses.all %}
+                      <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
+                        {{ reponse.texte }}
+                        {% if reponse.is_correct %}
+                          <span class="badge badge-success">Bonne réponse</span>
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td>Aucune question disponible.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-</div>
+  </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    const filterForm = $('#filterForm');
-    const selectedTagsContainer = $('#selected-tags-container');
-
-    // Fonction de debouncing
-    function debounce(func, delay) {
-        let debounceTimeout;
-        return function() {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(func, delay);
-        };
-    }
-
-    // Fonction pour soumettre le formulaire via AJAX
-    function submitFormAJAX() {
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      const filterForm = $('#filterForm')
+      const selectedTagsContainer = $('#selected-tags-container')
+    
+      // Fonction de debouncing
+      function debounce(func, delay) {
+        let debounceTimeout
+        return function () {
+          clearTimeout(debounceTimeout)
+          debounceTimeout = setTimeout(func, delay)
+        }
+      }
+    
+      // Fonction pour soumettre le formulaire via AJAX
+      function submitFormAJAX() {
         $.ajax({
-            url: filterForm.attr('action'),
-            type: 'GET',
-            data: filterForm.serialize(),
-            success: function(response) {
-                $('#questions-list').html($(response).find('#questions-list').html());
-            }
-        });
-    }
-
-    // Appliquer le debouncing à la saisie dans la barre de recherche
-    const debouncedSubmit = debounce(submitFormAJAX, 300);
-    filterForm.find('input[name="nom"]').on('input', debouncedSubmit);
-
-    // Interaction pour sélectionner/désélectionner les tags
-    $('#tags .tag-badge').click(function() {
-        const tagName = $(this).data('tag-name');
-        
+          url: filterForm.attr('action'),
+          type: 'GET',
+          data: filterForm.serialize(),
+          success: function (response) {
+            $('#questions-list').html($(response).find('#questions-list').html())
+          }
+        })
+      }
+    
+      // Appliquer le debouncing à la saisie dans la barre de recherche
+      const debouncedSubmit = debounce(submitFormAJAX, 300)
+      filterForm.find('input[name="nom"]').on('input', debouncedSubmit)
+    
+      // Interaction pour sélectionner/désélectionner les tags
+      $('#tags .tag-badge').click(function () {
+        const tagName = $(this).data('tag-name')
+    
         if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected').css('opacity', '0.6');
-            removeTagFromFilter(tagName);
+          $(this).removeClass('selected').css('opacity', '0.6')
+          removeTagFromFilter(tagName)
         } else {
-            $(this).addClass('selected').css('opacity', '1');
-            addTagToFilter(tagName);
+          $(this).addClass('selected').css('opacity', '1')
+          addTagToFilter(tagName)
         }
-
-        updateURLAndSubmit();
-    });
-
-    // Fonction pour ajouter un tag au filtre
-    function addTagToFilter(tagName) {
-        selectedTagsContainer.append('<input type="hidden" name="tags" value="' + tagName + '">');
-    }
-
-    // Fonction pour supprimer un tag du filtre
-    function removeTagFromFilter(tagName) {
-        selectedTagsContainer.find('input[value="' + tagName + '"]').remove();
-    }
-
-    // Fonction pour mettre à jour l'URL et soumettre le formulaire
-    function updateURLAndSubmit() {
-        const queryString = filterForm.serialize();
-        const baseUrl = filterForm.attr('action') || window.location.pathname;
-        const newUrl = baseUrl + '?' + queryString;
-        window.history.pushState({}, '', newUrl);
-        submitFormAJAX();
-    }
-
-    // Initialiser les tags sélectionnés
-    $('#tags .tag-badge').each(function() {
+    
+        updateURLAndSubmit()
+      })
+    
+      // Fonction pour ajouter un tag au filtre
+      function addTagToFilter(tagName) {
+        selectedTagsContainer.append('<input type="hidden" name="tags" value="' + tagName + '">')
+      }
+    
+      // Fonction pour supprimer un tag du filtre
+      function removeTagFromFilter(tagName) {
+        selectedTagsContainer.find('input[value="' + tagName + '"]').remove()
+      }
+    
+      // Fonction pour mettre à jour l'URL et soumettre le formulaire
+      function updateURLAndSubmit() {
+        const queryString = filterForm.serialize()
+        const baseUrl = filterForm.attr('action') || window.location.pathname
+        const newUrl = baseUrl + '?' + queryString
+        window.history.pushState({}, '', newUrl)
+        submitFormAJAX()
+      }
+    
+      // Initialiser les tags sélectionnés
+      $('#tags .tag-badge').each(function () {
         if (selectedTagsContainer.find('input[value="' + $(this).data('tag-name') + '"]').length > 0) {
-            $(this).addClass('selected').css('opacity', '1');
+          $(this).addClass('selected').css('opacity', '1')
         } else {
-            $(this).css('opacity', '0.6');
+          $(this).css('opacity', '0.6')
         }
-    });
-
-    // Afficher les boutons sur le survol
-    $(document).on('mouseenter', '.question-row', function() {
-        $(this).find('.button-list').css('display', 'flex');
-    }).on('mouseleave', '.question-row', function() {
-        $(this).find('.button-list').css('display', 'none');
-    });
-
-    // Confirmation de suppression avant de supprimer la question
-    $(document).on('click', '.delete-question-btn', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const questionRow = $(this).closest('.question-row');
-        const questionId = questionRow.data('question-id');
-        
+      })
+    
+      // Afficher les boutons sur le survol
+      $(document)
+        .on('mouseenter', '.question-row', function () {
+          $(this).find('.button-list').css('display', 'flex')
+        })
+        .on('mouseleave', '.question-row', function () {
+          $(this).find('.button-list').css('display', 'none')
+        })
+    
+      // Confirmation de suppression avant de supprimer la question
+      $(document).on('click', '.delete-question-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const questionRow = $(this).closest('.question-row')
+        const questionId = questionRow.data('question-id')
+    
         if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
-            window.location.href = "{% url 'delete-question' question_id=0 %}".replace('0', questionId);
+          window.location.href = "{% url 'question-delete' question_id=0 %}".replace('0', questionId)
         }
-    });
-
-    // Exporter la question en XML
-    $(document).on('click', '.export-question-btn', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const questionRow = $(this).closest('.question-row');
-        const questionId = questionRow.data('question-id');
-        window.location.href = "{% url 'export-question' question_id=0 %}".replace('0', questionId);
-    });
-
-    // Rediriger vers la page de modification de la question
-    $(document).on('click', '.edit-question-btn', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const questionRow = $(this).closest('.question-row');
-        const questionId = questionRow.data('question-id');
-        window.location.href = "{% url 'edit-question' pk=0 %}".replace('0', questionId);
-    });
-
-    // Afficher/masquer les réponses des questions
-    $(document).on('click', '.question-row', function(e) {
-        const questionId = $(this).data('question-id');
-        const answersList = $('#answers-' + questionId);
-
+      })
+    
+      // Exporter la question en XML
+      $(document).on('click', '.export-question-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const questionRow = $(this).closest('.question-row')
+        const questionId = questionRow.data('question-id')
+        window.location.href = "{% url 'question-export-xml' question_id=0 %}".replace('0', questionId)
+      })
+    
+      // Rediriger vers la page de modification de la question
+      $(document).on('click', '.edit-question-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const questionRow = $(this).closest('.question-row')
+        const questionId = questionRow.data('question-id')
+        window.location.href = "{% url 'question-edit' pk=0 %}".replace('0', questionId)
+      })
+    
+      // Afficher/masquer les réponses des questions
+      $(document).on('click', '.question-row', function (e) {
+        const questionId = $(this).data('question-id')
+        const answersList = $('#answers-' + questionId)
+    
         if (answersList.is(':visible')) {
-            answersList.slideUp();
-            $(this).find('.toggle-answers').text('Voir les réponses');
+          answersList.slideUp()
+          $(this).find('.toggle-answers').text('Voir les réponses')
         } else {
-            answersList.slideDown();
-            $(this).find('.toggle-answers').text('Masquer les réponses');
+          answersList.slideDown()
+          $(this).find('.toggle-answers').text('Masquer les réponses')
         }
-    });
-});
-</script>
+      })
+    })
+  </script>
 {% endblock %}

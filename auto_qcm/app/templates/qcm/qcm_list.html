@@ -22,9 +22,12 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="qcm-header">{{ qcm.titre }}</div>
 
-                  <div class="button-list" style="display:none; align-items:center; flex-direction:row;">
-                    <!-- Bouton export d'une qcm -->
+                  <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
+                  <div class="button-list align-items-center" style="gap: 10px; display: none;">
                     <button type="button" class="btn btn-info btn-sm export-qcm-btn"><i class="bi bi-arrow-bar-down"></i></button>
+
+                    <button type="button" class="btn btn-warning btn-sm edit-qcm-btn"><i class="bi bi-pencil"></i></button>
+
                     <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button>
                   </div>
                 </div>
@@ -81,7 +84,7 @@
         const qcmId = qcmRow.data('qcm-id')
     
         if (confirm('Voulez-vous vraiment supprimer ce qcm ?')) {
-          window.location.href = "{% url 'delete-qcm' qcm_id=0 %}".replace('0', qcmId)
+          window.location.href = "{% url 'qcm-delete' qcm_id=0 %}".replace('0', qcmId)
         }
       })
     
@@ -91,7 +94,16 @@
         e.stopPropagation()
         const qcmRow = $(this).closest('.qcm-row')
         const qcmId = qcmRow.data('qcm-id')
-        window.location.href = "{% url 'export-qcm-xml' qcm_id=0 %}".replace('0', qcmId)
+        window.location.href = "{% url 'qcm-export-xml' qcm_id=0 %}".replace('0', qcmId)
+      })
+    
+      // Rediriger vers la page de modification de la question
+      $(document).on('click', '.edit-qcm-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const qcmRow = $(this).closest('.qcm-row')
+        const qcmId = qcmRow.data('qcm-id')
+        window.location.href = "{% url 'qcm-edit' pk=0 %}".replace('0', qcmId)
       })
     
       // JavaScript pour afficher/masquer les questions des qcm

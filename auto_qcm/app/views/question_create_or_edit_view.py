@@ -18,6 +18,7 @@ def create_or_edit_question(request, pk=None):
         if form.is_valid() and formset.is_valid():
             # Sauvegarder la question
             question = form.save(commit=False)
+            question.creator = request.user
             question.save()
 
             # Sauvegarder les tags existants
@@ -36,8 +37,7 @@ def create_or_edit_question(request, pk=None):
             formset.save()
 
             return redirect('question-list')
-        else:
-            print(form.errors, formset.errors)
+        print(form.errors, formset.errors)
     else:
         form = QuestionForm(instance=question)
         formset = ReponseFormSet(instance=question)
