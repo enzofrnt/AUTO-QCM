@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
 {% load color_filters %}
+{% load latexify %}
 
 {% block content %}
+
+{% include 'latexify/stylesheets.html' %}
+
 <div class="container mt-4">
     <h2>Liste des Questions</h2>
     
@@ -76,7 +80,13 @@
 
                             <!-- Section des réponses à afficher/cacher -->
                             <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
-                                <div>{{ question.texte }}</div>
+
+                                <br>
+
+                                {% latexify question.texte parse_math=True %}
+
+                                <br><br>
+
                                 <ul class="list-group">
                                     <p>Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b></p>
                                     {% for reponse in question.reponses.all %}
@@ -225,6 +235,9 @@ $(document).ready(function() {
             $(this).find('.toggle-answers').text('Masquer les réponses');
         }
     });
-});
-</script>
+
+
+
+{% include "latexify/scripts.html" %}
+
 {% endblock %}
