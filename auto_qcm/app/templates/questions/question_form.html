@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
+{% load latexify %}
+
 {% block content %}
+
+{% include 'latexify/stylesheets.html' %}
+
 <div class="container mt-4">
     <h2>{% if question.pk %}Modifier la Question{% else %}Créer une Nouvelle Question{% endif %}</h2>
 
@@ -47,6 +52,12 @@
         <div class="form-group">
             {{ form.texte.label_tag }} 
             {{ form.texte }}
+        </div>
+
+        <!-- Champ pour la preview LaTeX -->
+         <div>
+            <label for="preview">Preview LaTeX :</label>
+            <div id="copy_text"></div>
         </div>
         
         <!-- Champ pour les tags existants -->
@@ -100,6 +111,7 @@
     </form>
 </div>
 
+{% include "latexify/scripts.html" %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
@@ -107,6 +119,32 @@ $(document).ready(function() {
     var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS');
     var formsetContainer = $('#reponseFormset');
 
+    // Fonction pour parser le texte LaTeX et le convertir en HTML
+    function parseLatexText(text) {
+        // Utilise une expression régulière pour identifier les formules LaTeX délimitées par '$...$'
+        return text.replace(/\\\$(.*?)\\\$/g, function(match, p1) {
+            // Remplace le LaTeX inline par une balise span avec la classe 'django-latexify math inline'
+            return '<span class="django-latexify math inline">' + p1 + '</span>';
+        });
+    }
+
+    // Fonction pour mettre à jour la preview à partir du champ de texte
+    function updatePreview() {
+        var latexText = $('#id_texte').val();
+        var parsedText = parseLatexText(latexText);
+        console.log(parsedText);
+        $('#copy_text').html('<span class="django-latexify text">' + parsedText + '</span>');
+        latex_render_math(math_latex_inline_elements, false);
+    }
+
+    // Appelle la fonction de mise à jour à l'ouverture de la page pour afficher le texte existant
+    updatePreview();
+
+    // Ajoute un écouteur d'événement sur le champ de texte pour mettre à jour la preview à chaque changement
+    $('#id_texte').on('input', function() {
+        updatePreview();
+    });
+    
     // Gestion de l'ajout dynamique de réponses
     $('#addReponse').click(function() {
         var formCount = parseInt(totalForms.val());
@@ -164,6 +202,9 @@ $(document).ready(function() {
             </div>`;
         $('#newTagsContainer').append(newTagHtml);
     });
+
+    
 });
 </script>
+
 {% endblock %}
