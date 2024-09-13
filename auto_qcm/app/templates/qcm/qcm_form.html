@@ -41,6 +41,22 @@
       <div class="form-group">{{ form.date.label_tag }}
         {{ form.date }}</div>
 
+      <!-- Champ pour les questions -->
+      <h3>Sélectionnez les questions :</h3>
+      <div class="form-group">
+        {% for question in questions %}
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="selected_questions" value="{{ question.id }}"
+              id="question_{{ question.id }}"
+              {% if question in selected_questions %}checked{% endif %}>
+            <label class="form-check-label" for="question_{{ question.id }}">
+              {{ question.nom }} - {{ question.texte }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+
+
       <!-- Bouton pour soumettre le formulaire -->
       <button type="submit" class="btn btn-success">Enregistrer</button>
     </form>
