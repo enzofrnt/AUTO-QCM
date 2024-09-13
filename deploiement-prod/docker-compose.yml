@@ -1,6 +1,6 @@
 services:
   auto_qcm_python:
-    container_name: auto_qcm_container
+    container_name: auto_qcm_python
     build:
       context: ../
       dockerfile: Dockerfile
@@ -10,7 +10,7 @@ services:
     ports:
       - "8000:8000"
 
-  auto_qcm_database:
+  auto_qcm_db:
     container_name: auto_qcm_db
     image: postgres:13
     environment:

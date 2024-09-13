@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'root',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': 'auto_qcm_database',  # Cela fait référence au nom du service de la base de données dans Docker Compose
+        'HOST': 'auto_qcm_db',  # Cela fait référence au nom du service de la base de données dans Docker Compose
         'PORT': '5432',
     }
 }
