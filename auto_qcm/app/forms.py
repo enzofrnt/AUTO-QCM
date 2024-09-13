@@ -33,4 +33,4 @@ ReponseFormSet = inlineformset_factory(
 class QcmForm(forms.ModelForm):
     class Meta:
         model = QCM
-        fields = ["titre","description"]
+        fields = ["titre","description","date"]
