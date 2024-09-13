@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'wait_for_db',
-    'app'
+    'latexify',
+    'app',
+    
 ]
 
 MIDDLEWARE = [
