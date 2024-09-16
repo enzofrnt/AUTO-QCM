@@ -36,7 +36,8 @@ from app.views import (
     enseignant_dashboard,
     search_student,
     delete_qcm,
-    export_qcm_xml
+    export_qcm_xml,
+    repondre_qcm
 )
 
 
@@ -61,7 +62,8 @@ urlpatterns = [
     path('qcm/edit/<int:pk>/',create_or_edit_qcm, name='qcm-edit'),
     path('qcm/list/',QcmListView.as_view(),name='qcm-list'),
     path('qcm/delete/<int:qcm_id>/',delete_qcm,name="qcm-delete"),
-    
+    #Reponse QCM
+    path('qcm/anwser/<int:qcm_id>/',repondre_qcm,name="qcm-answer"),
     #Export
     path(
         "question/export-xml/<int:question_id>/",
