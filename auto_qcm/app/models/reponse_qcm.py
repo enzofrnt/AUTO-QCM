@@ -1,7 +1,7 @@
 from django.db import models
 
 class ReponseQCM(models.Model):
-    eleve = models.ForeignKey('Eleve', on_delete=models.CASCADE, related_name='reponses_qcm')
+    eleve = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, related_name='reponses_qcm')
     qcm = models.ForeignKey('QCM', on_delete=models.CASCADE, related_name='reponses_qcm')
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='reponses_qcm')
     reponse = models.ForeignKey('Reponse', on_delete=models.CASCADE, related_name='reponses_qcm')

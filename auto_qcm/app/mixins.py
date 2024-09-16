@@ -4,13 +4,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class TeacherRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
-        if request.user.profile.user_type != 'Enseignant':
+        if request.user.utilisateur.user_type != 'Enseignant':
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
 class StudentRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
-        if request.user.profile.user_type != 'Etudiant':
+        if request.user.utilisateur.user_type != 'Etudiant':
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
@@ -24,6 +24,6 @@ class SelfRequiredMixin(LoginRequiredMixin):
 class TeacherOrStudentOwnDashboardRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         user_id = kwargs.get('pk')
-        if request.user.profile.user_type == 'Enseignant' or request.user.id == user_id:
+        if request.user.utilisateur.user_type == 'Enseignant' or request.user.id == user_id:
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
