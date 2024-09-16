@@ -46,7 +46,7 @@
                         <tbody>
                             {% for reponse in reponses %}
                             <tr>
-                                <td>{{ reponse.eleve.username }}</td>
+                                <td>{{ reponse.eleve.user.username }}</td>
                                 <td>{{ reponse.qcm.titre }}</td>
                                 <td>{{ reponse.question.texte }}</td>
                                 <td>{{ reponse.reponse.texte }}</td>

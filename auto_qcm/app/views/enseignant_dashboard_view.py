@@ -14,7 +14,7 @@ def enseignant_dashboard(request, pk=None):
     enseignant = get_object_or_404(User, pk=pk)
 
     # Récupérer les informations nécessaires pour le dashboard
-    reponses = ReponseQCM.objects.filter(qcm__creator=enseignant)  # Par exemple, les QCM créés par l'enseignant
+    reponses = ReponseQCM.objects.all()  # Par exemple, les QCM créés par l'enseignant
     questions = Question.objects.filter(creator=enseignant)
     upcoming_qcms = QCM.objects.filter(date__gte=timezone.now())
     
