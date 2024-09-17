@@ -1,5 +1,4 @@
-from .profile import Profile
-from .eleve import Eleve
+from .user import Utilisateur
 from .qcm import QCM
 from .question import Question
 from .reponse import Reponse
