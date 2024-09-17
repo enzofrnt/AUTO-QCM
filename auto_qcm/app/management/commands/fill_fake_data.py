@@ -17,12 +17,12 @@ class Command(BaseCommand):
         moquette = User.objects.create_user("Moquette", "moquette@gmail.com", "Moquette31")
         alex = User.objects.create_user("Alexi", "alexi@gmail.com", "LPBLPM81")
 
-        lois_utilisateur = Utilisateur.objects.create(user=lois, user_type="Etudiant")
-        nath_utilisateur = Utilisateur.objects.create(user=nath, user_type="Enseignant")
-        enzo_utilisateur = Utilisateur.objects.create(user=enzo, user_type="Etudiant")
-        kilian_utilisateur = Utilisateur.objects.create(user=kilian, user_type="Enseignant")
-        moquette_utilisateur = Utilisateur.objects.create(user=moquette, user_type="Etudiant")
-        alex_utilisateur = Utilisateur.objects.create(user=alex, user_type="Enseignant")
+        Utilisateur.objects.create(user=lois, user_type="Etudiant")
+        Utilisateur.objects.create(user=nath, user_type="Enseignant")
+        Utilisateur.objects.create(user=enzo, user_type="Etudiant")
+        Utilisateur.objects.create(user=kilian, user_type="Enseignant")
+        Utilisateur.objects.create(user=moquette, user_type="Etudiant")
+        Utilisateur.objects.create(user=alex, user_type="Enseignant")
 
         User.objects.create_superuser(
             username="admin", email="admin@example.com", password="adminpassword"
@@ -69,18 +69,5 @@ class Command(BaseCommand):
             qcm = QCM(titre=fake.word(), description=fake.text(), date=demain, creator=alexi)
             qcm.save()
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
-
-        # Créer des réponses factices pour les QCM
-        for qcm in QCM.objects.all():
-            for eleve in Utilisateur.objects.filter(user_type="Etudiant"):
-                for question in qcm.questions.all():
-                    # Créer une fausse réponse pour l'élève à chaque question du QCM
-                    ReponseQCM.objects.create(
-                        eleve=eleve,  # On lie directement l'objet Utilisateur
-                        qcm=qcm,
-                        question=question,
-                        reponse=question.reponses.order_by('?').first(),  # Sélectionner une réponse aléatoire
-                        date_reponse=datetime.now() - timedelta(days=random.randint(0, 30))
-                    )
 
         self.stdout.write(self.style.SUCCESS("Données factices et QCM générés avec succès."))
