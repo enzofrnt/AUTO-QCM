@@ -13,21 +13,17 @@
           <div class="question">
             <h4>{{ forloop.counter }}. {{ question.texte }}</h4>
             <div class="reponses">
-              {% if question.number_of_correct_answers > 1 %}
-                {% for reponse in question.reponses.all %}
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="question_{{ question.id }}[]" id="reponse_{{ reponse.id }}" value="{{ reponse.id }}" />
-                    <label class="form-check-label" for="reponse_{{ reponse.id }}">{{ reponse.texte }}</label>
-                  </div>
-                {% endfor %}
-              {% else %}
-                {% for reponse in question.reponses.all %}
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="reponse_{{ reponse.id }}" value="{{ reponse.id }}" />
-                    <label class="form-check-label" for="reponse_{{ reponse.id }}">{{ reponse.texte }}</label>
-                  </div>
-                {% endfor %}
-              {% endif %}
+              {% for reponse in question.reponses.all %}
+                <div class="form-check">
+                  <input class="form-check-input"
+                    type="{% if question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}"
+                    name="question_{{ question.id }}"
+                    id="reponse_{{ reponse.id }}"
+                    value="{{ reponse.id }}" />
+
+                  <label class="form-check-label" for="reponse_{{ reponse.id }}">{{ reponse.texte }}</label>
+                </div>
+              {% endfor %}
               <br />
             </div>
           </div>

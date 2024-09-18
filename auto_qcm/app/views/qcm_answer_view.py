@@ -9,7 +9,7 @@ def repondre_qcm(request, qcm_id):
     questions = qcm.questions.all()
     
     if request.method == 'POST':
-        reponse_qcm = ReponseQCM.objects.create(utilisateur=request.user, qcm=qcm,date_reponse=datetime.datetime.now())
+        reponse_qcm = ReponseQCM.objects.create(utilisateur=request.user, qcm=qcm, date_reponse=datetime.datetime.now())
         
         for question in questions:
             if question.number_of_correct_answers > 1:
@@ -26,8 +26,9 @@ def repondre_qcm(request, qcm_id):
                 
                 # Ajouter toutes les réponses sélectionnées à la ReponseQuestion
                 for reponse_id in reponse_ids:
-                    reponse = get_object_or_404(Reponse, id=reponse_id)
-                    reponse_question.reponse.add(reponse)
+                    if reponse_id:  # Assurez-vous que reponse_id n'est pas vide
+                        reponse = get_object_or_404(Reponse, id=reponse_id)
+                        reponse_question.reponse.add(reponse)
 
                 reponse_qcm.reponses.add(reponse_question)
         

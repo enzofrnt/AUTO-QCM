@@ -13,6 +13,6 @@ class ReponseQuestion(models.Model):
 
     def __str__(self):
         affichage = f"Réponse de {self.utilisateur.username} sur {self.question.nom} à {self.date} :"
-        for rep in self.reponse : 
+        for rep in self.reponse.all() : 
             affichage+= f"-{rep.texte}"
         return affichage
