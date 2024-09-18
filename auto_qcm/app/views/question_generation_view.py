@@ -1,3 +1,4 @@
+import json
 import logging
 
 import PyPDF2
@@ -73,7 +74,7 @@ def question_generation_view(request):
                     {
                         "role": "system",
                         "content": """
-                        Je veux que tu retournes en RAW json (Sans inclure les balise markedown) une liste de questions d'une longeurs aléartoire avec un nombre de réponses bonne et mauvsie aléatoires dans une liste sous chaque question.
+                        Je veux que tu retournes en RAW json (Sans inclure les balise markedown) une liste donc un tableau de questions d'une longeurs aléartoire avec un nombre de réponses bonne et mauvsie aléatoires dans une liste sous chaque question.
                         Chaque réponse sera donc objet en json qui contiendra la réponse et un booléen pour indiquer si c'est la bonne réponse ou non.
                         
                         Par exemple :
@@ -96,6 +97,8 @@ def question_generation_view(request):
                                 (...)
                             ]
                         }
+                        
+                        TU n'imrbique pas les questions dans un objet, tu les retournes directement dans un tableau.
                         """,
                     },
                     {
@@ -117,12 +120,23 @@ def question_generation_view(request):
                 status=500,
             )
 
+        reponse = response.choices[0].message.content
+
+        try:
+            reponse_data = json.loads(reponse.replace("```json", "").replace("```", ""))
+        except Exception as e:
+            logger.error(
+                f"Erreur lors de la conversion de la réponse en JSON : {str(e)}"
+            )
+            return JsonResponse(
+                {
+                    "error": f"Erreur lors de la conversion de la réponse en JSON : {str(e)}"
+                },
+                status=500,
+            )
+
         # Renvoyer la réponse en JSON
-        logger.error(
-            f"Questions générées à partir du fichier PDF : \n{response.choices[0].message.content}"
-        )
-        return JsonResponse(
-            {"questions": response.choices[0].message.content}, safe=False
-        )
+        logger.error(f"Questions générées à partir du fichier PDF : \n{reponse_data}")
+        return JsonResponse({"questions": reponse_data}, safe=False)
 
     return JsonResponse({"error": "Aucun fichier n'a été fourni"}, status=400)

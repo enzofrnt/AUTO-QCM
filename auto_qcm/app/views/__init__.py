@@ -13,5 +13,6 @@ from .question_create_or_edit_view import create_or_edit_question
 from .question_generation_view import question_generation_view
 from .question_list_view import QuestionListView
 from .remove_tags_view import remove_tag
+from .save_generated_questions_view import save_generated_questions
 from .search_students_view import search_student
 from .support_doc_view import support_doc

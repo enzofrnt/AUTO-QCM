@@ -33,6 +33,7 @@ from app.views import (
     question_generation_view,
     remove_tag,
     repondre_qcm,
+    save_generated_questions,
     search_student,
     support_doc,
 )
@@ -55,6 +56,7 @@ urlpatterns = [
     path("question/edit/<int:pk>/", create_or_edit_question, name="question-edit"),
     path("question/delete/<int:question_id>/", delete_question, name="question-delete"),
     path("question/generation/", question_generation_view, name="generate-questions"),
+    path("save-questions/", save_generated_questions, name="save-questions"),
     # DASHBOARD
     path("etudiant-dashboard/<int:pk>/", etudiant_dashboard, name="etudiant-dashboard"),
     path(
