@@ -11,20 +11,33 @@ def corriger_qcm(request, repqcm_id):
     user = reponse_qcm.utilisateur
     questions = qcm.questions.all()
     reponses_soumis = reponse_qcm.reponses.all()
+    score = 0
+    max_score = 0
 
     reponses_utilisateur = {}
-    for reponse in reponses_soumis:
-        question = reponse.question
+    for repquestion in reponses_soumis:
+        question = repquestion.question
+        max_score += question.note
         if question not in reponses_utilisateur:
             reponses_utilisateur[question] = []
-        for repquestion in reponse.reponse.all():
-            reponses_utilisateur[question].append(repquestion.id)
+        for reponse in repquestion.reponse.all():
+            if reponse.is_correct:
+                score += question.note / question.number_of_correct_answers
+            reponses_utilisateur[question].append(reponse.id)
+
+    if score.is_integer():
+        score_str = str(int(score))
+    else:
+        score_str = f"{score:.2f}"
+
+    note = f"{score_str}/{max_score}"
 
     context = {
         'qcm': qcm,
         'questions': questions,
         'reponses_utilisateur': reponses_utilisateur,
-        'user': user
+        'user': user,
+        'note':note
     }
     
     return render(request, 'qcm/qcm_correction.html', context)
