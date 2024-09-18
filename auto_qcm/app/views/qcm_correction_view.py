@@ -15,9 +15,10 @@ def corriger_qcm(request, repqcm_id):
     reponses_utilisateur = {}
     for reponse in reponses_soumis:
         question = reponse.question
-        if question.id not in reponses_utilisateur:
+        if question not in reponses_utilisateur:
             reponses_utilisateur[question] = []
-        reponses_utilisateur[question].append(reponse)
+        for repquestion in reponse.reponse.all():
+            reponses_utilisateur[question].append(repquestion.id)
 
     context = {
         'qcm': qcm,
