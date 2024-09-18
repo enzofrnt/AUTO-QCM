@@ -12,4 +12,7 @@ class ReponseQuestion(models.Model):
         unique_together = ('utilisateur', 'question','date')
 
     def __str__(self):
-        return f"Réponse de {self.utilisateur.name} sur {self.question.nom} à {self.date}"
+        affichage = f"Réponse de {self.utilisateur.username} sur {self.question.nom} à {self.date} :"
+        for rep in self.reponse : 
+            affichage+= f"-{rep.texte}"
+        return affichage

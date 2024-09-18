@@ -31,6 +31,6 @@ def repondre_qcm(request, qcm_id):
 
                 reponse_qcm.reponses.add(reponse_question)
         
-        return redirect('home')
+        return redirect('qcm-correct', repqcm_id=reponse_qcm.id)
     
     return render(request, 'qcm/qcm_answer.html', {'qcm': qcm, 'questions': questions})
