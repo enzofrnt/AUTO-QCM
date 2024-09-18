@@ -1,7 +1,7 @@
 from django.db import models
 
 class ReponseQuestion(models.Model):
-    utilisateur = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, related_name='eleve',default=1)
+    utilisateur = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='eleve',default=1)
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='question')
     reponse = models.ManyToManyField('Reponse', related_name='reponses')
     date = models.DateTimeField()

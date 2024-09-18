@@ -1,7 +1,7 @@
 from django.db import models
 
 class ReponseQCM(models.Model):
-    utilisateur = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, related_name='reponses_qcm',default=1)
+    utilisateur = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='reponses_qcm',default=1)
     qcm = models.ForeignKey('QCM', on_delete=models.CASCADE, related_name='reponses_qcm')
     reponses = models.ManyToManyField('ReponseQuestion')
     date_reponse = models.DateTimeField(auto_now_add=True)
