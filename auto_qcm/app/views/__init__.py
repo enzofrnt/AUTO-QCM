@@ -14,3 +14,4 @@ from .enseignant_dashboard_view import enseignant_dashboard
 from .search_students_view import search_student
 from .custom_permission_denied_view import custom_permission_denied_view
 from .qcm_answer_view import repondre_qcm
+from .qcm_correction_view import corriger_qcm
