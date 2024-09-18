@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from app.models import QCM, ReponseQCM, ReponseQuestion, Question, Reponse
+from app.models import QCM, ReponseQCM, ReponseQuestion, Reponse
 
 @login_required
 def repondre_qcm(request, qcm_id):
@@ -9,20 +8,25 @@ def repondre_qcm(request, qcm_id):
     questions = qcm.questions.all()
     
     if request.method == 'POST':
-        # Créer une nouvelle instance de ReponseQCM
-        reponse_qcm = ReponseQCM.objects.create(eleve=request.user, qcm=qcm)
+        reponse_qcm = ReponseQCM.objects.create(utilisateur=request.user, qcm=qcm)
         
         for question in questions:
-            reponse_id = request.POST.get(f'question_{question.id}')
-            if reponse_id:
-                reponse = get_object_or_404(Reponse, id=reponse_id)
-                
-                # Créer une ReponseQuestion pour chaque question répondue
+            if question.number_of_correct_answers > 1:
+                reponse_ids = request.POST.getlist(f'question_{question.id}')
+            else:
+                reponse_ids = [request.POST.get(f'question_{question.id}')]
+            
+            if reponse_ids:
                 reponse_question = ReponseQuestion.objects.create(
-                    eleve=request.user.eleve,
+                    utilisateur=request.user,
                     question=question
                 )
-                reponse_question.reponse.add(reponse)
+                
+                # Ajouter toutes les réponses sélectionnées à la ReponseQuestion
+                for reponse_id in reponse_ids:
+                    reponse = get_object_or_404(Reponse, id=reponse_id)
+                    reponse_question.reponse.add(reponse)
+
                 reponse_qcm.reponses.add(reponse_question)
         
         return redirect('')
