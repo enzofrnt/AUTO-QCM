@@ -11,7 +11,9 @@ class Question(models.Model):
     nom = models.CharField(max_length=50)
     texte = models.CharField(max_length=255)
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
-    creator = models.ForeignKey("auth.User", on_delete=models.CASCADE)  # 1 est l'ID d'un utilisateur par défaut
+    creator = models.ForeignKey(
+        "auth.User", on_delete=models.CASCADE
+    )  # 1 est l'ID d'un utilisateur par défaut
 
     def __str__(self):
         return self.texte

@@ -92,9 +92,9 @@
     </form>
   </div>
 
-  <!-- Modal Popup -->
+  <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
   <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="fileModalLabel">Uploader un fichier PDF</h5>
@@ -108,6 +108,16 @@
               <input type="file" class="form-control" id="fileInput" name="file" accept=".pdf" required>
             </div>
           </form>
+          <!-- Indicateur de chargement -->
+          <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display:none;">
+            <span class="visually-hidden"></span>
+          </div>
+          <!-- Conteneur pour les questions générées -->
+          <div id="generatedQuestionsContainer" style="display: none;">
+            <h4>Questions générées</h4>
+            <div id="generatedQuestionsList"></div>
+            <button type="button" class="btn btn-primary" id="saveSelectedQuestions">Ajouter les questions sélectionnées</button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
@@ -123,41 +133,105 @@
     $(document).ready(function() {
       // Ouvrir la modal lors du clic sur le bouton
       $('#openModal').click(function() {
-        $('#fileModal').modal('show');
+          $('#fileModal').modal('show');
       });
-
+  
       // Envoyer le fichier via Ajax lors du clic sur le bouton "Envoyer"
       $('#uploadFileBtn').click(function() {
-        var formData = new FormData($('#fileUploadForm')[0]);
-
-        $.ajax({
-          url: '/question/generation/',  // URL de ta vue Django
-          type: 'POST',
-          data: formData,
-          processData: false,
-          contentType: false,
-          success: function(response) {
-            console.log(response);  // Afficher la réponse dans la console
-            $('#fileModal').modal('hide');
-          },
-          error: function(xhr, status, error) {
-            console.error(xhr.responseText);  // Afficher les erreurs dans la console
+          var formData = new FormData($('#fileUploadForm')[0]);
+  
+          // Afficher l'indicateur de chargement
+          $('#loadingSpinner').show();
+          $('#generatedQuestionsContainer').hide();
+  
+          $.ajax({
+            url: '/question/generation/',  // URL de ta vue Django
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+              $('#loadingSpinner').hide();
+              $('#generatedQuestionsContainer').show();
+              console.log(response);  // Afficher la réponse dans la console
+              
+              // Corriger pour accéder aux questions dans le tableau
+              displayGeneratedQuestions(response.questions);
+            },
+            error: function(xhr, status, error) {
+              $('#loadingSpinner').hide();
+              console.error(xhr.responseText);  // Afficher les erreurs dans la console
+            }
+          });
+        });
+  
+      // Fonction pour afficher les questions générées dans la popup
+      function displayGeneratedQuestions(questions) {
+          var questionsList = $('#generatedQuestionsList');
+          questionsList.empty();  // Vider la liste avant d'afficher les nouvelles questions
+  
+          questions.forEach(function(question, index) {
+            var questionHtml = `
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="${question.nom}" id="generatedQuestion_${index}">
+                <label class="form-check-label" for="generatedQuestion_${index}">
+                  <strong>${question.nom}</strong><br>
+                  ${question.texte}
+                  <ul>`;
+            
+            question.reponses.forEach(function(reponse) {
+              questionHtml += `<li>${reponse.texte} ${reponse.is_correct ? '(Bonne réponse)' : ''}</li>`;
+            });
+  
+            questionHtml += `</ul></label></div>`;
+  
+            questionsList.append(questionHtml);
+          });
+        }
+  
+      // Sauvegarder les questions sélectionnées
+      $('#saveSelectedQuestions').click(function() {
+          var selectedQuestions = [];
+  
+          // Récupérer les questions cochées
+          $('#generatedQuestionsList input:checked').each(function() {
+            selectedQuestions.push($(this).val());
+          });
+  
+          if (selectedQuestions.length > 0) {
+            // Faire un POST pour sauvegarder les questions sélectionnées
+            $.ajax({
+              url: '/save-questions/',  // URL pour sauvegarder les questions
+              type: 'POST',
+              data: {
+                'questions': selectedQuestions,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              success: function(response) {
+                alert('Questions sauvegardées avec succès !');
+                window.location.reload();  // Rafraîchir la page pour voir les nouvelles questions dans la liste de QCM
+              },
+              error: function(xhr, status, error) {
+                console.error(xhr.responseText);  // Afficher les erreurs dans la console
+              }
+            });
+          } else {
+            alert('Veuillez sélectionner au moins une question.');
           }
         });
-      });
-
+  
       // Filtrer les questions par recherche
       $('#searchQuestion').on('input', function() {
-        var searchValue = $(this).val().toLowerCase();
-        $('#questionsList .question-item').each(function() {
-          var questionText = $(this).text().toLowerCase();
-          if (questionText.includes(searchValue)) {
-            $(this).show();
-          } else {
-            $(this).hide();
-          }
+          var searchValue = $(this).val().toLowerCase();
+          $('#questionsList .question-item').each(function() {
+            var questionText = $(this).text().toLowerCase();
+            if (questionText.includes(searchValue)) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          });
         });
-      });
-    });
+  });
   </script>
 {% endblock %}
