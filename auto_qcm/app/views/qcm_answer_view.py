@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from app.models import QCM, ReponseQCM, ReponseQuestion, Reponse
+import datetime
 
 @login_required
 def repondre_qcm(request, qcm_id):
@@ -8,7 +9,7 @@ def repondre_qcm(request, qcm_id):
     questions = qcm.questions.all()
     
     if request.method == 'POST':
-        reponse_qcm = ReponseQCM.objects.create(utilisateur=request.user, qcm=qcm)
+        reponse_qcm = ReponseQCM.objects.create(utilisateur=request.user, qcm=qcm,date_reponse=datetime.datetime.now())
         
         for question in questions:
             if question.number_of_correct_answers > 1:
@@ -19,7 +20,8 @@ def repondre_qcm(request, qcm_id):
             if reponse_ids:
                 reponse_question = ReponseQuestion.objects.create(
                     utilisateur=request.user,
-                    question=question
+                    question=question,
+                    date=datetime.datetime.now()
                 )
                 
                 # Ajouter toutes les réponses sélectionnées à la ReponseQuestion
@@ -29,6 +31,6 @@ def repondre_qcm(request, qcm_id):
 
                 reponse_qcm.reponses.add(reponse_question)
         
-        return redirect('')
+        return redirect('home')
     
     return render(request, 'qcm/qcm_answer.html', {'qcm': qcm, 'questions': questions})
