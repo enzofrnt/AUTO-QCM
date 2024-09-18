@@ -6,10 +6,13 @@
     <p>{{ qcm.description }}</p>
     <br />
 
+    <p>Note du qcm: {{note}}</p>
+
     <div class="questions">
         {% for question, reponses_ids  in reponses_utilisateur.items %}
             <div class="question">
                 <h4>{{ forloop.counter }}. {{ question.texte }}</h4>
+                <p>Sur {{question.note}}</p>
                 <div class="reponses">
                     {% for reponse in question.reponses.all %}
                         <div class="form-check">
