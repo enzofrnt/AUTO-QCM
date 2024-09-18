@@ -97,8 +97,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="fileModalLabel">Uploader un fichier PDF</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="fileModalLabel">Envoyer un fichier PDF de cours pour générer des questions</h5>
         </div>
         <div class="modal-body">
           <form id="fileUploadForm">
@@ -120,8 +119,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-          <button type="button" class="btn btn-primary" id="uploadFileBtn">Envoyer</button>
+          <button type="button" class="btn btn-secondary" id="closeModal" data-bs-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-primary" id="generateBtn">Générer</button>
         </div>
       </div>
     </div>
@@ -130,108 +129,137 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    var hasGenerated = false;  // Indicateur pour savoir si des questions ont déjà été générées
+    var questions = [];  // Variable pour stocker les questions générées
+
     $(document).ready(function() {
       // Ouvrir la modal lors du clic sur le bouton
       $('#openModal').click(function() {
-          $('#fileModal').modal('show');
+        $('#fileModal').modal('show');
       });
+
+      // Envoyer le fichier via Ajax lors du clic sur le bouton "Générer" ou "Régénérer"
+      $('#generateBtn').click(function() {
+        var formData = new FormData($('#fileUploadForm')[0]);
   
-      // Envoyer le fichier via Ajax lors du clic sur le bouton "Envoyer"
-      $('#uploadFileBtn').click(function() {
-          var formData = new FormData($('#fileUploadForm')[0]);
+        // Afficher l'indicateur de chargement
+        $('#loadingSpinner').show();
+        $('#generatedQuestionsContainer').hide();
   
-          // Afficher l'indicateur de chargement
-          $('#loadingSpinner').show();
-          $('#generatedQuestionsContainer').hide();
-  
-          $.ajax({
-            url: '/question/generation/',  // URL de ta vue Django
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-              $('#loadingSpinner').hide();
-              $('#generatedQuestionsContainer').show();
-              console.log(response);  // Afficher la réponse dans la console
-              
-              // Corriger pour accéder aux questions dans le tableau
-              displayGeneratedQuestions(response.questions);
-            },
-            error: function(xhr, status, error) {
-              $('#loadingSpinner').hide();
-              console.error(xhr.responseText);  // Afficher les erreurs dans la console
-            }
-          });
+        $.ajax({
+          url: '/question/generation/',  // URL de ta vue Django
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+            $('#loadingSpinner').hide();
+            $('#generatedQuestionsContainer').show();
+            questions = response.questions;  // Stocker les questions générées dans la variable
+            
+            displayGeneratedQuestions(questions);
+            
+            // Changer le bouton en "Régénérer"
+            hasGenerated = true;
+            $('#generateBtn').text('Régénérer');
+          },
+          error: function(xhr, status, error) {
+            $('#loadingSpinner').hide();
+            console.error(xhr.responseText);  // Afficher les erreurs dans la console
+          }
         });
+      });
   
       // Fonction pour afficher les questions générées dans la popup
       function displayGeneratedQuestions(questions) {
-          var questionsList = $('#generatedQuestionsList');
-          questionsList.empty();  // Vider la liste avant d'afficher les nouvelles questions
-  
-          questions.forEach(function(question, index) {
-            var questionHtml = `
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="${question.nom}" id="generatedQuestion_${index}">
-                <label class="form-check-label" for="generatedQuestion_${index}">
-                  <strong>${question.nom}</strong><br>
-                  ${question.texte}
-                  <ul>`;
-            
-            question.reponses.forEach(function(reponse) {
-              questionHtml += `<li>${reponse.texte} ${reponse.is_correct ? '(Bonne réponse)' : ''}</li>`;
-            });
-  
-            questionHtml += `</ul></label></div>`;
-  
-            questionsList.append(questionHtml);
+        var questionsList = $('#generatedQuestionsList');
+        questionsList.empty();  // Vider la liste avant d'afficher les nouvelles questions
+
+        questions.forEach(function(question, index) {
+          var questionHtml = `
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="${index}" id="generatedQuestion_${index}">
+              <label class="form-check-label" for="generatedQuestion_${index}">
+                <strong>${question.nom}</strong><br>
+                ${question.texte}
+                <ul>`;
+          
+          question.reponses.forEach(function(reponse) {
+            questionHtml += `<li>${reponse.texte} ${reponse.is_correct ? '(Bonne réponse)' : ''}</li>`;
           });
-        }
-  
+
+          questionHtml += `</ul></label></div>`;
+
+          questionsList.append(questionHtml);
+        });
+      }
+
       // Sauvegarder les questions sélectionnées
       $('#saveSelectedQuestions').click(function() {
-          var selectedQuestions = [];
-  
-          // Récupérer les questions cochées
-          $('#generatedQuestionsList input:checked').each(function() {
-            selectedQuestions.push($(this).val());
+        var selectedQuestions = [];
+
+        // Récupérer les questions cochées
+        $('#generatedQuestionsList input:checked').each(function() {
+          var questionIndex = $(this).val();  // Utiliser l'index pour récupérer la question complète
+          var questionData = questions[questionIndex];
+
+          // Ajouter la question complète avec ses réponses dans selectedQuestions
+          selectedQuestions.push({
+            "nom": questionData.nom,
+            "texte": questionData.texte,
+            "reponses": questionData.reponses.map(function(reponse) {
+              return {
+                "texte": reponse.texte,
+                "is_correct": reponse.is_correct
+              };
+            })
           });
-  
-          if (selectedQuestions.length > 0) {
-            // Faire un POST pour sauvegarder les questions sélectionnées
-            $.ajax({
-              url: '/save-questions/',  // URL pour sauvegarder les questions
-              type: 'POST',
-              data: {
-                'questions': selectedQuestions,
-                'csrfmiddlewaretoken': '{{ csrf_token }}'
-              },
-              success: function(response) {
-                alert('Questions sauvegardées avec succès !');
-                window.location.reload();  // Rafraîchir la page pour voir les nouvelles questions dans la liste de QCM
-              },
-              error: function(xhr, status, error) {
-                console.error(xhr.responseText);  // Afficher les erreurs dans la console
-              }
-            });
-          } else {
-            alert('Veuillez sélectionner au moins une question.');
-          }
         });
-  
-      // Filtrer les questions par recherche
-      $('#searchQuestion').on('input', function() {
-          var searchValue = $(this).val().toLowerCase();
-          $('#questionsList .question-item').each(function() {
-            var questionText = $(this).text().toLowerCase();
-            if (questionText.includes(searchValue)) {
-              $(this).show();
-            } else {
-              $(this).hide();
+
+        if (selectedQuestions.length > 0) {
+          // Envoyer les données sous forme de JSON
+          $.ajax({
+            url: '/save-questions/',  // URL pour sauvegarder les questions
+            type: 'POST',
+            data: JSON.stringify({
+              'questions': selectedQuestions
+            }),
+            contentType: 'application/json',
+            success: function(response) {
+              alert('Questions sauvegardées avec succès !');
+              window.location.reload();  // Rafraîchir la page pour voir les nouvelles questions dans la liste de QCM
+            },
+            error: function(xhr, status, error) {
+              console.error(xhr.responseText);  // Afficher les erreurs dans la console
             }
           });
+        } else {
+          alert('Veuillez sélectionner au moins une question.');
+        }
+      });
+
+      // Vider les variables liées à la réponse du POST lorsqu'on ferme la modal
+      $('#closeModal').click(function() {
+        if (!hasGenerated) {
+          // Réinitialiser les champs du formulaire de génération
+          $('#fileInput').val('');  // Vider le fichier sélectionné
+          $('#generatedQuestionsList').empty();  // Vider la liste des questions générées
+          $('#generateBtn').text('Générer');  // Réinitialiser le texte du bouton
+        }
+      });
+
+      // Filtrer les questions par recherche
+      $('#searchQuestion').on('input', function() {
+        var searchValue = $(this).val().toLowerCase();
+        $('#questionsList .question-item').each(function() {
+          var questionText = $(this).text().toLowerCase();
+          if (questionText.includes(searchValue)) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
         });
-  });
+      });
+    });
   </script>
 {% endblock %}
