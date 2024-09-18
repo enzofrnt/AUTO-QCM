@@ -2,12 +2,12 @@
 
 {% block content %}
 <div class="container">
-    <h1>Correction du QCM : {{ qcm.titre }} de {{user.username}}</h1>
+    <h1>Correction du QCM : {{ qcm.titre }} de {{ user.username }}</h1>
     <p>{{ qcm.description }}</p>
     <br />
 
     <div class="questions">
-        {% for question,reponses in reponses_utilisateur.items %}
+        {% for question, reponses_ids  in reponses_utilisateur.items %}
             <div class="question">
                 <h4>{{ forloop.counter }}. {{ question.texte }}</h4>
                 <div class="reponses">
@@ -15,13 +15,22 @@
                         <div class="form-check">
                             <input 
                                 class="form-check-input" 
+                                name="question_{{ question.id }}"
+                                id="reponse_{{ reponse.id }}"
                                 type="{% if question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}" 
+                                {% if reponse.id in reponses_ids  %}checked{% endif %}
                                 disabled
-                                {% if reponse in reponses %}checked{% endif %}
                             />
                             <label 
-                                class="form-check-label {% if reponse.correct %}text-success{% else %}text-danger{% endif %}">
+                                class="form-check-label">
                                 {{ reponse.texte }}
+                                {% if reponse.is_correct %}
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                {% else %}
+                                    {% if reponse.id in reponses_ids  %}
+                                        <i class="bi bi-x-circle-fill text-danger"></i>
+                                    {% endif %}
+                                {% endif %}
                             </label>
                         </div>
                     {% endfor %}

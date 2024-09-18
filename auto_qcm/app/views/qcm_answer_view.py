@@ -24,9 +24,8 @@ def repondre_qcm(request, qcm_id):
                     date=datetime.datetime.now()
                 )
                 
-                # Ajouter toutes les réponses sélectionnées à la ReponseQuestion
                 for reponse_id in reponse_ids:
-                    if reponse_id:  # Assurez-vous que reponse_id n'est pas vide
+                    if reponse_id:
                         reponse = get_object_or_404(Reponse, id=reponse_id)
                         reponse_question.reponse.add(reponse)
 
