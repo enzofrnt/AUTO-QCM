@@ -11,7 +11,7 @@ class Question(models.Model):
     nom = models.CharField(max_length=50)
     texte = models.CharField(max_length=255)
     note = models.IntegerField(default=1)
-    melange_rep = models.BooleanField(default=False)
+    melange_rep = models.BooleanField(default=True)
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
     creator = models.ForeignKey("auth.User", on_delete=models.CASCADE)
 
