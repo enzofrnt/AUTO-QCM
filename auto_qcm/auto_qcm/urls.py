@@ -36,6 +36,7 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
+    corriger_qcm
 )
 from django.conf.urls import handler403
 from django.contrib import admin
@@ -57,22 +58,19 @@ urlpatterns = [
     path("question/delete/<int:question_id>/", delete_question, name="question-delete"),
     path("question/generation/", question_generation_view, name="generate-questions"),
     path("save-questions/", save_generated_questions, name="save-questions"),
-    # DASHBOARD
-    path("etudiant-dashboard/<int:pk>/", etudiant_dashboard, name="etudiant-dashboard"),
-    path(
-        "enseignant-dashboard/<int:pk>/",
-        enseignant_dashboard,
-        name="enseignant-dashboard",
-    ),
-    path("search-student/", search_student, name="search-student"),
-    # CRUD QCM
-    path("qcm/create/", create_or_edit_qcm, name="qcm-create"),
-    path("qcm/edit/<int:pk>/", create_or_edit_qcm, name="qcm-edit"),
-    path("qcm/list/", QcmListView.as_view(), name="qcm-list"),
-    path("qcm/delete/<int:qcm_id>/", delete_qcm, name="qcm-delete"),
-    # Reponse QCM
-    path("qcm/anwser/<int:qcm_id>/", repondre_qcm, name="qcm-answer"),
-    # Export
+    #DASHBOARD
+    path('etudiant-dashboard/<int:pk>/', etudiant_dashboard, name="etudiant-dashboard"),
+    path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name="enseignant-dashboard"),
+    path('search-student/', search_student, name='search-student'),
+    #CRUD QCM
+    path('qcm/create/',create_or_edit_qcm, name="qcm-create"),
+    path('qcm/edit/<int:pk>/',create_or_edit_qcm, name='qcm-edit'),
+    path('qcm/list/',QcmListView.as_view(),name='qcm-list'),
+    path('qcm/delete/<int:qcm_id>/',delete_qcm,name="qcm-delete"),
+    #Reponse QCM
+    path('qcm/anwser/<int:qcm_id>/',repondre_qcm,name="qcm-answer"),
+    path('qcm/correct/<int:repqcm_id>/',corriger_qcm,name="qcm-correct"),
+    #Export
     path(
         "question/export-xml/<int:question_id>/",
         export_question_xml,
