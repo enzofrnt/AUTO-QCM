@@ -2,14 +2,13 @@
 
 {% block content %}
 <div class="container mt-5">
-    
     <h1 class="mb-4">Tableau de bord Enseignant</h1>
     <p>Gérez vos QCM, suivez les résultats et planifiez vos sessions</p>
 
     <div class="row">
-        <!-- Barre de recherche pour rechercher un élève -->
+        <!-- Colonne de gauche : Barre de recherche et Liste des QCM -->
         <div class="col-md-6">
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm mb-3">
                 <div class="card-header bg-success text-white">
                     <h3>Rechercher un élève</h3>
                 </div>
@@ -24,127 +23,111 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Liste des QCM contenant des questions du professeur -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h3>QCM avec vos questions</h3>
+                </div>
+                <div class="card-body">
+                    <div style="max-height: 235px; overflow-y: auto;">
+                        <ul class="list-group">
+                            {% for qcm in qcms_with_questions %}
+                            <li class="list-group-item">
+                                <strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">Aucun QCM trouvé.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Historique des réponses aux QCM -->
         <div class="col-md-6">
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h3>Historique des réponses aux QCM</h3>
-                </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Étudiant</th>
-                                <th>QCM</th>
-                                <th>Question</th>
-                                <th>Réponse</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for reponse in reponses %}
-                            <tr>
-                                <td>{{ reponse.eleve.user.username }}</td>
-                                <td>{{ reponse.qcm.titre }}</td>
-                                <td>{{ reponse.question.texte }}</td>
-                                <td>{{ reponse.reponse.texte }}</td>
-                                <td>{{ reponse.date_reponse }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Calendrier des QCM à venir -->
-        <div class="col-md-12">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h3>Calendrier des QCM à venir</h3>
-                </div>
-                <div class="card-body">
+                    <!-- Navigation buttons -->
+                    <div class="mb-3">
+                        <button id="prev" class="btn btn-secondary">Précédent</button>
+                        <button id="next" class="btn btn-secondary">Suivant</button>
+                        <button id="today" class="btn btn-primary">Aujourd'hui</button>
+                    </div>
+                    <h3 id="currentDate" class="text-center mb-3"></h3>
                     <div id="calendar"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Liste des questions créées par l'enseignant -->
-        <div class="col-md-12">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-info text-white">
-                    <h3>Vos Questions</h3>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for question in questions %}
-                        <li class="list-group-item">
-                            {{ question.texte }}
-                        </li>
-                        {% endfor %}
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Script pour le calendrier FullCalendar -->
-<!-- Inclure FullCalendar JS -->
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<!-- Correct CDN links for Bootstrap Calendar -->
+<link rel="stylesheet" href="https://bootsnipp.com/snippets/6/6b5f5e0d76c8c10d9d3e6d48f2e5e63e/bootstrap-calendar.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://bootsnipp.com/snippets/6/6b5f5e0d76c8c10d9d3e6d48f2e5e63e/bootstrap-calendar.min.js"></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-
-        function getRandomColor() {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        var events = [
-            {% for qcm in upcoming_qcms %}
-            {
-                title: '{{ qcm.titre|escapejs }}',
-                start: '{{ qcm.date|date:"Y-m-d\\TH:i:s" }}',
-                backgroundColor: getRandomColor(),  // Couleur aléatoire pour le fond
-                borderColor: getRandomColor(),      // Couleur aléatoire pour la bordure
-                textColor: 'black'
-            },
-            {% endfor %}
-        ];
-
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            buttonText: {
-                today: 'Aujourd\'hui',
-                month: 'Mois',
-                week: 'Semaine',
-                day: 'Jour'
-            },
-            themeSystem: 'bootstrap',
-            events: events
+    $(document).ready(function() {
+        // Initialize Bootstrap Calendar
+        var calendar = $('#calendar').calendar({
+            tmpl_path: '/path/to/templates/',
+            events_source: [
+                {% for qcm in upcoming_qcms %}
+                {
+                    id: '{{ qcm.id }}',
+                    title: '{{ qcm.titre|escapejs }}',
+                    start: '{{ qcm.date|date:"Y-m-d H:i:s" }}',
+                    end: '{{ qcm.date|date:"Y-m-d H:i:s" }}',
+                },
+                {% endfor %}
+            ],
+            view: 'month',
+            tmpl_cache: false
         });
 
-        calendar.render();
+        // Navigation buttons
+        $('#prev').on('click', function() {
+            calendar.calendars('prev');
+        });
+        $('#next').on('click', function() {
+            calendar.calendars('next');
+        });
+        $('#today').on('click', function() {
+            calendar.calendars('today');
+        });
+
+        // Update current date display
+        function updateCurrentDate() {
+            var currentDate = calendar.calendars('getDate');
+            var monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                              "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+            var monthYear = monthNames[currentDate.getMonth()] + " " + currentDate.getFullYear();
+            $('#currentDate').text(monthYear);
+        }
+
+        updateCurrentDate();
     });
 </script>
 
 <style>
-    .fc-daygrid-event {
-        padding: 5px;
-        font-size: 14px;
-        border-radius: 5px;
+    #calendar {
+        height: 500px;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .btn-group .btn {
+        border-radius: 0;
+    }
+    .btn-group .btn:first-child {
+        border-top-left-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+    }
+    .btn-group .btn:last-child {
+        border-top-right-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
     }
 </style>
 {% endblock %}
