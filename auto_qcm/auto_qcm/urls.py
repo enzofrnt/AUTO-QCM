@@ -36,6 +36,7 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
+    corriger_qcm
 )
 from django.conf.urls import handler403
 from django.contrib import admin
