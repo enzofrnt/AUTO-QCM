@@ -8,6 +8,12 @@ def repondre_qcm(request, qcm_id):
     qcm = get_object_or_404(QCM, id=qcm_id)
     questions = qcm.questions.all()
     
+    for question in questions:
+        if question.melange_rep : 
+            question.reponses_random = question.reponses.all().order_by('?')
+        else : 
+            question.reponses_random = question.reponses.all()
+
     if request.method == 'POST':
         reponse_qcm = ReponseQCM.objects.create(utilisateur=request.user, qcm=qcm, date_reponse=datetime.datetime.now())
         
