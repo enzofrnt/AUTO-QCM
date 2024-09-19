@@ -20,6 +20,36 @@
             </div>
         </div>
     </div>
+    <!-- Historique des réponses aux QCM -->
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3>Historique des réponses aux QCM</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>QCM</th>
+                            <th>Question</th>
+                            <th>Réponse</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reponse in reponses %}
+                        <tr>
+                            <td>{{ reponse.qcm.titre }}</td>
+                            <td>{{ reponse.question.texte }}</td>
+                            <td>{{ reponse.reponse.texte }}</td>
+                            <td>{{ reponse.date_reponse }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- Script pour le calendrier FullCalendar -->
 <!-- Inclure FullCalendar JS -->
