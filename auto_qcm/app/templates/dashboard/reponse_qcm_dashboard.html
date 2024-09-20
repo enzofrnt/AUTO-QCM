@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Réponses au QCM : {{ qcm.titre }}</h1>
+
+    <ul class="list-group">
+        {% for reponse in reponses %}
+        <li class="list-group-item">
+            <strong>{{ reponse.utilisateur.username }}</strong> - Répondu le {{ reponse.date_reponse|date:"d/m/Y H:i" }}
+            <a href="{% url 'qcm-correct' reponse.id %}" class="btn btn-primary btn-sm float-right">
+                Corriger la réponse
+            </a>
+        </li>
+        {% empty %}
+        <li class="list-group-item">Aucune réponse trouvée pour ce QCM.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
