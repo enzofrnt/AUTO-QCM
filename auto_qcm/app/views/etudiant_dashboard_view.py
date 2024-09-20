@@ -28,4 +28,6 @@ def etudiant_dashboard(request, pk):
 
     return render(request, 'dashboard/etudiant_dashboard.html', {
         'upcoming_qcms': upcoming_qcms,
+        'reponse_qcm': reponse_qcm,
+        'user':utilisateur,
     })
