@@ -11,7 +11,7 @@ def search_student(request):
         # Filtrer les utilisateurs qui contiennent la query dans leur nom d'utilisateur et qui sont de type 'etudiant'
         students = User.objects.filter(
             username__icontains=query,
-            profile__user_type='Etudiant'
+            utilisateur__user_type='Etudiant'
         )
     else:
         # Si aucune query, retourner une liste vide
