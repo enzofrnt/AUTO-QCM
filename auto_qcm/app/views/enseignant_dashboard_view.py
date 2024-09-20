@@ -14,8 +14,8 @@ def enseignant_dashboard(request, pk=None):
     enseignant = get_object_or_404(User, pk=pk)
     
     # Récupérer les QCM contenant des questions créées par cet enseignant
-    qcms_with_questions = QCM.objects.filter(questions__creator=enseignant).distinct().order_by('-date')[:10]
-    
+    qcms_with_questions = QCM.objects.filter(questions__creator=enseignant).distinct().prefetch_related('reponses_qcm').order_by('-date')[:10]
+
     # Récupérer les QCM à venir pour les 3 prochains mois
     today = timezone.now().date()
     three_months_later = today + timedelta(days=90)
