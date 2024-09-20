@@ -13,3 +13,22 @@ class ReponseQCM(models.Model):
 
     def __str__(self):
         return f"Reponse de {self.utilisateur.username} à {self.qcm.titre}"
+    
+    @property
+    def score(self):
+        """Calculer le score du qcm."""
+        score = 0
+        for reponseQuestion in self.reponses.all():
+            score += reponseQuestion.score
+        return score
+    
+    @property
+    def score_max(self):
+        """Calculer le score max du qcm."""
+        score = 0
+        for question in self.qcm.questions.all():
+            score += question.note
+        return score
+    
+
+    
