@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from app.decorators import teacher_or_student_own_dashboard_required
-from app.models import QCM, ReponseQCM
+from app.models import QCM, ReponseQCM, ReponseQuestion
 from django.db.models import Q
 from datetime import timedelta
 
@@ -25,9 +25,11 @@ def etudiant_dashboard(request, pk):
     upcoming_qcms = QCM.objects.filter(
         Q(date__gte=today) & Q(date__lte=three_months_later)
     ).order_by('date')
+    
+
+
 
     return render(request, 'dashboard/etudiant_dashboard.html', {
         'upcoming_qcms': upcoming_qcms,
         'reponse_qcm': reponse_qcm,
-        'user':utilisateur,
     })
