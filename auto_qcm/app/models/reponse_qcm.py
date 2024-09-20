@@ -20,7 +20,7 @@ class ReponseQCM(models.Model):
         score = 0
         for reponseQuestion in self.reponses.all():
             score += reponseQuestion.score
-        return score
+        return affichage_score(score)
     
     @property
     def score_max(self):
@@ -29,6 +29,19 @@ class ReponseQCM(models.Model):
         for question in self.qcm.questions.all():
             score += question.note
         return score
-    
+
+def is_int(x):
+    '''Verifie si un nombre est un entier, car la fonction is_integer ne marche pas sur les entiers'''
+    if(isinstance(x,int)):
+        return True
+    if x == int(x): 
+        return True
+    return False
+
+def affichage_score(x):
+    '''Affiche le score en entier ou en float à 2 chiffres après la virgule'''
+    if(is_int(x)):
+        return int(x)
+    return round(x,2)
 
     
