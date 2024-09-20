@@ -21,7 +21,7 @@ class ReponseQuestion(models.Model):
     def score(self):
         """Calculer le score de la question."""
         score = 0
-        for reponse in self.reponses.all():
+        for reponse in self.reponse.all():
             if reponse.is_correct:
                 score += reponse.question.note /reponse.question.number_of_correct_answers
             else :
