@@ -15,7 +15,7 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ["nom", "texte", "tags", "new_tags"]
+        fields = ["nom", "texte","note","melange_rep", "tags", "new_tags"]
         widgets = {
             "tags": forms.CheckboxSelectMultiple(),  # Affichage des tags existants en tant que checkboxes
             'texte': forms.Textarea(attrs={'rows': 5, 'cols': 60}),  # plus grand textarea
@@ -35,3 +35,6 @@ class QcmForm(forms.ModelForm):
     class Meta:
         model = QCM
         fields = ["titre","description","date"]
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+        }
