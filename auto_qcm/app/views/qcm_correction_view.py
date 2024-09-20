@@ -26,12 +26,3 @@ def corriger_qcm(request, repqcm_id):
     }
     
     return render(request, 'qcm/qcm_correction.html', context)
-
-
-def is_int(x):
-    '''Verifie si un nombre est un entier, car la fonction is_integer ne marche pas sur les entiers'''
-    if(isinstance(x,int)):
-        return True
-    if x == int(x): 
-        return True
-    return False
