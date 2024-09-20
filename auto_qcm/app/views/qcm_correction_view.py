@@ -10,42 +10,19 @@ def corriger_qcm(request, repqcm_id):
     qcm = reponse_qcm.qcm
     user = reponse_qcm.utilisateur
     reponses_soumis = reponse_qcm.reponses.all()
-    score = 0
-    max_score = 0
     reponses_utilisateur = {}
 
     for repquestion in reponses_soumis:
-        score_question = 0
-        question = repquestion.question
-        max_score += question.note
-        if question not in reponses_utilisateur:
-            reponses_utilisateur[question] = ['', []]
+        if repquestion not in reponses_utilisateur:
+            reponses_utilisateur[repquestion] = []
         for reponse in repquestion.reponse.all():
-            if reponse.is_correct:
-                score_question += question.note / question.number_of_correct_answers
-            elif question.number_of_correct_answers >1:
-                # Si on a une question a réponses multiples les mauvaises réponses doivent réduire les points
-                score_question -= question.note / question.number_of_correct_answers
-
-            reponses_utilisateur[question][1].append(reponse.id)
-        score_question = score_question if score_question > 0 else 0
-        score += score_question
-        reponses_utilisateur[question][0] = str(int(score_question)) if is_int(score_question) else f"{score_question:.2f}"
-
-    score = score if score > 0 else 0
-
-    if is_int(score):
-        score_str = str(int(score))
-    else:
-        score_str = f"{score:.2f}"
-
-    note = f"{score_str}/{max_score}"
+            reponses_utilisateur[repquestion].append(reponse.id)
 
     context = {
+        'reponse_qcm': reponse_qcm,
         'qcm': qcm,
         'reponses_utilisateur': reponses_utilisateur,
-        'user': user,
-        'note':note
+        'user': user
     }
     
     return render(request, 'qcm/qcm_correction.html', context)
