@@ -23,9 +23,16 @@ def corriger_qcm(request, repqcm_id):
         for reponse in repquestion.reponse.all():
             if reponse.is_correct:
                 score_question += question.note / question.number_of_correct_answers
+            elif question.number_of_correct_answers >1:
+                # Si on a une question a réponses multiples les mauvaises réponses doivent réduire les points
+                score_question -= question.note / question.number_of_correct_answers
+
             reponses_utilisateur[question][1].append(reponse.id)
+        score_question = score_question if score_question > 0 else 0
         score += score_question
         reponses_utilisateur[question][0] = str(int(score_question)) if is_int(score_question) else f"{score_question:.2f}"
+
+    score = score if score > 0 else 0
 
     if is_int(score):
         score_str = str(int(score))
