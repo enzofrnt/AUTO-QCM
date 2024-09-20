@@ -16,3 +16,20 @@ class ReponseQuestion(models.Model):
         for rep in self.reponse.all() : 
             affichage+= f"-{rep.texte}"
         return affichage
+    
+    @property
+    def score(self):
+        """Calculer le score de la question."""
+        score = 0
+        for reponse in self.reponses.all():
+            if reponse.is_correct:
+                score += reponse.question.note /reponse.question.number_of_correct_answers
+            else :
+                score -= reponse.question.note /reponse.question.number_of_correct_answers
+        score = max(0,score)
+        return score
+    
+    @property
+    def score_max(self):
+        """Calculer le score max de la question."""
+        return self.question.note
