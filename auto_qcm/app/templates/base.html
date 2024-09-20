@@ -34,8 +34,8 @@
               
               <!-- Navigation Links -->
               <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-house-door"></i> Accueil</a></li>
-              <li><a class="nav-item" href="{% url 'question-list' %}"> <i class="bi bi-card-checklist"></i> Liste des questions</a></li>
               {% if user.utilisateur.user_type == 'Enseignant' %}
+                  <li><a class="nav-item" href="{% url 'question-list' %}"> <i class="bi bi-card-checklist"></i> Liste des questions</a></li>
                   <li><a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a></li>
                   <li><a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a></li>
                   <li><a class="nav-item" href="{% url 'qcm-list' %}"><i class="bi bi-card-checklist"></i> Liste des qcm (temp)</a></li>

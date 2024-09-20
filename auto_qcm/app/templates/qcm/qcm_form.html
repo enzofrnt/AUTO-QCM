@@ -22,7 +22,6 @@
           {% for error in form.non_field_errors %}
             <li>{{ error }}</li>
           {% endfor %}
-
           {% for form in formset %}
             {% for error in form.errors %}
               <li>{{ error }}</li>
@@ -35,64 +34,238 @@
     <form method="post" id="qcmForm">
       {% csrf_token %}
 
-      <!-- Champ pour le texte de la question -->
-      <div class="form-group">{{ form.titre.label_tag }}
-        {{ form.titre }}</div>
-
-      <!-- Champ pour le texte de la question -->
-      <div class="form-group">{{ form.description.label_tag }}
-        {{ form.description }}</div>
-
-      <!-- Champ pour la date du qcm -->
-      <div class="form-group">{{ form.date.label_tag }}
-        {{ form.date }}</div>
-
-      <!-- Champ pour les questions -->
-      <h3>Sélectionnez les questions :</h3>
+      <!-- Champ pour le titre du QCM -->
       <div class="form-group">
-        <label for="searchQuestion">Rechercher une question :</label>
-        <input type="text" class="form-control" id="searchQuestion" placeholder="Rechercher par nom de question">
+        {{ form.titre.label_tag }}
+        {{ form.titre }}
       </div>
 
+      <!-- Champ pour la description du QCM -->
+      <div class="form-group">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+      </div>
+
+      <!-- Champ pour la date du QCM -->
+      <div class="form-group">
+        {{ form.date.label_tag }}
+        {{ form.date }}
+      </div>
+
+      <!-- Recherche et filtre des questions -->
+      <h3>Sélectionnez les questions :</h3>
+
+      <!-- Champ pour rechercher une question -->
+      <div class="d-inline-flex">
+        <div class="form-group">
+          <label for="searchQuestion">Rechercher une question :</label>
+          <input type="text" class="form-control" id="searchQuestion" placeholder="Rechercher">
+        </div>
+        <!-- Bouton pour ouvrir la popup -->
+        <button type="button" class="btn btn-success ml-2 w-10 m-4" id="openModal">Générer automatiquement des questions</button>
+      </div>
+
+      <!-- Liste des questions avec tags, case à cocher et boutons d'action -->
       <div class="form-group" id="questionsList">
         {% for question in questions %}
-          <div class="form-check question-item">
-            <input class="form-check-input" type="checkbox" name="selected_questions" value="{{ question.id }}"
-              id="question_{{ question.id }}"
-              {% if question in selected_questions %}checked{% endif %}>
-            <label class="form-check-label" for="question_{{ question.id }}">
-              {{ question.nom }} - {{ question.texte }}
-            </label>
+          <div class="form-check question-item d-flex align-items-center justify-content-between">
+            <div>
+              <input class="form-check-input" type="checkbox" name="selected_questions" value="{{ question.id }}" id="question_{{ question.id }}" {% if question in selected_questions %}checked{% endif %}>
+              <label class="form-check-label" for="question_{{ question.id }}">
+                <div>
+                  <strong>{{ question.nom }} :</strong> {{ question.texte }}
+                </div>
+                <div>
+                  {% for tag in question.tags.all %}
+                    <span class="badge" style="background-color: {{ tag.color }}; color: #fff;">{{ tag.name }}</span>
+                  {% endfor %}
+                </div>
+              </label>
+            </div>
+
+            <!-- Boutons d'action pour modifier, supprimer, exporter -->
+            <div class="btn-group" role="group">
+              <a href="{% url 'question-edit' pk=question.id %}" class="btn btn-warning btn-sm">Modifier</a>
+              <a href="{% url 'question-delete' question.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?');">Supprimer</a>
+              <a href="{% url 'question-export-xml' question.id %}" class="btn btn-info btn-sm">Exporter</a>
+            </div>
           </div>
         {% endfor %}
       </div>
-
 
       <!-- Bouton pour soumettre le formulaire -->
       <button type="submit" class="btn btn-success">Enregistrer</button>
     </form>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-  $(document).ready(function() {
-    // Écouter les événements de saisie dans la barre de recherche
-    $('#searchQuestion').on('input', function() {
-      var searchValue = $(this).val().toLowerCase();
-      // Boucle à travers chaque question pour voir si elle correspond à la recherche
-      $('#questionsList .question-item').each(function() {
-        var questionText = $(this).text().toLowerCase();
+  <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
+  <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="fileModalLabel">Envoyer un fichier PDF de cours pour générer des questions</h5>
+        </div>
+        <div class="modal-body">
+          <form id="fileUploadForm">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="fileInput" class="form-label">Choisir un fichier PDF</label>
+              <input type="file" class="form-control" id="fileInput" name="file" accept=".pdf" required>
+            </div>
+          </form>
+          <!-- Indicateur de chargement -->
+          <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display:none;">
+            <span class="visually-hidden"></span>
+          </div>
+          <!-- Conteneur pour les questions générées -->
+          <div id="generatedQuestionsContainer" style="display: none;">
+            <h4>Questions générées</h4>
+            <div id="generatedQuestionsList"></div>
+            <button type="button" class="btn btn-primary" id="saveSelectedQuestions">Ajouter les questions sélectionnées</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="closeModal" data-bs-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-primary" id="generateBtn">Générer</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        // Afficher ou masquer la question en fonction de la recherche
-        if (questionText.includes(searchValue)) {
-          $(this).show();
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    var hasGenerated = false;  // Indicateur pour savoir si des questions ont déjà été générées
+    var questions = [];  // Variable pour stocker les questions générées
+
+    $(document).ready(function() {
+      // Ouvrir la modal lors du clic sur le bouton
+      $('#openModal').click(function() {
+        $('#fileModal').modal('show');
+      });
+
+      // Envoyer le fichier via Ajax lors du clic sur le bouton "Générer" ou "Régénérer"
+      $('#generateBtn').click(function() {
+        var formData = new FormData($('#fileUploadForm')[0]);
+  
+        // Afficher l'indicateur de chargement
+        $('#loadingSpinner').show();
+        $('#generatedQuestionsContainer').hide();
+  
+        $.ajax({
+          url: '/question/generation/',  // URL de ta vue Django
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+            $('#loadingSpinner').hide();
+            $('#generatedQuestionsContainer').show();
+            questions = response.questions;  // Stocker les questions générées dans la variable
+            
+            displayGeneratedQuestions(questions);
+            
+            // Changer le bouton en "Régénérer"
+            hasGenerated = true;
+            $('#generateBtn').text('Régénérer');
+          },
+          error: function(xhr, status, error) {
+            $('#loadingSpinner').hide();
+            console.error(xhr.responseText);  // Afficher les erreurs dans la console
+          }
+        });
+      });
+  
+      // Fonction pour afficher les questions générées dans la popup
+      function displayGeneratedQuestions(questions) {
+        var questionsList = $('#generatedQuestionsList');
+        questionsList.empty();  // Vider la liste avant d'afficher les nouvelles questions
+
+        questions.forEach(function(question, index) {
+          var questionHtml = `
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="${index}" id="generatedQuestion_${index}">
+              <label class="form-check-label" for="generatedQuestion_${index}">
+                <strong>${question.nom}</strong><br>
+                ${question.texte}
+                <ul>`;
+          
+          question.reponses.forEach(function(reponse) {
+            questionHtml += `<li>${reponse.texte} ${reponse.is_correct ? '(Bonne réponse)' : ''}</li>`;
+          });
+
+          questionHtml += `</ul></label></div>`;
+
+          questionsList.append(questionHtml);
+        });
+      }
+
+      // Sauvegarder les questions sélectionnées
+      $('#saveSelectedQuestions').click(function() {
+        var selectedQuestions = [];
+
+        // Récupérer les questions cochées
+        $('#generatedQuestionsList input:checked').each(function() {
+          var questionIndex = $(this).val();  // Utiliser l'index pour récupérer la question complète
+          var questionData = questions[questionIndex];
+
+          // Ajouter la question complète avec ses réponses dans selectedQuestions
+          selectedQuestions.push({
+            "nom": questionData.nom,
+            "texte": questionData.texte,
+            "reponses": questionData.reponses.map(function(reponse) {
+              return {
+                "texte": reponse.texte,
+                "is_correct": reponse.is_correct
+              };
+            })
+          });
+        });
+
+        if (selectedQuestions.length > 0) {
+          // Envoyer les données sous forme de JSON
+          $.ajax({
+            url: '/save-questions/',  // URL pour sauvegarder les questions
+            type: 'POST',
+            data: JSON.stringify({
+              'questions': selectedQuestions
+            }),
+            contentType: 'application/json',
+            success: function(response) {
+              alert('Questions sauvegardées avec succès !');
+              window.location.reload();  // Rafraîchir la page pour voir les nouvelles questions dans la liste de QCM
+            },
+            error: function(xhr, status, error) {
+              console.error(xhr.responseText);  // Afficher les erreurs dans la console
+            }
+          });
         } else {
-          $(this).hide();
+          alert('Veuillez sélectionner au moins une question.');
         }
       });
+
+      // Vider les variables liées à la réponse du POST lorsqu'on ferme la modal
+      $('#closeModal').click(function() {
+        if (!hasGenerated) {
+          // Réinitialiser les champs du formulaire de génération
+          $('#fileInput').val('');  // Vider le fichier sélectionné
+          $('#generatedQuestionsList').empty();  // Vider la liste des questions générées
+          $('#generateBtn').text('Générer');  // Réinitialiser le texte du bouton
+        }
+      });
+
+      // Filtrer les questions par recherche
+      $('#searchQuestion').on('input', function() {
+        var searchValue = $(this).val().toLowerCase();
+        $('#questionsList .question-item').each(function() {
+          var questionText = $(this).text().toLowerCase();
+          if (questionText.includes(searchValue)) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+      });
     });
-  });
-</script>
+  </script>
 {% endblock %}
-
-
