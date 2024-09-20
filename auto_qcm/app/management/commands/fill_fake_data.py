@@ -1,5 +1,4 @@
-from app.models import Question, Tag, Reponse, QCM
-from app.models import Profile
+from app.models import Question, Tag, Reponse, QCM, ReponseQCM,Utilisateur  # Assurez-vous d'importer le bon modèle
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from faker import Faker
@@ -18,12 +17,12 @@ class Command(BaseCommand):
         moquette = User.objects.create_user("Moquette", "moquette@gmail.com", "Moquette31")
         alex = User.objects.create_user("Alexi", "alexi@gmail.com", "LPBLPM81")
 
-        Profile.objects.create(user=lois, user_type="Etudiant")
-        Profile.objects.create(user=nath, user_type="Enseignant")
-        Profile.objects.create(user=enzo, user_type="Etudiant")
-        Profile.objects.create(user=kilian, user_type="Enseignant")
-        Profile.objects.create(user=moquette, user_type="Etudiant")
-        Profile.objects.create(user=alex, user_type="Enseignant")
+        Utilisateur.objects.create(user=lois, user_type="Etudiant")
+        Utilisateur.objects.create(user=nath, user_type="Enseignant")
+        Utilisateur.objects.create(user=enzo, user_type="Etudiant")
+        Utilisateur.objects.create(user=kilian, user_type="Enseignant")
+        Utilisateur.objects.create(user=moquette, user_type="Etudiant")
+        Utilisateur.objects.create(user=alex, user_type="Enseignant")
 
         User.objects.create_superuser(
             username="admin", email="admin@example.com", password="adminpassword"
@@ -61,17 +60,14 @@ class Command(BaseCommand):
                     question=question, texte=fake.sentence(), is_correct=False
                 )
 
-        # Créer un QCM avec toi en tant qu'auteur et Alexi comme nom d'utilisateur
-        alexi = User.objects.get(id='6')
+        # Créer un QCM avec Alexi comme auteur
+        alexi = User.objects.get(id=6)
         
-        # Creer des QCM factices
+        # Créer des QCM factices
         demain = datetime.now() + timedelta(days=1)
         for _ in range(10):
-            qcm = QCM(titre=fake.word(),description=fake.text(), date=demain,creator=alexi)
+            qcm = QCM(titre=fake.word(), description=fake.text(), date=demain, creator=alexi)
             qcm.save()
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
-
-        # Associer des questions au QCM
-        qcm.questions.set(questions)
 
         self.stdout.write(self.style.SUCCESS("Données factices et QCM générés avec succès."))

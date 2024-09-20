@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1>{{ qcm.titre }}</h1>
+    <p>{{ qcm.description }}</p>
+    <br />
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="questions">
+        {% for question in questions %}
+          <div class="question">
+            <h4>{{ forloop.counter }}. {{ question.texte }}</h4>
+            <div class="reponses">
+              {% for reponse in question.reponses_random %}
+                <div class="form-check">
+                  <input class="form-check-input"
+                    type="{% if question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}"
+                    name="question_{{ question.id }}"
+                    id="reponse_{{ reponse.id }}"
+                    value="{{ reponse.id }}" />
+
+                  <label class="form-check-label" for="reponse_{{ reponse.id }}">{{ reponse.texte }}</label>
+                </div>
+              {% endfor %}
+              <br />
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary">Envoyer les réponses</button>
+    </form>
+  </div>
+{% endblock %}

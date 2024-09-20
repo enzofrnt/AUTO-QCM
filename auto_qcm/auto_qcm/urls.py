@@ -16,29 +16,34 @@ Including another URLconf
 """
 
 import os
+
+from app.views import (
+    CustomLoginView,
+    QcmListView,
+    QuestionListView,
+    create_or_edit_qcm,
+    create_or_edit_question,
+    delete_qcm,
+    delete_question,
+    enseignant_dashboard,
+    etudiant_dashboard,
+    export_qcm_xml,
+    export_question_xml,
+    home,
+    question_generation_view,
+    remove_tag,
+    repondre_qcm,
+    save_generated_questions,
+    search_student,
+    support_doc,
+    corriger_qcm,
+    qcm_responses,
+)
+from django.conf.urls import handler403
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls.conf import include
-from django.contrib.auth import views as auth_views
-from django.conf.urls import handler403
-from app.views import (
-    QuestionListView,
-    create_or_edit_question,
-    remove_tag,
-    delete_question,
-    home,
-    CustomLoginView,
-    export_question_xml,
-    support_doc,
-    etudiant_dashboard,
-    QcmListView, 
-    create_or_edit_qcm,
-    enseignant_dashboard,
-    search_student,
-    delete_qcm,
-    export_qcm_xml
-)
-
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -47,31 +52,36 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
-    #CRUD QUESTIONS
+    # CRUD QUESTIONS
     path("question/list/", QuestionListView.as_view(), name="question-list"),
-    path('question/create/', create_or_edit_question, name='question-create'),
-    path('question/edit/<int:pk>/', create_or_edit_question, name='question-edit'),
+    path("question/create/", create_or_edit_question, name="question-create"),
+    path("question/edit/<int:pk>/", create_or_edit_question, name="question-edit"),
     path("question/delete/<int:question_id>/", delete_question, name="question-delete"),
+    path("question/generation/", question_generation_view, name="generate-questions"),
+    path("save-questions/", save_generated_questions, name="save-questions"),
     #DASHBOARD
     path('etudiant-dashboard/<int:pk>/', etudiant_dashboard, name="etudiant-dashboard"),
     path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name="enseignant-dashboard"),
     path('search-student/', search_student, name='search-student'),
+    path('qcm/responses/<int:qcm_id>/', qcm_responses, name='qcm-responses'),
     #CRUD QCM
     path('qcm/create/',create_or_edit_qcm, name="qcm-create"),
     path('qcm/edit/<int:pk>/',create_or_edit_qcm, name='qcm-edit'),
     path('qcm/list/',QcmListView.as_view(),name='qcm-list'),
     path('qcm/delete/<int:qcm_id>/',delete_qcm,name="qcm-delete"),
-    
+    #Reponse QCM
+    path('qcm/anwser/<int:qcm_id>/',repondre_qcm,name="qcm-answer"),
+    path('qcm/correct/<int:repqcm_id>/',corriger_qcm,name="qcm-correct"),
     #Export
     path(
         "question/export-xml/<int:question_id>/",
         export_question_xml,
         name="question-export-xml",
     ),
-    path('qcm/export-xml/<int:qcm_id>/',export_qcm_xml,name="qcm-export-xml")
+    path("qcm/export-xml/<int:qcm_id>/", export_qcm_xml, name="qcm-export-xml"),
 ]
 
 if os.environ.get("env", "dev") == "dev":
     urlpatterns.append(path("__reload__/", include("django_browser_reload.urls")))
 
-handler403 = 'app.views.custom_permission_denied_view'
+handler403 = "app.views.custom_permission_denied_view"
