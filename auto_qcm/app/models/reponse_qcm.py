@@ -1,16 +1,47 @@
 from django.db import models
 
 class ReponseQCM(models.Model):
-    eleve = models.ForeignKey('Eleve', on_delete=models.CASCADE, related_name='reponses_qcm')
+    utilisateur = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='reponses_qcm',default=1)
     qcm = models.ForeignKey('QCM', on_delete=models.CASCADE, related_name='reponses_qcm')
-    question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='reponses_qcm')
-    reponse = models.ForeignKey('Reponse', on_delete=models.CASCADE, related_name='reponses_qcm')
+    reponses = models.ManyToManyField('ReponseQuestion')
     date_reponse = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Réponse QCM"
         verbose_name_plural = "Réponses QCM"
-        unique_together = ('eleve', 'qcm', 'question')
+        unique_together = ('utilisateur', 'qcm', 'date_reponse')
 
     def __str__(self):
-        return f"{self.eleve.username} - {self.qcm.titre} - {self.question.texte}"
+        return f"Reponse de {self.utilisateur.username} à {self.qcm.titre}"
+    
+    @property
+    def score(self):
+        """Calculer le score du qcm."""
+        score = 0
+        for reponseQuestion in self.reponses.all():
+            score += reponseQuestion.score
+        return affichage_score(score)
+    
+    @property
+    def score_max(self):
+        """Calculer le score max du qcm."""
+        score = 0
+        for question in self.qcm.questions.all():
+            score += question.note
+        return score
+
+def is_int(x):
+    '''Verifie si un nombre est un entier, car la fonction is_integer ne marche pas sur les entiers'''
+    if(isinstance(x,int)):
+        return True
+    if x == int(x): 
+        return True
+    return False
+
+def affichage_score(x):
+    '''Affiche le score en entier ou en float à 2 chiffres après la virgule'''
+    if(is_int(x)):
+        return int(x)
+    return round(x,2)
+
+    
