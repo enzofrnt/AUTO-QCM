@@ -26,7 +26,7 @@
                 <ul class="list-group">
                     {% for reponse1 in reponse_qcm.reponses %}
                     <li class="list-group-item">
-                        <strong>{{ reponse1.question }}</strong> - {{ reponse1..reponse.is_correct }}
+                        <strong>{{ reponse1.question }}</strong> - {{ reponse1.reponse.first.is_correct }}
                     </li>
                     {% empty %}
                     <li class="list-group-item">Vous n'avez fait aucun QCM.</li>
@@ -35,6 +35,42 @@
             </div>
         </div>
     </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-primary text-white">
+            <h3>Vos réponses</h3>
+            {% if reponses_qcm %}
+                <p>Il y a des réponses disponibles.</p>
+            {% else %}
+                <p>Aucune réponse n'a été trouvée.</p>
+            {% endif %}
+            {% if user %}
+                <p>{{ user }}</p>
+            {% else %}
+                <p>Aucune réponse n'a été trouvée.</p>
+            {% endif %}
+
+        </div>
+        <div class="card-body">
+            <div style="max-height: 243px; overflow-y: auto;">
+                <ul class="list-group">
+                    {% for reponse in reponse_qcm %}
+                    <li class="list-group-item">
+                        <strong>{{ reponse.qcm.titre }}</strong> - {{ reponse.qcm.date|date:"d/m/Y" }}
+                        <ul>
+                            <li>
+                                <a href="{% url 'qcm-correct' reponse.id %}">Voir ma réponse</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">Aucun QCM trouvé.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
 </div>
 <!-- Script pour le calendrier FullCalendar -->
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
