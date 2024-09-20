@@ -9,10 +9,10 @@
     <p>Note du qcm: {{note}}</p>
 
     <div class="questions">
-        {% for question, reponses_ids  in reponses_utilisateur.items %}
+        {% for question, details in reponses_utilisateur.items %}
             <div class="question">
                 <h4>{{ forloop.counter }}. {{ question.texte }}</h4>
-                <p>Sur {{question.note}}</p>
+                <p>{{details.0}} / {{question.note}}</p>
                 <div class="reponses">
                     {% for reponse in question.reponses.all %}
                         <div class="form-check">
@@ -21,7 +21,7 @@
                                 name="question_{{ question.id }}"
                                 id="reponse_{{ reponse.id }}"
                                 type="{% if question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}" 
-                                {% if reponse.id in reponses_ids  %}checked{% endif %}
+                                {% if reponse.id in details.1  %}checked{% endif %}
                                 disabled
                             />
                             <label 
@@ -30,7 +30,7 @@
                                 {% if reponse.is_correct %}
                                     <i class="bi bi-check-circle-fill text-success"></i>
                                 {% else %}
-                                    {% if reponse.id in reponses_ids  %}
+                                    {% if reponse.id in details.1  %}
                                         <i class="bi bi-x-circle-fill text-danger"></i>
                                     {% endif %}
                                 {% endif %}
