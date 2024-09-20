@@ -1,210 +1,222 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% load latexify %}
 
 {% block content %}
+  {% include 'latexify/stylesheets.html' %}
 
-{% include 'latexify/stylesheets.html' %}
-
-<div class="container mt-4">
-    <h2>{% if question.pk %}Modifier la Question{% else %}Créer une Nouvelle Question{% endif %}</h2>
+  <div class="container mt-4">
+    <h2>
+      {% if question.pk %}
+        Modifier la Question
+      {% else %}
+        Créer une Nouvelle Question
+      {% endif %}
+    </h2>
 
     <!-- Affichage des erreurs -->
     {% if form.errors or formset.errors %}
-        <div class="alert alert-danger">
-            <ul>
-                <!-- Affichage des erreurs du formulaire principal -->
-                {% for field in form %}
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-                {% if form.non_field_errors %}
-                    {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                {% endif %}
-                
-                <!-- Affichage des erreurs du formset -->
-                {% for formset_form in formset %}
-                    {% if formset_form.errors %}
-                        {% for field, errors in formset_form.errors.items %}
-                            <li>{{ field }}: {{ errors|join:", " }}</li>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
+      <div class="alert alert-danger">
+        <ul>
+          <!-- Affichage des erreurs du formulaire principal -->
+          {% for field in form %}
+            {% if field.errors %}
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+          {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endif %}
+
+          <!-- Affichage des erreurs du formset -->
+          {% for formset_form in formset %}
+            {% if formset_form.errors %}
+              {% for field, errors in formset_form.errors.items %}
+                <li>{{ field }}: {{ errors|join:', ' }}</li>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
     {% endif %}
 
     <form method="post" id="questionForm">
-        {% csrf_token %}
-        
-        <!-- Champ pour le nom de la question -->
-        <div class="form-group">
-            {{ form.nom.label_tag }} 
-            {{ form.nom }}
-        </div>
+      {% csrf_token %}
 
-        <!-- Champ pour le texte de la question -->
-        <div class="form-group">
-            {{ form.texte.label_tag }} 
-            {{ form.texte }}
-        </div>
+      <!-- Champ pour le nom de la question -->
+      <div class="form-group">{{ form.nom.label_tag }}
+        {{ form.nom }}</div>
 
-        <!-- Champ pour la preview LaTeX -->
-         <div>
-            <label for="preview">Preview LaTeX :</label>
-            <div id="copy_text"></div>
-        </div>
-        
-        <!-- Champ pour les tags existants -->
-        <div class="form-group">
-            {{ form.tags.label_tag }}
-            {{ form.tags }}
-        </div>
+      <!-- Champ pour le texte de la question -->
+      <div class="form-group">{{ form.texte.label_tag }}
+        {{ form.texte }}</div>
 
-        <!-- Bouton pour ajouter de nouveaux tags -->
-        <div class="form-group">
-            <label for="new_tags">Ajouter de nouveaux tags :</label>
-            <div id="newTagsContainer"></div>
-            <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
-        </div>
+      <!-- Champ pour la note de la question -->
+      <div class="form-group">{{ form.note.label_tag }}
+        {{ form.note }}</div>
 
-        <!-- Titre et bouton pour ajouter des réponses -->
-        <div class="d-flex align-items-center mb-2">
-            <h3>Réponses</h3>
-            <button type="button" id="addReponse" class="btn btn-sm btn-outline-primary ml-2">+</button>
-        </div>
+      <!-- Champ pour si la question a des reponses mélangées -->
+      <div class="form-group">{{ form.melange_rep.label_tag }}
+        {{ form.melange_rep }}</div>
 
-        <!-- Formset pour les réponses -->
-        <div id="reponseFormset">
-            {{ formset.management_form }}
-            {% for formset_form in formset %}
-                <div class="formset_row border rounded p-3 mb-3 position-relative">
-                    <!-- Champ caché pour l'ID de la réponse -->
-                    {{ formset_form.id }}
+      <!-- Champ pour la preview LaTeX -->
+      <div>
+        <label for="preview">Preview LaTeX :</label>
+        <div id="copy_text"></div>
+      </div>
 
-                    <!-- Champ caché pour la suppression -->
-                    {{ formset_form.DELETE }}
+      <!-- Champ pour les tags existants -->
+      <div class="form-group">{{ form.tags.label_tag }}
+        {{ form.tags }}</div>
 
-                    <div class="form-group">
-                        {{ formset_form.texte.label_tag }} 
-                        {{ formset_form.texte }}
-                    </div>
-                    <div class="form-check">
-                        {{ formset_form.is_correct }}
-                        {{ formset_form.is_correct.label_tag }}
-                    </div>
-                    <!-- Bouton pour supprimer une réponse -->
-                    <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute" style="top: 5px; right: 5px;">&times;</button>
-                </div>
-            {% endfor %}
-        </div>
+      <!-- Bouton pour ajouter de nouveaux tags -->
+      <div class="form-group">
+        <label for="new_tags">Ajouter de nouveaux tags :</label>
+        <div id="newTagsContainer"></div>
+        <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
+      </div>
 
-        <!-- Bouton pour soumettre le formulaire -->
-        <button type="submit" class="btn btn-success">
-            {% if question.pk %}Enregistrer les modifications{% else %}Créer la question{% endif %}
-        </button>
+      <!-- Titre et bouton pour ajouter des réponses -->
+      <div class="d-flex align-items-center mb-2">
+        <h3>Réponses</h3>
+        <button type="button" id="addReponse" class="btn btn-sm btn-outline-primary ml-2">+</button>
+      </div>
+
+      <!-- Formset pour les réponses -->
+      <div id="reponseFormset">
+        {{ formset.management_form }}
+        {% for formset_form in formset %}
+          <div class="formset_row border rounded p-3 mb-3 position-relative">
+            <!-- Champ caché pour l'ID de la réponse -->
+            {{ formset_form.id }}
+
+            <!-- Champ caché pour la suppression -->
+            {{ formset_form.DELETE }}
+
+            <div class="form-group">{{ formset_form.texte.label_tag }}
+              {{ formset_form.texte }}</div>
+            <div class="form-check">{{ formset_form.is_correct }}
+              {{ formset_form.is_correct.label_tag }}</div>
+            <!-- Bouton pour supprimer une réponse -->
+            <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute" style="top: 5px; right: 5px;">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Bouton pour soumettre le formulaire -->
+      <button type="submit" class="btn btn-success">
+        {% if question.pk %}
+          Enregistrer les modifications
+        {% else %}
+          Créer la question
+        {% endif %}
+      </button>
     </form>
-</div>
+  </div>
 
-{% include "latexify/scripts.html" %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    var formsetPrefix = "{{ formset.prefix }}";
-    var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS');
-    var formsetContainer = $('#reponseFormset');
-
-    // Fonction pour parser le texte LaTeX et le convertir en HTML
-    function parseLatexText(text) {
+  {% include 'latexify/scripts.html' %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      var formsetPrefix = '{{ formset.prefix }}'
+      var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
+      var formsetContainer = $('#reponseFormset')
+    
+      // Fonction pour parser le texte LaTeX et le convertir en HTML
+      function parseLatexText(text) {
         // Utilise une expression régulière pour identifier les formules LaTeX délimitées par '$...$'
-        return text.replace(/\\\$(.*?)\\\$/g, function(match, p1) {
-            // Remplace le LaTeX inline par une balise span avec la classe 'django-latexify math inline'
-            return '<span class="django-latexify math inline">' + p1 + '</span>';
-        });
-    }
-
-    // Fonction pour mettre à jour la preview à partir du champ de texte
-    function updatePreview() {
-        var latexText = $('#id_texte').val();
-        var parsedText = parseLatexText(latexText);
-        console.log(parsedText);
-        $('#copy_text').html('<span class="django-latexify text">' + parsedText + '</span>');
-        latex_render_math(math_latex_inline_elements, false);
-    }
-
-    // Appelle la fonction de mise à jour à l'ouverture de la page pour afficher le texte existant
-    updatePreview();
-
-    // Ajoute un écouteur d'événement sur le champ de texte pour mettre à jour la preview à chaque changement
-    $('#id_texte').on('input', function() {
-        updatePreview();
-    });
+        return text.replace(/\\\$(.*?)\\\$/g, function (match, p1) {
+          // Remplace le LaTeX inline par une balise span avec la classe 'django-latexify math inline'
+          return '<span class="django-latexify math inline">' + p1 + '</span>'
+        })
+      }
     
-    // Gestion de l'ajout dynamique de réponses
-    $('#addReponse').click(function() {
-        var formCount = parseInt(totalForms.val());
-        var newFormHtml = formsetContainer.find('.formset_row:first').clone();
-
+      // Fonction pour mettre à jour la preview à partir du champ de texte
+      function updatePreview() {
+        var latexText = $('#id_texte').val()
+        var parsedText = parseLatexText(latexText)
+        console.log(parsedText)
+        $('#copy_text').html('<span class="django-latexify text">' + parsedText + '</span>')
+        latex_render_math(math_latex_inline_elements, false)
+      }
+    
+      // Appelle la fonction de mise à jour à l'ouverture de la page pour afficher le texte existant
+      updatePreview()
+    
+      // Ajoute un écouteur d'événement sur le champ de texte pour mettre à jour la preview à chaque changement
+      $('#id_texte').on('input', function () {
+        updatePreview()
+      })
+    
+      // Gestion de l'ajout dynamique de réponses
+      $('#addReponse').click(function () {
+        var formCount = parseInt(totalForms.val())
+        var newFormHtml = formsetContainer.find('.formset_row:first').clone()
+    
         // Mise à jour des attributs 'id' et 'name' pour chaque élément cloné
-        newFormHtml.find('input, select, textarea').each(function() {
-            var newId = $(this).attr('id').replace('-0-', '-' + formCount + '-');
-            var newName = $(this).attr('name').replace('-0-', '-' + formCount + '-');
-            $(this).attr({'name': newName, 'id': newId});
-
-            // Si c'est un nouveau formulaire, effacer les valeurs des champs
-            if ($(this).attr('type') !== 'hidden') {
-                $(this).val('');  // Efface les valeurs des champs (sauf les hidden comme id)
-            }
-        });
-
-        // Pour les nouveaux formulaires, le champ 'id' doit être vide
-        newFormHtml.find('input[type="hidden"]').each(function() {
-            var newId = $(this).attr('id').replace('-0-', '-' + formCount + '-');
-            var newName = $(this).attr('name').replace('-0-', '-' + formCount + '-');
-            $(this).attr({'name': newName, 'id': newId});
-            $(this).val('');  // Effacer le champ id pour les nouveaux éléments
-        });
-
-        newFormHtml.find('.removeReponse').show();
-
-        formsetContainer.append(newFormHtml);
-        totalForms.val(formCount + 1);
-    });
-
-    // Gestion de la suppression de réponses
-    $(document).on('click', '.removeReponse', function() {
-        // Marquer le formulaire pour suppression en cochant le champ 'DELETE'
-        var formRow = $(this).closest('.formset_row');
-        formRow.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true);
-
-        // Masquer le formulaire, mais le garder dans le DOM pour l'envoyer à Django
-        formRow.hide();
-    });
-
-    // Initialiser le bouton supprimer
-    $('.removeReponse').each(function() {
-        if ($(this).closest('.formset_row').index() === 0) {
-            $(this).hide();
-        }
-    });
-
-    // Gestion de l'ajout dynamique de nouveaux tags
-    $('#addNewTag').click(function() {
-        var newTagHtml = `
-            <div class="input-group mb-2">
-                <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
-                <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
-            </div>`;
-        $('#newTagsContainer').append(newTagHtml);
-    });
-
+        newFormHtml.find('input, select, textarea').each(function () {
+          var newId = $(this)
+            .attr('id')
+            .replace('-0-', '-' + formCount + '-')
+          var newName = $(this)
+            .attr('name')
+            .replace('-0-', '-' + formCount + '-')
+          $(this).attr({ name: newName, id: newId })
     
-});
-</script>
-
+          // Si c'est un nouveau formulaire, effacer les valeurs des champs
+          if ($(this).attr('type') !== 'hidden') {
+            $(this).val('') // Efface les valeurs des champs (sauf les hidden comme id)
+          }
+        })
+    
+        // Pour les nouveaux formulaires, le champ 'id' doit être vide
+        newFormHtml.find('input[type="hidden"]').each(function () {
+          var newId = $(this)
+            .attr('id')
+            .replace('-0-', '-' + formCount + '-')
+          var newName = $(this)
+            .attr('name')
+            .replace('-0-', '-' + formCount + '-')
+          $(this).attr({ name: newName, id: newId })
+          $(this).val('') // Effacer le champ id pour les nouveaux éléments
+        })
+    
+        newFormHtml.find('.removeReponse').show()
+    
+        formsetContainer.append(newFormHtml)
+        totalForms.val(formCount + 1)
+      })
+    
+      // Gestion de la suppression de réponses
+      $(document).on('click', '.removeReponse', function () {
+        // Marquer le formulaire pour suppression en cochant le champ 'DELETE'
+        var formRow = $(this).closest('.formset_row')
+        formRow.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true)
+    
+        // Masquer le formulaire, mais le garder dans le DOM pour l'envoyer à Django
+        formRow.hide()
+      })
+    
+      // Initialiser le bouton supprimer
+      $('.removeReponse').each(function () {
+        if ($(this).closest('.formset_row').index() === 0) {
+          $(this).hide()
+        }
+      })
+    
+      // Gestion de l'ajout dynamique de nouveaux tags
+      $('#addNewTag').click(function () {
+        var newTagHtml = `
+                    <div class="input-group mb-2">
+                        <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+                        <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+                    </div>`
+        $('#newTagsContainer').append(newTagHtml)
+      })
+    })
+  </script>
 {% endblock %}

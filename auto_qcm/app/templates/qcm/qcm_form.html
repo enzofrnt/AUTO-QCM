@@ -2,7 +2,13 @@
 
 {% block content %}
   <div class="container mt-4">
-    <h2>Créer un Nouveau QCM</h2>
+    <h2>
+      {% if question.pk %}
+        Modifier le QCM
+      {% else %}
+        Créer un nouveau QCM
+      {% endif %}
+    </h2>
 
     <!-- Affichage des erreurs -->
     {% if form.errors or formset.errors %}
