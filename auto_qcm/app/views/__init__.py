@@ -19,3 +19,4 @@ from .custom_permission_denied_view import custom_permission_denied_view
 from .qcm_answer_view import repondre_qcm
 from .qcm_correction_view import corriger_qcm
 from .support_doc_view import support_doc
+from .reponse_qcm_dashboard_view import qcm_responses
