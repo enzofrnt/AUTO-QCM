@@ -39,7 +39,7 @@ def create_or_edit_question(request, pk=None):
             formset.save()
 
             # Rediriger vers l'URL précédente ou vers une URL par défaut
-            next_url = request.POST.get('next', request.META.get('HTTP_REFERER', 'question-list'))
+            next_url = request.POST.get('next', request.META.get('HTTP_REFERER', 'home'))
             return redirect(next_url)
 
         # Affiche les erreurs de formulaire s'il y en a
