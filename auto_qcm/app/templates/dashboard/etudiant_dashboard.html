@@ -6,6 +6,50 @@
     <h2>Tableau de bord de {{ user }}</h2>
 
     <div class="row">
+
+        <!-- Liste des QCM contenant des questions du professeurliste des réponses au qcm et statistiques -->
+		<div class="col-md-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h3>Vos réponses aux QCM</h3>
+                </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div style="max-height: 243px; overflow-y: auto;">
+                            <ul class="list-group">
+                                {% for reponse in reponse_qcm %}
+                                <li class="list-group-item">
+                                    <strong>{{ reponse.qcm.titre }}</strong> - {{ reponse.qcm.date|date:"d/m/Y" }}
+                                    <ul>
+                                        <li>
+                                            <a href="{% url 'qcm-correct' reponse.id %}">Voir ma réponse</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                {% empty %}
+                                <li class="list-group-item">Aucun QCM trouvé.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h3>Vos statistiques</h3>
+                </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div style="max-height: 243px; overflow-y: auto;">
+                            <canvas id="qcmChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendrier -->
         <div class="col-md-6">
             <div class="card shadow-sm mb-4">
             <div class="card-body">
@@ -14,39 +58,14 @@
             </div>
             </div>
         </div>
-        <!-- Liste des QCM contenant des questions du professeur -->
-        <div class="card shadow-sm mb-3">
-            <div class="card-header bg-primary text-white">
-                <h3>Vos réponses aux QCM</h3>
-            </div>
-            <div class="card shadow-sm mb-3">
-                <div class="card-body">
-                    <div style="max-height: 243px; overflow-y: auto;">
-                        <ul class="list-group">
-                            {% for reponse in reponse_qcm %}
-                            <li class="list-group-item">
-                                <strong>{{ reponse.qcm.titre }}</strong> - {{ reponse.qcm.date|date:"d/m/Y" }}
-                                <ul>
-                                    <li>
-                                        <a href="{% url 'qcm-correct' reponse.id %}">Voir ma réponse</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            {% empty %}
-                            <li class="list-group-item">Aucun QCM trouvé.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
     </div>
         
         
 </div>
 <!-- Script pour le calendrier FullCalendar -->
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
@@ -101,6 +120,89 @@
         });
 
         calendar.render();
+        
+    /// Data for the chart
+    var ctx = document.getElementById('qcmChart').getContext('2d');
+    var qcmTitles = [
+        {% for reponse in reponse_qcm %}
+            '{{ reponse.qcm.titre|escapejs }}',
+        {% endfor %}
+    ];
+    var qcmScores = [
+        {% for reponse in reponse_qcm %}
+            {{ reponse.score }},
+        {% endfor %}
+    ];
+
+    var qcmMaxScores = [
+        {% for reponse in reponse_qcm %}
+            {{ reponse.qcm.number_of_questions }},
+        {% endfor %}
+    ];
+
+
+    // Normalize scores to 20 only if qcmMaxScores are non-zero
+    var normalizedScores = qcmScores.map((score, index) => {
+        var maxScore = qcmMaxScores[index];
+        return maxScore > 0 ? (score / maxScore) * 20 : 0; // Avoid division by zero
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: qcmTitles,
+            datasets: [{
+                label: 'Score',
+                data: normalizedScores, // Use normalized scores
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                barPercentage: 0.5, // Thinner bars
+                // Adding the real scores as an additional property
+                realScores: qcmScores, 
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45,
+                        autoSkip: false,
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    min: 0,  // Set the minimum value of the y-axis to 0
+                    max: 20,   // Set the maximum value to 20
+                    ticks: {
+                        stepSize: 5 // Adjust the tick intervals
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            return tooltipItems[0].label; // Show the QCM title
+                        },
+                        label: function(tooltipItem) {
+                            var normalizedScore = tooltipItem.dataset.data[tooltipItem.dataIndex];
+                            return [
+                                normalizedScore.toFixed(2) + '/20'
+                            ]; 
+                        }
+                    }
+                }
+            }
+            
+        }
+    });
+
+
+
+
     });
 
     function getRandomColor() {

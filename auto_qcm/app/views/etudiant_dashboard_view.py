@@ -19,6 +19,8 @@ def etudiant_dashboard(request, pk):
     # Récupérer les réponses au QCM
     reponse_qcm = ReponseQCM.objects.filter(utilisateur=utilisateur)
 
+    #
+
     # Récupérer les QCM à venir pour les 3 prochains mois
     today = timezone.now().date()
     three_months_later = today + timedelta(days=90)
