@@ -3,7 +3,7 @@
 {% block content %}
   <div class="container mt-4">
     <h2>
-      {% if question.pk %}
+      {% if qcm.pk %}
         Modifier le QCM
       {% else %}
         Créer un nouveau QCM
@@ -94,7 +94,13 @@
       </div>
 
       <!-- Bouton pour soumettre le formulaire -->
-      <button type="submit" class="btn btn-success">Enregistrer</button>
+      <button type="submit" class="btn btn-success">
+        {% if qcm.pk %}
+          Modifier
+        {% else %}
+          Créer
+        {% endif %}
+    </button>
     </form>
   </div>
 
