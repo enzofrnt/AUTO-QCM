@@ -16,7 +16,7 @@ def create_or_edit_question(request, pk=None):
     if request.method == 'POST':
         form = QuestionForm(request.POST, instance=question)
         formset = ReponseFormSet(request.POST, instance=question)
-        
+
         if form.is_valid() and formset.is_valid():
             # Sauvegarder la question
             question = form.save(commit=False)
@@ -38,7 +38,11 @@ def create_or_edit_question(request, pk=None):
             formset.instance = question
             formset.save()
 
-            return redirect('question-list')
+            # Rediriger vers l'URL précédente ou vers une URL par défaut
+            next_url = request.POST.get('next', request.META.get('HTTP_REFERER', 'question-list'))
+            return redirect(next_url)
+
+        # Affiche les erreurs de formulaire s'il y en a
         print(form.errors, formset.errors)
     else:
         form = QuestionForm(instance=question)
@@ -47,5 +51,6 @@ def create_or_edit_question(request, pk=None):
     return render(request, 'questions/question_form.html', {
         'form': form,
         'formset': formset,
-        'question': question  # Passer l'objet question pour gérer le titre et le bouton dynamiquement
+        'question': question,  # Passer l'objet question pour gérer le titre et le bouton dynamiquement
+        'next': request.META.get('HTTP_REFERER', 'question-list')  # Passer la prochaine URL pour redirection
     })
