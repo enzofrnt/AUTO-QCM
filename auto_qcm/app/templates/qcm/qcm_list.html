@@ -25,6 +25,7 @@
                   <div class="button-list" style="display:none; align-items:center; flex-direction:row;">
                     <!-- Bouton export d'une qcm -->
                     <button type="button" class="btn btn-info btn-sm export-qcm-btn"><i class="bi bi-arrow-bar-down"></i></button>
+                    <button type="button" class="btn btn-info btn-sm export-qcm-latex-btn">test<i class="bi bi-arrow-bar-down"></i></button>
                     <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button>
                   </div>
                 </div>
@@ -92,6 +93,15 @@
         const qcmRow = $(this).closest('.qcm-row')
         const qcmId = qcmRow.data('qcm-id')
         window.location.href = "{% url 'export-qcm-xml' qcm_id=0 %}".replace('0', qcmId)
+      })
+
+      // Exporter la question en Latek
+      $(document).on('click', '.export-qcm-latex-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const qcmRow = $(this).closest('.qcm-row')
+        const qcmId = qcmRow.data('qcm-id')
+        window.location.href = "{% url 'export-qcm-latex' qcm_id=0 %}".replace('0', qcmId)
       })
     
       // JavaScript pour afficher/masquer les questions des qcm
