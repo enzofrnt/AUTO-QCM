@@ -35,7 +35,8 @@ from app.views import (
     enseignant_dashboard,
     search_student,
     delete_qcm,
-    export_qcm_xml
+    export_qcm_xml,
+    export_qcm_latex
 )
 
 
@@ -56,6 +57,11 @@ urlpatterns = [
         "export-question/<int:question_id>/",
         export_question_xml,
         name="export-question",
+    ),
+    path(
+        "export-qcm-latex/<int:qcm_id>/",
+        export_qcm_latex,
+        name="export-qcm-latex",
     ),
     path('create-qcm/',create_qcm, name="qcm-create"),
     path('list-qcm/',QcmListView.as_view(),name='qcm-list'),
