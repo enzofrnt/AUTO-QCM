@@ -124,6 +124,15 @@
         const qcmId = qcmRow.data('qcm-id')
         window.location.href = "{% url 'qcm-export-latex' qcm_id=0 %}".replace('0', qcmId)
       })
+
+      // Exporter la question en Latek
+      $(document).on('click', '.export-qcm-latex-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const qcmRow = $(this).closest('.qcm-row')
+        const qcmId = qcmRow.data('qcm-id')
+        window.location.href = "{% url 'export-qcm-latex' qcm_id=0 %}".replace('0', qcmId)
+      })
     
       // JavaScript pour afficher/masquer les questions des qcm
       $(document).on('click', '.qcm-row', function (e) {
