@@ -45,11 +45,15 @@ class Question(models.Model):
             + self.texte
             + "<br></p>]]>"
             + "</text></questiontext>"
-            + "<defaultgrade>"+self.note+"</defaultgrade>"
+            + "<defaultgrade>"
+            + str(self.note)
+            + "</defaultgrade>"
             + "<single>"
             + ("false" if self.number_of_correct_answers > 1 else "true")
             + "</single>"
-            + "<shuffleanswers>"+self.melange_rep+"</shuffleanswers> "
+            + "<shuffleanswers>"
+            + ("true" if self.melange_rep else "false")
+            + "</shuffleanswers> "
             + "<answernumbering>abc</answernumbering>"
             + '<correctfeedback format="html">'
             + "<text>Votre réponse est correcte.</text>"
@@ -84,11 +88,15 @@ class Question(models.Model):
             + self.texte
             + "<br></p>]]>"
             + "</text></questiontext>"
-            + "<defaultgrade>"+self.note+"</defaultgrade>"
+            + "<defaultgrade>"
+            + str(self.note)
+            + "</defaultgrade>"
             + "<single>"
             + ("false" if self.number_of_correct_answers > 1 else "true")
             + "</single>"
-            + "<shuffleanswers>"+self.melange_rep+"</shuffleanswers> "
+            + "<shuffleanswers>"
+            + ("true" if self.melange_rep else "false")
+            + "</shuffleanswers> "
             + "<answernumbering>abc</answernumbering>"
             + '<correctfeedback format="html">'
             + "<text>Votre réponse est correcte.</text>"
