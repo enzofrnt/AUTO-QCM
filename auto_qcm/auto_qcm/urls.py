@@ -79,11 +79,8 @@ urlpatterns = [
         export_question_xml,
         name="question-export-xml",
     ),
-    path('create-qcm/',create_qcm, name="qcm-create"),
-    path('list-qcm/',QcmListView.as_view(),name='qcm-list'),
-    path('search-student/', search_student, name='search-student'),
-    path('delete-qcm/<int:qcm_id>/',delete_qcm,name="delete-qcm"),
-    path('export-qcm-xml/<int:qcm_id>/',export_qcm_xml,name="export-qcm-xml")
+    path('qcm/export-xml/<int:qcm_id>/',export_qcm_xml,name="qcm-export-xml"),
+    path('qcm/export-latex/<int:qcm_id>/',export_qcm_latex,name="qcm-export-latex"),
 ]
 
 if os.environ.get("env", "dev") == "dev":
