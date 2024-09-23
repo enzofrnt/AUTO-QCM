@@ -11,7 +11,7 @@ def self_required(view_func):
             raise PermissionDenied
     return _wrapped_view
 
-def teacher_or_student_own_dashboard_required(view_func):
+def teacher_or_self_student_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         user_id = kwargs.get('pk')  # Obtenir l'ID de l'utilisateur depuis les kwargs
         if request.user.utilisateur.user_type == 'Enseignant' or request.user.id == user_id:
