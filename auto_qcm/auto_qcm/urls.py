@@ -21,23 +21,24 @@ from app.views import (
     CustomLoginView,
     QcmListView,
     QuestionListView,
+    corriger_qcm,
     create_or_edit_qcm,
     create_or_edit_question,
     delete_qcm,
     delete_question,
     enseignant_dashboard,
     etudiant_dashboard,
+    export_qcm_latex,
     export_qcm_xml,
     export_question_xml,
     home,
+    qcm_responses,
     question_generation_view,
     remove_tag,
     repondre_qcm,
     save_generated_questions,
     search_student,
     support_doc,
-    corriger_qcm,
-    qcm_responses,
 )
 from django.conf.urls import handler403
 from django.contrib import admin
@@ -78,7 +79,11 @@ urlpatterns = [
         export_question_xml,
         name="question-export-xml",
     ),
-    path("qcm/export-xml/<int:qcm_id>/", export_qcm_xml, name="qcm-export-xml"),
+    path('create-qcm/',create_qcm, name="qcm-create"),
+    path('list-qcm/',QcmListView.as_view(),name='qcm-list'),
+    path('search-student/', search_student, name='search-student'),
+    path('delete-qcm/<int:qcm_id>/',delete_qcm,name="delete-qcm"),
+    path('export-qcm-xml/<int:qcm_id>/',export_qcm_xml,name="export-qcm-xml")
 ]
 
 if os.environ.get("env", "dev") == "dev":
