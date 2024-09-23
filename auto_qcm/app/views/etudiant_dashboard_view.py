@@ -2,14 +2,14 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from app.decorators import teacher_or_student_own_dashboard_required
+from app.decorators import teacher_or_self_student_required
 from app.models import QCM, ReponseQCM, ReponseQuestion
 from django.db.models import Q
 from datetime import timedelta
 
 
 @login_required(login_url='login')
-@teacher_or_student_own_dashboard_required
+@teacher_or_self_student_required
 def etudiant_dashboard(request, pk):    
     utilisateur = get_object_or_404(User, pk=pk)
 
