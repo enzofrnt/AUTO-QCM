@@ -63,12 +63,8 @@
 	</div>
 </div>
 
-<!-- Correct CDN links for Bootstrap Calendar -->
-<link rel="stylesheet" href="https://bootsnipp.com/snippets/6/6b5f5e0d76c8c10d9d3e6d48f2e5e63e/bootstrap-calendar.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://bootsnipp.com/snippets/6/6b5f5e0d76c8c10d9d3e6d48f2e5e63e/bootstrap-calendar.min.js"></script>
-
+<!-- Script pour le calendrier FullCalendar -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
@@ -121,28 +117,17 @@
 						}
         });
 
-        // Navigation buttons
-        $('#prev').on('click', function() {
-            calendar.calendars('prev');
-        });
-        $('#next').on('click', function() {
-            calendar.calendars('next');
-        });
-        $('#today').on('click', function() {
-            calendar.calendars('today');
-        });
-
-        // Update current date display
-        function updateCurrentDate() {
-            var currentDate = calendar.calendars('getDate');
-            var monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-                              "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-            var monthYear = monthNames[currentDate.getMonth()] + " " + currentDate.getFullYear();
-            $('#currentDate').text(monthYear);
-        }
-
-        updateCurrentDate();
+        calendar.render();
     });
+
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
 </script>
 
 <style>
