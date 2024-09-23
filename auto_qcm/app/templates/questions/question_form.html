@@ -46,6 +46,9 @@
 
     <form method="post" id="questionForm">
       {% csrf_token %}
+      
+      <!-- Champ caché pour l'URL de redirection -->
+      <input type="hidden" name="next" value="{{ next }}">
 
       <!-- Champ pour le nom de la question -->
       <div class="form-group">{{ form.nom.label_tag }}
