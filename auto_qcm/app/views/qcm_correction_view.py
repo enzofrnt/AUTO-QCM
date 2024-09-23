@@ -4,7 +4,7 @@ from app.models import ReponseQCM
 from app.decorators import teacher_or_student_own_dashboard_required
 
 @login_required(login_url='login')
-@teacher_or_student_own_dashboard_required
+# @teacher_or_student_own_dashboard_required
 def corriger_qcm(request, repqcm_id):
     reponse_qcm = get_object_or_404(ReponseQCM, id=repqcm_id)
     qcm = reponse_qcm.qcm
