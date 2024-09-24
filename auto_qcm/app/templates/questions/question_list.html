@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% load color_filters %}
-{% load latexify %}
+{% load color_filters %} 
+{% comment %} {% load latexify %} {% endcomment %}
 
 {% block content %}
-  {% include 'latexify/stylesheets.html' %}
+  {% comment %} {% include 'latexify/stylesheets.html' %} {% endcomment %}
 
   <div class="container mt-4">
     <h2>Liste des Questions</h2>
@@ -47,46 +47,7 @@
           {% for question in questions %}
             <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
               <td>
-                <div class="d-flex justify-content-between align-items-center question-container">
-                  <div class="question-header">{{ question.nom }}</div>
-
-                  <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
-                  <div class="button-list align-items-center" style="gap: 10px; display: none;">
-                    <button type="button" class="btn btn-info btn-sm export-question-btn"><i class="bi bi-arrow-bar-down"></i></button>
-
-                    <button type="button" class="btn btn-warning btn-sm edit-question-btn"><i class="bi bi-pencil"></i></button>
-
-                    <button type="button" class="btn btn-danger btn-sm delete-question-btn"><i class="bi bi-trash"></i></button>
-                  </div>
-                </div>
-
-                <!-- Boucle pour afficher les tags associés -->
-                {% for tag in question.tags.all %}
-                  <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">{{ tag.name }}</span>
-                {% endfor %}
-
-                <!-- Section des réponses à afficher/cacher -->
-                <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
-                  <br />
-
-                  {% latexify question.texte parse_math=True %}
-
-                  <br /><br />
-
-                  <ul class="list-group">
-                    <p>
-                      Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b>
-                    </p>
-                    {% for reponse in question.reponses.all %}
-                      <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
-                        {{ reponse.texte }}
-                        {% if reponse.is_correct %}
-                          <span class="badge badge-success">Bonne réponse</span>
-                        {% endif %}
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
+                {% include 'questions/question_display.html' with question=question show_buttons=True %}
               </td>
             </tr>
           {% empty %}
@@ -98,8 +59,6 @@
       </table>
     </div>
   </div>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function () {
       const filterForm = $('#filterForm')
@@ -170,59 +129,6 @@
           $(this).addClass('selected').css('opacity', '1')
         } else {
           $(this).css('opacity', '0.6')
-        }
-      })
-    
-      // Afficher les boutons sur le survol
-      $(document)
-        .on('mouseenter', '.question-row', function () {
-          $(this).find('.button-list').css('display', 'flex')
-        })
-        .on('mouseleave', '.question-row', function () {
-          $(this).find('.button-list').css('display', 'none')
-        })
-    
-      // Confirmation de suppression avant de supprimer la question
-      $(document).on('click', '.delete-question-btn', function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        const questionRow = $(this).closest('.question-row')
-        const questionId = questionRow.data('question-id')
-    
-        if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
-          window.location.href = "{% url 'question-delete' question_id=0 %}".replace('0', questionId)
-        }
-      })
-    
-      // Exporter la question en XML
-      $(document).on('click', '.export-question-btn', function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        const questionRow = $(this).closest('.question-row')
-        const questionId = questionRow.data('question-id')
-        window.location.href = "{% url 'question-export-xml' question_id=0 %}".replace('0', questionId)
-      })
-    
-      // Rediriger vers la page de modification de la question
-      $(document).on('click', '.edit-question-btn', function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        const questionRow = $(this).closest('.question-row')
-        const questionId = questionRow.data('question-id')
-        window.location.href = "{% url 'question-edit' pk=0 %}".replace('0', questionId)
-      })
-    
-      // Afficher/masquer les réponses des questions
-      $(document).on('click', '.question-row', function (e) {
-        const questionId = $(this).data('question-id')
-        const answersList = $('#answers-' + questionId)
-    
-        if (answersList.is(':visible')) {
-          answersList.slideUp()
-          $(this).find('.toggle-answers').text('Voir les réponses')
-        } else {
-          answersList.slideDown()
-          $(this).find('.toggle-answers').text('Masquer les réponses')
         }
       })
     })

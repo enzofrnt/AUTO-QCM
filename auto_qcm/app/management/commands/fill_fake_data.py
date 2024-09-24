@@ -1,9 +1,18 @@
-from app.models import Question, Tag, Reponse, QCM, ReponseQCM,Utilisateur  # Assurez-vous d'importer le bon modèle
+import random
+from datetime import datetime, timedelta
+
+from app.models import (  # Assurez-vous d'importer le bon modèle
+    QCM,
+    Question,
+    Reponse,
+    ReponseQCM,
+    Tag,
+    Utilisateur,
+)
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from faker import Faker
-import random
-from datetime import datetime, timedelta
+
 
 class Command(BaseCommand):
     help = "Remplit la base de données avec des données factices."
@@ -12,13 +21,17 @@ class Command(BaseCommand):
         # Création des utilisateurs
         lois = User.objects.create_user("Lois", "lois@gmail.com", "LoisLeBeau31")
         nath = User.objects.create_user("Nathan", "nath@gmail.com", "TheBest31")
-        enzo = User.objects.create_user("Enzo", "enzo@gmail.com", "AppleNul12")
+        enzo = User.objects.create_user("Enzo", "enzo@gmail.com", "enzo")
+        prof = User.objects.create_user("prof", "prof@gmail.com", "prof")
         kilian = User.objects.create_user("Kilian", "kiki@gmail.com", "BoisUnVerre31")
-        moquette = User.objects.create_user("Moquette", "moquette@gmail.com", "Moquette31")
+        moquette = User.objects.create_user(
+            "Moquette", "moquette@gmail.com", "Moquette31"
+        )
         alex = User.objects.create_user("Alexi", "alexi@gmail.com", "LPBLPM81")
 
         Utilisateur.objects.create(user=lois, user_type="Etudiant")
         Utilisateur.objects.create(user=nath, user_type="Enseignant")
+        Utilisateur.objects.create(user=prof, user_type="Enseignant")
         Utilisateur.objects.create(user=enzo, user_type="Etudiant")
         Utilisateur.objects.create(user=kilian, user_type="Enseignant")
         Utilisateur.objects.create(user=moquette, user_type="Etudiant")
@@ -41,7 +54,9 @@ class Command(BaseCommand):
         # Créer des questions factices
         questions = []
         for _ in range(10):
-            question = Question(nom=fake.word(), texte=fake.sentence(), creator=User.objects.get(id=6))  # Créateur défini
+            question = Question(
+                nom=fake.word(), texte=fake.sentence(), creator=User.objects.get(id=6)
+            )  # Créateur défini
             question.save()
             question.tags.set(fake.random_elements(elements=tags, unique=True))
             questions.append(question)
@@ -62,12 +77,16 @@ class Command(BaseCommand):
 
         # Créer un QCM avec Alexi comme auteur
         alexi = User.objects.get(id=6)
-        
+
         # Créer des QCM factices
         demain = datetime.now() + timedelta(days=1)
         for _ in range(10):
-            qcm = QCM(titre=fake.word(), description=fake.text(), date=demain, creator=alexi)
+            qcm = QCM(
+                titre=fake.word(), description=fake.text(), date=demain, creator=alexi
+            )
             qcm.save()
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
 
-        self.stdout.write(self.style.SUCCESS("Données factices et QCM générés avec succès."))
+        self.stdout.write(
+            self.style.SUCCESS("Données factices et QCM générés avec succès.")
+        )
