@@ -109,6 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# On utiliser le modèle d'user custom pour faciliter les templates
+AUTH_USER_MODEL = "app.Utilisateur"
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
