@@ -1,14 +1,11 @@
-import random
-from datetime import datetime, timedelta
-
-from app.models import (  # Assurez-vous d'importer le bon modèle
-    QCM,
+from app.models import (
     Question,
-    Reponse,
-    ReponseQCM,
     Tag,
+    Reponse,
+    QCM,
+    ReponseQCM,
     Utilisateur,
-)
+)  # Assurez-vous d'importer le bon modèle
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from faker import Faker

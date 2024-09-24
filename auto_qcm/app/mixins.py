@@ -21,7 +21,7 @@ class SelfRequiredMixin(LoginRequiredMixin):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
-class TeacherOrStudentOwnDashboardRequiredMixin(LoginRequiredMixin):
+class TeacherOrSelfStudentRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         user_id = kwargs.get('pk')
         if request.user.utilisateur.user_type == 'Enseignant' or request.user.id == user_id:
