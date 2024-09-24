@@ -39,6 +39,7 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
+    qcm_statistics,
 )
 from django.conf.urls import handler403
 from django.contrib import admin
@@ -65,6 +66,7 @@ urlpatterns = [
     path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name="enseignant-dashboard"),
     path('search-student/', search_student, name='search-student'),
     path('qcm/responses/<int:qcm_id>/', qcm_responses, name='qcm-responses'),
+    path('qcm/statistiques/<int:pk>/', qcm_statistics, name='qcm-statistics'),
     #CRUD QCM
     path('qcm/create/',create_or_edit_qcm, name="qcm-create"),
     path('qcm/edit/<int:pk>/',create_or_edit_qcm, name='qcm-edit'),
