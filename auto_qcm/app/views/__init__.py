@@ -1,6 +1,6 @@
 from .custom_permission_denied_view import custom_permission_denied_view
-from .delete_qcm_view import delete_qcm
-from .delete_question_view import delete_question
+from .qcm_delete_view import delete_qcm
+from .question_delete_view import delete_question
 from .enseignant_dashboard_view import enseignant_dashboard
 from .etudiant_dashboard_view import etudiant_dashboard
 from .export_question_view import export_qcm_xml, export_question_xml
@@ -20,3 +20,4 @@ from .qcm_answer_view import repondre_qcm
 from .qcm_correction_view import corriger_qcm
 from .support_doc_view import support_doc
 from .reponse_qcm_dashboard_view import qcm_responses
+from .plage_create_or_edit_view import create_or_edit_plage

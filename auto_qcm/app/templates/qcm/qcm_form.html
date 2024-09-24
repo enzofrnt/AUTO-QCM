@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
   <div class="container mt-4">
     <h2>
@@ -46,62 +45,54 @@
         {{ form.description }}
       </div>
 
-      <!-- Champ pour la date du QCM -->
-      <div class="form-group">
-        {{ form.date.label_tag }}
-        {{ form.date }}
+      <!-- Plages associées au QCM -->
+      <div class="d-flex align-items-center mb-2">
+        <h3>Plages</h3>
+        <button type="button" id="addPlage" class="btn btn-sm btn-outline-primary ml-2" onclick="cloneMore()">+</button>
       </div>
 
-      <!-- Recherche et filtre des questions -->
-      <h3>Sélectionnez les questions :</h3>
+      <div id="plagesFormset">
+        {{ formset.management_form }}
+        {% for formset_form in formset %}
+          <div class="formset-row item" id="form_num0" style="display: flex; justify-content: space-between">
+            <div class="form-group">{{ formset_form.debut.label_tag }} {{formset_form.debut}}</div>
+            <div class="form-group">{{ formset_form.fin.label_tag }} {{formset_form.fin}}</div>
+            <div class="form-group">{{ formset_form.promo.label_tag }} {{formset_form.promo}}</div>
+            <div class="form-group">{{ formset_form.groupe.label_tag }} {{formset_form.groupe}}</div>
 
-      <!-- Champ pour rechercher une question -->
-      <div class="d-inline-flex">
-        <div class="form-group">
-          <label for="searchQuestion">Rechercher une question :</label>
-          <input type="text" class="form-control" id="searchQuestion" placeholder="Rechercher">
-        </div>
-        <!-- Bouton pour ouvrir la popup -->
-        <button type="button" class="btn btn-success ml-2 w-10 m-4" id="openModal">Générer automatiquement des questions</button>
-      </div>
+            {% with index=forloop.counter0 %}
 
-      <!-- Liste des questions avec tags, case à cocher et boutons d'action -->
-      <div class="form-group" id="questionsList">
-        {% for question in questions %}
-          <div class="form-check question-item d-flex align-items-center justify-content-between">
-            <div>
-              <input class="form-check-input" type="checkbox" name="selected_questions" value="{{ question.id }}" id="question_{{ question.id }}" {% if question in selected_questions %}checked{% endif %}>
-              <label class="form-check-label" for="question_{{ question.id }}">
-                <div>
-                  <strong>{{ question.nom }} :</strong> {{ question.texte }}
-                </div>
-                <div>
-                  {% for tag in question.tags.all %}
-                    <span class="badge" style="background-color: {{ tag.color }}; color: #fff;">{{ tag.name }}</span>
-                  {% endfor %}
-                </div>
-              </label>
+            <div class="form-group col-md-1 mb-0 ml-2" style="position: relative;margin-top:2%">
+              <button style="margin-bottom:3% ;font-weight: bold;" type="button" class="btn btn-danger"  id="del-form-{{index}}" onclick="deleteForm({{index}})"><i class="bi bi-trash"></i></button>
             </div>
 
-            <!-- Boutons d'action pour modifier, supprimer, exporter -->
-            <div class="btn-group" role="group">
-              <a href="{% url 'question-edit' pk=question.id %}" class="btn btn-warning btn-sm">Modifier</a>
-              <a href="{% url 'question-delete' question.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?');">Supprimer</a>
-              <a href="{% url 'question-export-xml' question.id %}" class="btn btn-info btn-sm">Exporter</a>
-            </div>
+            {% endwith %}
           </div>
         {% endfor %}
       </div>
 
-      <!-- Bouton pour soumettre le formulaire -->
+      <!-- Sélection des questions -->
+      <h3>Sélectionnez les questions :</h3>
+      <div id="questionsList">
+        {% for question in questions %}
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="selected_questions" value="{{ question.id }}" id="question_{{ question.id }}" {% if question in selected_questions %}checked{% endif %}>
+            <label class="form-check-label" for="question_{{ question.id }}">
+              <strong>{{ question.nom }} :</strong> {{ question.texte }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+
       <button type="submit" class="btn btn-success">
         {% if qcm.pk %}
           Modifier
         {% else %}
           Créer
         {% endif %}
-    </button>
+      </button>
     </form>
+
   </div>
 
   <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
@@ -143,6 +134,70 @@
   <script>
     var hasGenerated = false;  // Indicateur pour savoir si des questions ont déjà été générées
     var questions = [];  // Variable pour stocker les questions générées
+
+    var formsetPrefix = '{{ formset.prefix }}'
+    var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
+    var formsetContainer = $('#plagesFormset')
+
+    function cloneMore() { 
+      // Trouver l'élément à cloner
+      var newElement = document.getElementsByClassName('item')[0].cloneNode(true);
+      
+      // Récupérer le nombre total de formulaires actuels
+      var total = Number($("#id_form-TOTAL_FORMS").val());
+      var newTotal = total + 1;
+      $("#id_form-TOTAL_FORMS").val(newTotal);  // Met à jour le total des formulaires
+
+      // Remplacer les attributs name et id des inputs
+      newElement.querySelectorAll("input").forEach(function (input) {
+          var name = input.getAttribute("name").replace(/\d+/, total);  // Remplacer le nombre par le nouvel index
+          var id = input.getAttribute("id").replace(/\d+/, total);      // Pareil pour l'ID
+          input.setAttribute("name", name);
+          input.setAttribute("id", id);
+          input.value = "";  // Réinitialiser la valeur des inputs
+      });
+
+      // Mettre à jour l'attribut onClick du bouton de suppression
+      newElement.querySelector("button").setAttribute("onClick", `deleteForm(${total})`);
+      newElement.id = `form_num${total}`;
+
+      // Ajouter le nouvel élément cloné à la fin de la liste des items
+      $("#plagesFormset").append(newElement);
+    }
+
+    function deleteForm(formNum) {
+      var totalForms = Number($("#id_form-TOTAL_FORMS").val());
+
+      if (totalForms <= 1) {
+          return;  // Ne rien faire si on ne veut pas supprimer le dernier formulaire
+      }
+
+      // Décrémenter le nombre total de formulaires
+      totalForms--;
+      $("#id_form-TOTAL_FORMS").val(totalForms);
+
+      // Supprimer le formulaire actuel
+      $(`#form_num${formNum}`).remove();
+
+      // Re-numéroter les formulaires restants
+      var forms = $('div[id^="form_num"]');
+      for (var i = 0; i < totalForms; i++) {
+          var form = $(forms[i]);
+          form.attr('id', `form_num${i}`);
+
+          // Mettre à jour les inputs avec les nouveaux index
+          form.find('input').each(function() {
+              var name = $(this).attr('name').replace(/\d+/, i);
+              var id = $(this).attr('id').replace(/\d+/, i);
+              $(this).attr('name', name);
+              $(this).attr('id', id);
+          });
+
+        // Mettre à jour le bouton de suppression avec le bon index
+        form.find('button').attr('onClick', `deleteForm(${i})`);
+    }
+}
+
 
     $(document).ready(function() {
       // Ouvrir la modal lors du clic sur le bouton
@@ -273,5 +328,7 @@
         });
       });
     });
+
+    
   </script>
 {% endblock %}
