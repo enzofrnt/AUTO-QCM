@@ -29,100 +29,103 @@ class QCM(models.Model):
         return texte
     
     
-def convert_to_latex(self):
+    def convert_to_latex(self):
+        """
+        Convertit un QCM en document LaTeX.
+        """
+        # Début du document LaTeX
+        latex_content = r"""\documentclass{article}
+
+    \usepackage[latin1]{inputenc}
+    \usepackage[T1]{fontenc}
+
+    \usepackage[bloc,completemulti]{automultiplechoice}
+    \usepackage{multicol}
+    \begin{document}
+
+    \AMCrandomseed{1237893}
+
+    \element{amc}{
     """
-    Convertit un QCM en document LaTeX.
-    """
-    # Début du document LaTeX
-    latex_content = r"""\documentclass{article}
 
-\usepackage[latin1]{inputenc}
-\usepackage[T1]{fontenc}
+        # Boucle à travers les questions associées au QCM
+        for question in self.questions.all():
+            # Déterminer le type de question
+            question_type = "questionmult" if question.reponses.filter(is_correct=True).count() > 1 else "question"
+            
+            # Ajouter la question LaTeX
+            latex_content += f"  \\begin{{{question_type}}}{{{question.nom}}}\n"
+            latex_content += "    \\bareme{b=2}\n"  # Ajustez le barème si nécessaire
+            latex_content += f"    {question.texte}\n"
+            latex_content += "    \\begin{multicols}{2}\n"
+            latex_content += "      \\begin{reponses}\n"
 
-\usepackage[bloc,completemulti]{automultiplechoice}
-\usepackage{multicol}
-\begin{document}
+            # Boucle à travers les réponses associées à la question
+            for reponse in question.reponses.all():
+                if reponse.is_correct:
+                    latex_content += f"        \\bonne{{{reponse.texte}}}\n"
+                else:
+                    latex_content += f"        \\mauvaise{{{reponse.texte}}}\n"
 
-\AMCrandomseed{1237893}
-
-\element{amc}{
-"""
-
-    # Boucle à travers les questions associées au QCM
-    for question in self.questions.all():
-        # Déterminer le type de question
-        question_type = "questionmult" if question.reponses.filter(is_correct=True).count() > 1 else "question"
+            latex_content += "      \\end{reponses}\n"
+            latex_content += "    \\end{multicols}\n"
+            latex_content += f"  \\end{{{question_type}}}\n"
         
-        # Ajouter la question LaTeX
-        latex_content += f"  \\begin{{{question_type}}}{{{question.nom}}}\n"
-        latex_content += "    \\bareme{b=2}\n"  # Ajustez le barème si nécessaire
-        latex_content += f"    {question.texte}\n"
-        latex_content += "    \\begin{multicols}{2}\n"
-        latex_content += "      \\begin{reponses}\n"
+        # Fermer l'environnement \element{amc}
+        latex_content += "}\n"
 
-        # Boucle à travers les réponses associées à la question
-        for reponse in question.reponses.all():
-            if reponse.is_correct:
-                latex_content += f"        \\bonne{{{reponse.texte}}}\n"
-            else:
-                latex_content += f"        \\mauvaise{{{reponse.texte}}}\n"
+        # Ajouter l'exemplaire (entête et corps du document)
+        latex_content += r"""
+    \exemplaire{10}{
 
-        latex_content += "      \\end{reponses}\n"
-        latex_content += "    \\end{multicols}\n"
-        latex_content += f"  \\end{{{question_type}}}\n}}\n"
+    %%% début de l'en-tête des copies :
 
-    # Fin du document LaTeX
-    latex_content += r"""
-\exemplaire{10}{
+    \noindent{\bf Classe d'application d'AMC  \hfill Examen du 01/01/2010}
 
-%%% début de l'en-tête des copies :
+    \vspace{2ex}
 
-\noindent{\bf Classe d'application d'AMC  \hfill Examen du 01/01/2010}
+    Cet examen a pour but d'illustrer l'utilisation d'\emph{Auto Multiple Choice}. Vous pourrez trouver sur le site d'AMC les copies de Jojo Boulix et André Roullot afin de tester la saisie automatique, ainsi que le fichier listant les étudiants de la classe d'application d'AMC (dont font partie Jojo et André) afin de tester l'association automatique à partir des numéros d'étudiants.
 
-\vspace{2ex}
+    \vspace{3ex}
 
-  Cet examen a pour but d'illustrer l'utilisation d'\emph{Auto Multiple Choice}. Vous pourrez trouver sur le site d'AMC les copies de Jojo Boulix et André Roullot afin de tester la saisie automatique, ainsi que le fichier listant les étudiants de la classe d'application d'AMC (dont font partie Jojo et André) afin de tester l'association automatique à partir des numéros d'étudiants.
+    \noindent\AMCcode{etu}{8}\hspace*{\fill}
+    \begin{minipage}{.5\linewidth}
+    $\longleftarrow{}$ codez votre numéro d'étudiant ci-contre, et écrivez votre nom et prénom ci-dessous.
 
-\vspace{3ex}
+    \vspace{3ex}
 
-\noindent\AMCcode{etu}{8}\hspace*{\fill}
-\begin{minipage}{.5\linewidth}
-$\longleftarrow{}$ codez votre numéro d'étudiant ci-contre, et écrivez votre nom et prénom ci-dessous.
+    \champnom{\fbox{
+        \begin{minipage}{.9\linewidth}
+        Nom et prénom :
 
-\vspace{3ex}
+        \vspace*{.5cm}\dotfill
+        \vspace*{1mm}
+        \end{minipage}
+    }}\end{minipage}
 
-\champnom{\fbox{
-    \begin{minipage}{.9\linewidth}
-      Nom et prénom :
+    \vspace{1ex}
 
-      \vspace*{.5cm}\dotfill
-      \vspace*{1mm}
-    \end{minipage}
-  }}\end{minipage}
+    \noindent\hrulefill
 
-\vspace{1ex}
+    \vspace{2ex}
 
-\noindent\hrulefill
+    \begin{center}
+    Les questions faisant apparaître le symbole \multiSymbole{} peuvent présenter zéro, une ou plusieurs bonnes réponses. Les autres ont une unique bonne réponse.
+    \end{center}
 
-\vspace{2ex}
+    \noindent\hrulefill
 
-\begin{center}
-  Les questions faisant apparaître le symbole \multiSymbole{} peuvent présenter zéro, une ou plusieurs bonnes réponses. Les autres ont une unique bonne réponse.
-\end{center}
+    \vspace{2ex}
+    %%% fin de l'en-tête
 
-\noindent\hrulefill
+    \melangegroupe{amc}
+    \restituegroupe{amc}
 
-\vspace{2ex}
-%%% fin de l'en-tête
+    \clearpage
 
-\melangegroupe{amc}
-\restituegroupe{amc}
+    }
 
-\clearpage
+    \end{document}
+    """
 
-}
-
-\end{document}
-"""
-
-    return latex_content
+        return latex_content
