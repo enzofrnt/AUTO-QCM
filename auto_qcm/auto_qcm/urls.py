@@ -21,6 +21,7 @@ from app.views import (
     CustomLoginView,
     QcmListView,
     QuestionListView,
+    afficher_questions,
     corriger_qcm,
     create_or_edit_qcm,
     create_or_edit_question,
@@ -81,8 +82,8 @@ urlpatterns = [
         export_question_xml,
         name="question-export-xml",
     ),
-    path('qcm/export-xml/<int:qcm_id>/',export_qcm_xml,name="qcm-export-xml"),
-    path('qcm/export-latex/<int:qcm_id>/',export_qcm_latex,name="qcm-export-latex"),
+    path("qcm/export-xml/<int:qcm_id>/", export_qcm_xml, name="qcm-export-xml"),
+    path("qcm/export-latex/<int:qcm_id>/", export_qcm_latex, name="qcm-export-latex"),
 ]
 
 if os.environ.get("env", "dev") == "dev":
