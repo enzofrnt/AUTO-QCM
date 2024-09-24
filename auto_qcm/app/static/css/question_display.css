@@ -1,3 +1,42 @@
-.question-containeur {
+/* .question-container { */
+[class^="question-container-"] {
     width: 100%;
 }
+
+/* .question-row:hover {
+    background-color: #f1f1f1;
+} */
+
+
+/* .question-row:hover .button-list {
+    display: flex;
+}
+
+.question-row {
+    position: relative;
+    padding-right: 80px;
+}
+
+.button-list button {
+    display: inline-block;
+    margin-left: 5px;
+} */
+
+/* .button-list {
+    display: none; 
+    justify-content: flex-end; 
+    gap: 10px;
+} */
+
+/* Animation d'affichage des réponses */
+/* .answers-list {
+    margin-top: 10px;
+    display: none;
+} */
+
+
+/* .question-row {
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+} */
