@@ -1,4 +1,4 @@
-from .user import Utilisateur
+from .utilisateur import Utilisateur
 from .qcm import QCM
 from .question import Question
 from .reponse import Reponse
