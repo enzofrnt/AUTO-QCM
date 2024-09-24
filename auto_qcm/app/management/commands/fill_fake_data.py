@@ -10,8 +10,6 @@ from app.models import (
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 from faker import Faker
-import random
-from datetime import datetime, timedelta
 
 
 class Command(BaseCommand):
@@ -137,6 +135,35 @@ class Command(BaseCommand):
             )
             qcm.save()
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
+
+        # Récupérer un QCM aléatoire
+        qcm_random = QCM.objects.order_by("?").first()
+
+        # Créer une instance de ReponseQCM pour Moquette
+        rep = ReponseQCM.objects.create(
+            utilisateur=moquette, qcm=qcm_random, date_reponse=datetime.now()
+        )
+
+        # Récupérer des réponses aléatoires associées aux questions du QCM
+        random_questions = qcm_random.questions.all()
+        reponses_qcm = []
+
+        for question in random_questions:
+            # Sélectionner des réponses aléatoires pour chaque question
+            reponses_random = Reponse.objects.filter(question=question).order_by("?")[
+                :1
+            ]
+            reponse_qcm = ReponseQuestion.objects.create(
+                utilisateur=moquette, question=question, date=datetime.now()
+            )
+            reponse_qcm.reponse.set(
+                reponses_random
+            )  # Associe les réponses aléatoires à la question
+            reponse_qcm.save()
+            reponses_qcm.append(reponse_qcm)
+
+        rep.reponses.set(reponses_qcm)
+        rep.save()
 
         # Récupérer un QCM aléatoire
         qcm_random = QCM.objects.order_by("?").first()

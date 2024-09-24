@@ -46,13 +46,13 @@ class Question(models.Model):
             + "<br></p>]]>"
             + "</text></questiontext>"
             + "<defaultgrade>"
-            + self.note
+            + str(self.note)
             + "</defaultgrade>"
             + "<single>"
             + ("false" if self.number_of_correct_answers > 1 else "true")
             + "</single>"
             + "<shuffleanswers>"
-            + self.melange_rep
+            + ("true" if self.melange_rep else "false")
             + "</shuffleanswers> "
             + "<answernumbering>abc</answernumbering>"
             + '<correctfeedback format="html">'
@@ -89,13 +89,13 @@ class Question(models.Model):
             + "<br></p>]]>"
             + "</text></questiontext>"
             + "<defaultgrade>"
-            + self.note
+            + str(self.note)
             + "</defaultgrade>"
             + "<single>"
             + ("false" if self.number_of_correct_answers > 1 else "true")
             + "</single>"
             + "<shuffleanswers>"
-            + self.melange_rep
+            + ("true" if self.melange_rep else "false")
             + "</shuffleanswers> "
             + "<answernumbering>abc</answernumbering>"
             + '<correctfeedback format="html">'

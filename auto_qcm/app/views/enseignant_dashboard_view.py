@@ -5,6 +5,9 @@ from app.models import ReponseQCM, Question, QCM, Utilisateur
 from app.decorators import self_required, teacher_required
 from django.contrib.auth.decorators import login_required
 from datetime import timedelta
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @login_required(login_url="login")

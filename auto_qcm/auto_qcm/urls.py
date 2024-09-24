@@ -21,24 +21,27 @@ from app.views import (
     CustomLoginView,
     QcmListView,
     QuestionListView,
+    afficher_questions,
+    corriger_qcm,
     create_or_edit_qcm,
     create_or_edit_question,
     delete_qcm,
     delete_question,
     enseignant_dashboard,
     etudiant_dashboard,
+    export_qcm_latex,
     export_qcm_xml,
     export_question_xml,
     home,
+    qcm_responses,
     question_generation_view,
     remove_tag,
     repondre_qcm,
     save_generated_questions,
     search_student,
     support_doc,
-    corriger_qcm,
-    qcm_responses,
     create_or_edit_plage,
+    qcm_statistics,
 )
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
@@ -70,6 +73,7 @@ urlpatterns = [
     ),
     path("search-student/", search_student, name="search-student"),
     path("qcm/responses/<int:qcm_id>/", qcm_responses, name="qcm-responses"),
+    path("qcm/statistiques/<int:pk>/", qcm_statistics, name="qcm-statistics"),
     # CRUD QCM
     path("qcm/create/", create_or_edit_qcm, name="qcm-create"),
     path("qcm/edit/<int:pk>/", create_or_edit_qcm, name="qcm-edit"),
@@ -85,6 +89,7 @@ urlpatterns = [
         name="question-export-xml",
     ),
     path("qcm/export-xml/<int:qcm_id>/", export_qcm_xml, name="qcm-export-xml"),
+    path("qcm/export-latex/<int:qcm_id>/", export_qcm_latex, name="qcm-export-latex"),
 ]
 
 if os.environ.get("env", "dev") == "dev":
