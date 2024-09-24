@@ -14,7 +14,7 @@ class Question(models.Model):
     melange_rep = models.BooleanField(default=True)
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
     creator = models.ForeignKey("auth.User", on_delete=models.CASCADE)
-
+    
     def __str__(self):
         return self.texte
 
