@@ -130,7 +130,10 @@ class Command(BaseCommand):
         demain = datetime.now() + timedelta(days=1)
         for _ in range(10):
             qcm = QCM(
-                titre=fake.word(), description=fake.text(), date=demain, creator=alex
+                titre=fake.word(),
+                description=fake.text(),
+                date_modif=demain,
+                creator=alex,
             )
             qcm.save()
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))

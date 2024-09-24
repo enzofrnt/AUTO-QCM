@@ -1,6 +1,8 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Question, Reponse, Tag, QCM
+from django.db.models import Q
+from .models import Question, Reponse, QCM, Utilisateur, Plage
+from django.contrib.auth.models import Group
 
 
 class QuestionForm(forms.ModelForm):
@@ -15,10 +17,12 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ["nom", "texte","note","melange_rep", "tags", "new_tags"]
+        fields = ["nom", "texte", "note", "melange_rep", "tags", "new_tags"]
         widgets = {
             "tags": forms.CheckboxSelectMultiple(),  # Affichage des tags existants en tant que checkboxes
-            'texte': forms.Textarea(attrs={'rows': 5, 'cols': 60}),  # plus grand textarea
+            "texte": forms.Textarea(
+                attrs={"rows": 5, "cols": 60}
+            ),  # plus grand textarea
         }
 
 
@@ -31,10 +35,36 @@ ReponseFormSet = inlineformset_factory(
     can_delete=True,  # Permettre de supprimer des réponses
 )
 
+
 class QcmForm(forms.ModelForm):
     class Meta:
         model = QCM
-        fields = ["titre","description","date"]
+        fields = ["titre", "description", "date_modif"]
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+            "date_modif": forms.DateInput(
+                attrs={"type": "datetime-local", "class": "form-control"}
+            )
         }
+
+
+class PlageForm(forms.ModelForm):
+    class Meta:
+        model = Plage
+        fields = ["debut", "fin", "promo", "groupe"]
+
+    def __init__(self, *args, **kwargs):
+        super(PlageForm, self).__init__(*args, **kwargs)
+
+        self.fields["promo"].queryset = Group.objects.filter(name__startswith="BUT")
+
+        self.fields["groupe"].queryset = Group.objects.filter(
+            Q(name__startswith="1") | Q(name__startswith="2") | Q(name__startswith="3")
+        )
+
+        # Widget pr pas mettre un textfield
+        self.fields["debut"].widget = forms.DateTimeInput(
+            attrs={"type": "datetime-local"}
+        )
+        self.fields["fin"].widget = forms.DateTimeInput(
+            attrs={"type": "datetime-local"}
+        )

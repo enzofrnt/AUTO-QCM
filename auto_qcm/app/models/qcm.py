@@ -6,7 +6,8 @@ class QCM(models.Model):
     titre = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     questions = models.ManyToManyField("Question", related_name="qcms", blank=True)
-    date = models.DateTimeField(default=timezone.now)  # Définir une date par défaut
+    date_modif = models.DateTimeField(default=timezone.now)
+    plages = models.ManyToManyField("Plage", related_name="qcms", blank=True)
     creator = models.ForeignKey(
         "Utilisateur", on_delete=models.CASCADE
     )  # 1 est l'ID d'un utilisateur par défaut

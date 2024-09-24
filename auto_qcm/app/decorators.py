@@ -1,6 +1,4 @@
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 
 
 def self_required(view_func):

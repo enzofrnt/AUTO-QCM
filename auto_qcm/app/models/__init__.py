@@ -5,3 +5,4 @@ from .reponse import Reponse
 from .reponse_qcm import ReponseQCM
 from .tag import Tag
 from .reponse_question import ReponseQuestion
+from .plage import Plage
