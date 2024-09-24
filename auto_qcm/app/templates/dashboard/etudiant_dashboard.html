@@ -3,52 +3,69 @@
 
 {% block content %}
 <div class="main-content">
-    <h1>Tableau de bord</h1>
-    <p>Des quiz express, pour un succès qui progresse</p>
-    <!-- utile ? -->
-    <div class="buttons">
-        EN COURS - afficher anciens qcm, faire des stats etc
-    </div>
-    <div class="col-md-6">
-        <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <div id="calendar" style="width: 100%; height: 500px;"></div>
-        </div>
-        </div>
-    </div>
-    <!-- Liste des QCM contenant des questions du professeur -->
-    <div class="card shadow-sm mb-3">
-        <div class="card-header bg-primary text-white">
-            <h3>Vos réponses aux QCM</h3>
-        </div>
-        <div class="card shadow-sm mb-3">
-            <div class="card-body">
-                <div style="max-height: 243px; overflow-y: auto;">
-                    <ul class="list-group">
-                        {% for reponse in reponse_qcm %}
-                        <li class="list-group-item">
-                            <strong>{{ reponse.qcm.titre }}</strong> - {{ reponse.qcm.date|date:"d/m/Y" }}
-                            <ul>
-                                <li>
-                                    <a href="{% url 'qcm-correct' reponse.id %}">Voir ma réponse</a>
+    <h2>Tableau de bord de {{ user }}</h2>
+
+    <div class="row">
+
+        <!-- Liste des QCM contenant des questions du professeurliste des réponses au qcm et statistiques -->
+		<div class="col-md-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h3>Vos réponses aux QCM</h3>
+                </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div style="max-height: 243px; overflow-y: auto;">
+                            <ul class="list-group">
+                                {% for reponse in reponse_qcm %}
+                                <li class="list-group-item">
+                                    <strong>{{ reponse.qcm.titre }}</strong> - {{ reponse.qcm.date|date:"d/m/Y" }}
+                                    <ul>
+                                        <li>
+                                            <a href="{% url 'qcm-correct' reponse.id %}">Voir ma réponse</a>
+                                        </li>
+                                    </ul>
                                 </li>
+                                {% empty %}
+                                <li class="list-group-item">Aucun QCM trouvé.</li>
+                                {% endfor %}
                             </ul>
-                        </li>
-                        {% empty %}
-                        <li class="list-group-item">Aucun QCM trouvé.</li>
-                        {% endfor %}
-                    </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h3>Votre progression aux QCM hebdomadaires</h3>
+                </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div style="max-height: 243px; overflow-y: auto;">
+                            <canvas id="qcmChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
-    </div>
 
-    
-    
+        <!-- Calendrier -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <br>
+                <div id="calendar" style="width: 100%; height: 500px;"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+        
+        
 </div>
 <!-- Script pour le calendrier FullCalendar -->
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
@@ -61,7 +78,8 @@
                 backgroundColor: getRandomColor(),
                 borderColor: getRandomColor(),
                 textColor: 'black',
-                url: '{{ qcm.get_absolute_url|escapejs }}'  // Assurez-vous que chaque QCM a une URL définie dans le modèle
+                url: '{% url "qcm-answer" qcm.id %}'  // Assurez-vous que chaque QCM a une URL définie dans le modèle
+                 
             },
             {% endfor %}
         ];
@@ -102,7 +120,123 @@
         });
 
         calendar.render();
+        
+    /// Data for the chart
+    var ctx = document.getElementById('qcmChart').getContext('2d');
+    var qcmTitles = [
+        {% for reponse in reponse_qcm %}
+            '{{ reponse.qcm.titre|escapejs }}',
+        {% endfor %}
+    ];
+    var qcmScores = [
+        {% for reponse in reponse_qcm %}
+            {{ reponse.score }},
+        {% endfor %}
+    ];
+
+    var qcmMaxScores = [
+        {% for reponse in reponse_qcm %}
+            {{ reponse.score_max }},
+        {% endfor %}
+    ];
+
+    var qcmDates = [
+    {% for reponse in reponse_qcm %}
+        '{{ reponse.qcm.date|date:"d/m/Y"|escapejs }}',
+    {% endfor %}
+    ];
+
+    var qcmIds = [
+    {% for reponse in reponse_qcm %}
+        {{ reponse.qcm.id }},
+    {% endfor %}
+    ];
+
+
+
+    // Normalize scores to 20 only if qcmMaxScores are non-zero
+    var normalizedScores = qcmScores.map((score, index) => {
+        var maxScore = qcmMaxScores[index];
+        return maxScore > 0 ? (score / maxScore) * 20 : 0; // Avoid division by zero
     });
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [
+                {% for reponse in reponse_qcm %}
+                    '{{ reponse.qcm.titre|escapejs }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                data: normalizedScores,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            onClick: function(evt) {
+                var activePoints = this.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (activePoints.length) {
+                    var clickedIndex = activePoints[0].index; // Obtenir l'index du point cliqué
+                    var qcmId = qcmIds[clickedIndex]; // Récupérer l'ID du QCM correspondant
+                    window.location.href = "{% url 'qcm-correct' 0 %}".replace("0", qcmId); // Rediriger vers l'URL de correction
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45,
+                        autoSkip: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: 20,
+                    ticks: {
+                        stepSize: 5
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            return tooltipItems[0].label;
+                        },
+                        label: function(tooltipItem) {
+                            var normalizedScore = tooltipItem.dataset.data[tooltipItem.dataIndex];
+                            var realScore = qcmScores[tooltipItem.dataIndex];
+                            var maxScore = qcmMaxScores[tooltipItem.dataIndex];
+                            var qcmDate = qcmDates[tooltipItem.dataIndex];
+                            return [
+                                'Note : ' + realScore + '/' + maxScore,
+                                'Note sur 20 : ' + normalizedScore.toFixed(2),
+                                'Date : ' + qcmDate
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    
+    
+    
+    
+});
 
     function getRandomColor() {
         var letters = '0123456789ABCDEF';
@@ -130,5 +264,7 @@
     .fc-event {
         cursor: pointer; /* Ajoutez cette ligne pour changer le curseur en pointer */
     }
+
+    
 </style>
 {% endblock %}

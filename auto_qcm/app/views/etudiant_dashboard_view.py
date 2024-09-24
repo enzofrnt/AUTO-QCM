@@ -18,6 +18,7 @@ def etudiant_dashboard(request, pk):
 
     # Récupérer les réponses au QCM
     reponse_qcm = ReponseQCM.objects.filter(utilisateur=utilisateur)
+    reponse_qcm = sorted(reponse_qcm, key=lambda x: x.qcm.date)
 
     # Récupérer les QCM à venir pour les 3 prochains mois
     today = timezone.now().date()
