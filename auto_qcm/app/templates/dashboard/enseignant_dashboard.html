@@ -154,71 +154,73 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var ctx = document.getElementById('stats-graph').getContext('2d');
-        var qcmsStats = {{ qcms_stats|safe }};
-        var chart;
+				var ctx = document.getElementById('stats-graph').getContext('2d');
+				var qcmsStats = {{ qcms_stats|safe }};
+				var chart;
 
-        function updateChart(selectedQcmId) {
-            var data = [];
-            var labels = [];
+				function updateChart(selectedQcmId) {
+						var data = [];
+						var labels = [];
 
-            if (selectedQcmId === 'all') {
-                data = qcmsStats.map(qcm => qcm.avg_score);
-                labels = qcmsStats.map(qcm => qcm.titre);
-            } else {
-                var selectedQcm = qcmsStats.find(qcm => qcm.id === parseInt(selectedQcmId));
-                if (selectedQcm) {
-                    data = [selectedQcm.avg_score];
-                    labels = [selectedQcm.titre];
-                }
-            }
+						if (selectedQcmId === 'all') {
+								data = qcmsStats.map(qcm => qcm.avg_score_percentage);
+								labels = qcmsStats.map(qcm => qcm.titre);
+						} else {
+								var selectedQcm = qcmsStats.find(qcm => qcm.id === parseInt(selectedQcmId));
+								if (selectedQcm) {
+										data = [selectedQcm.avg_score_percentage];
+										labels = [selectedQcm.titre];
+								}
+						}
 
-            if (chart) {
-                chart.destroy();
-            }
 
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Score moyen',
-                        data: data,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Score'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Statistiques des QCM'
-                        }
-                    }
-                }
-            });
-        }
+						if (chart) {
+								chart.destroy();
+						}
 
-        document.getElementById('qcm-select').addEventListener('change', function() {
-            updateChart(this.value);
-        });
+						chart = new Chart(ctx, {
+								type: 'bar',
+								data: {
+										labels: labels,
+										datasets: [{
+												label: 'Score moyen (%)',
+												data: data,
+												backgroundColor: 'rgba(75, 192, 192, 0.6)',
+												borderColor: 'rgba(75, 192, 192, 1)',
+												borderWidth: 1
+										}]
+								},
+								options: {
+										scales: {
+												y: {
+														beginAtZero: true,
+														max: 100,
+														title: {
+																display: true,
+																text: 'Score (%)'
+														}
+												}
+										},
+										plugins: {
+												legend: {
+														display: false
+												},
+												title: {
+														display: true,
+														text: 'Statistiques des QCM'
+												}
+										}
+								}
+						});
+				}
 
-        // Initial chart with all QCMs
-        updateChart('all');
-    });
+				document.getElementById('qcm-select').addEventListener('change', function() {
+						updateChart(this.value);
+				});
+
+				// Initial chart with all QCMs
+				updateChart('all');
+		});
 </script>
 
 <style>
