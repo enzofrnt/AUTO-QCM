@@ -2,65 +2,86 @@
 
 {% block content %}
 <div class="container mt-5">
-	<h1 class="mb-4">Tableau de bord Enseignant</h1>
-	<p>Gérez vos QCM, suivez les résultats et planifiez vos sessions</p>
+    <h1 class="mb-4">Tableau de bord Enseignant</h1>
+    <p>Gérez vos QCM, suivez les résultats et planifiez vos sessions</p>
 
-	<div class="row">
-		<!-- Colonne de gauche : Barre de recherche et Liste des QCM -->
-		<div class="col-md-6">
-			<div class="card shadow-sm mb-3">
-				<div class="card-header bg-success text-white">
-					<h3>Rechercher un élève</h3>
-				</div>
-				<div class="card-body">
-					<form method="GET" action="{% url 'search-student' %}">
-						<div class="input-group">
-							<input type="text" class="form-control" name="q" placeholder="Nom ou Prénom de l'élève">
-							<button class="btn btn-success" type="submit">Rechercher</button>
-						</div>
-					</form>
-				</div>
-			</div>
+    <div class="row">
+        <!-- Colonne de gauche : Barre de recherche et Liste des QCM -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success text-white">
+                    <h3>Rechercher un élève</h3>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'search-student' %}">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" placeholder="Nom ou Prénom de l'élève">
+                            <button class="btn btn-success" type="submit">Rechercher</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-			<div class="card shadow-sm mb-3">
-				<div class="card-header bg-primary text-white">
-					<h3>QCM avec vos questions</h3>
-				</div>
-				<div class="card-body">
-					<div style="max-height: 243px; overflow-y: auto;">
-						<ul class="list-group">
-							{% for qcm in qcms_with_questions %}
-							<li class="list-group-item">
-								<strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
-								<ul>
-									{% if qcm.reponses_qcm.count > 0 %}
-									<li>
-										{{ qcm.reponses_qcm.count }} réponses - 
-										<a href="{% url 'qcm-responses' qcm.id %}">Voir toutes les réponses</a>
-									</li>
-									{% else %}
-									<li>Aucune réponse pour ce QCM.</li>
-									{% endif %}
-								</ul>
-							</li>
-							{% empty %}
-							<li class="list-group-item">Aucun QCM trouvé.</li>
-							{% endfor %}
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h3>QCM avec vos questions</h3>
+                </div>
+                <div class="card-body">
+                    <div style="max-height: 243px; overflow-y: auto;">
+                        <ul class="list-group">
+                            {% for qcm in qcms_with_questions %}
+                            <li class="list-group-item">
+                                <strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
+                                <ul>
+                                    {% if qcm.reponses_qcm.count > 0 %}
+                                    <li>
+                                        {{ qcm.reponses_qcm.count }} réponses - 
+                                        <a href="{% url 'qcm-responses' qcm.id %}">Voir toutes les réponses</a>
+                                    </li>
+                                    {% else %}
+                                    <li>Aucune réponse pour ce QCM.</li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">Aucun QCM trouvé.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<!-- Colonne de droite : Calendrier -->
-		<div class="col-md-6">
-			<div class="card shadow-sm mb-4">
-				<div class="card-body">
-					<div id="calendar" style="width: 100%; height: 500px;"></div>
-				</div>
-			</div>
-		</div>
-	</div>
+        <!-- Colonne de droite : Calendrier -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div id="calendar" style="width: 100%; height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Statistics Module -->
+        <div class="col-md-12 mt-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h3>Statistiques des QCM</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="qcm-select">Sélectionnez un QCM :</label>
+                        <select id="qcm-select" class="form-control">
+                            <option value="all">Tous les QCM</option>
+                            {% for qcm in qcms_stats %}
+                                <option value="{{ qcm.id }}">{{ qcm.titre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <canvas id="stats-graph" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Script pour le calendrier FullCalendar -->
@@ -99,9 +120,8 @@
             events: events,
             allDaySlot: false,
             eventMaxStack: 2,
-            dayMaxEvents: 1, // This will limit the number of events displayed per day to at least one
+            dayMaxEvents: 1,
             eventClick: function(info) {
-                // Redirection vers l'URL de l'événement
                 window.location.href = info.event.url;
             },
             views: {
@@ -109,12 +129,12 @@
                     titleFormat: { year: 'numeric', month: 'long' }
                 }
             },
-            eventOrder: 'title', // Ordre des événements dans la pile
+            eventOrder: 'title',
             eventDidMount: function(info) {
-								if (info.view.type === 'dayGridMonth' && info.event._def.extendedProps.more) {
-										info.el.querySelector('.fc-daygrid-day-top').innerHTML += `<span class="fc-more-events">${info.event._def.extendedProps.more} more...</span>`;
-								}
-						}
+                if (info.view.type === 'dayGridMonth' && info.event._def.extendedProps.more) {
+                    info.el.querySelector('.fc-daygrid-day-top').innerHTML += '<span class="fc-more-events">' + info.event._def.extendedProps.more + ' more...</span>';
+                }
+            }
         });
 
         calendar.render();
@@ -130,22 +150,93 @@
     }
 </script>
 
+<!-- Chart.js for statistics graph -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('stats-graph').getContext('2d');
+        var qcmsStats = {{ qcms_stats|safe }};
+        var chart;
+
+        function updateChart(selectedQcmId) {
+            var data = [];
+            var labels = [];
+
+            if (selectedQcmId === 'all') {
+                data = qcmsStats.map(qcm => qcm.avg_score);
+                labels = qcmsStats.map(qcm => qcm.titre);
+            } else {
+                var selectedQcm = qcmsStats.find(qcm => qcm.id === parseInt(selectedQcmId));
+                if (selectedQcm) {
+                    data = [selectedQcm.avg_score];
+                    labels = [selectedQcm.titre];
+                }
+            }
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Score moyen',
+                        data: data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Score'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Statistiques des QCM'
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('qcm-select').addEventListener('change', function() {
+            updateChart(this.value);
+        });
+
+        // Initial chart with all QCMs
+        updateChart('all');
+    });
+</script>
+
 <style>
-	.fc-daygrid-event {
-		padding: 5px;
-		font-size: 14px;
-		border-radius: 5px;
-	}
+    .fc-daygrid-event {
+        padding: 5px;
+        font-size: 14px;
+        border-radius: 5px;
+    }
 
-	.fc-more-events {
-		display: inline-block;
-		font-size: 12px;
-		color: #007bff;
-		cursor: pointer;
-	}
+    .fc-more-events {
+        display: inline-block;
+        font-size: 12px;
+        color: #007bff;
+        cursor: pointer;
+    }
 
-	.fc-event {
-		cursor: pointer; /* Ajoutez cette ligne pour changer le curseur en pointer */
-	}
+    .fc-event {
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
