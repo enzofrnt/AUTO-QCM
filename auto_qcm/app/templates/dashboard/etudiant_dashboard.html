@@ -37,7 +37,7 @@
 
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-primary text-white">
-                    <h3>Vos statistiques</h3>
+                    <h3>Votre progression aux QCM hebdomadaires</h3>
                 </div>
                 <div class="card shadow-sm mb-3">
                     <div class="card-body">
@@ -136,9 +136,22 @@
 
     var qcmMaxScores = [
         {% for reponse in reponse_qcm %}
-            {{ reponse.qcm.number_of_questions }},
+            {{ reponse.score_max }},
         {% endfor %}
     ];
+
+    var qcmDates = [
+    {% for reponse in reponse_qcm %}
+        '{{ reponse.qcm.date|date:"d/m/Y"|escapejs }}',
+    {% endfor %}
+    ];
+
+    var qcmIds = [
+    {% for reponse in reponse_qcm %}
+        {{ reponse.qcm.id }},
+    {% endfor %}
+    ];
+
 
 
     // Normalize scores to 20 only if qcmMaxScores are non-zero
@@ -148,62 +161,82 @@
     });
 
     new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
-            labels: qcmTitles,
+            labels: [
+                {% for reponse in reponse_qcm %}
+                    '{{ reponse.qcm.titre|escapejs }}',
+                {% endfor %}
+            ],
             datasets: [{
-                label: 'Score',
-                data: normalizedScores, // Use normalized scores
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                data: normalizedScores,
                 borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-                barPercentage: 0.5, // Thinner bars
-                // Adding the real scores as an additional property
-                realScores: qcmScores, 
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)'
             }]
         },
         options: {
             responsive: true,
+            onClick: function(evt) {
+                var activePoints = this.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (activePoints.length) {
+                    var clickedIndex = activePoints[0].index; // Obtenir l'index du point cliqué
+                    var qcmId = qcmIds[clickedIndex]; // Récupérer l'ID du QCM correspondant
+                    window.location.href = "{% url 'qcm-correct' 0 %}".replace("0", qcmId); // Rediriger vers l'URL de correction
+                }
+            },
             scales: {
                 x: {
                     ticks: {
                         maxRotation: 45,
                         minRotation: 45,
-                        autoSkip: false,
+                        autoSkip: false
                     }
                 },
                 y: {
                     beginAtZero: true,
-                    min: 0,  // Set the minimum value of the y-axis to 0
-                    max: 20,   // Set the maximum value to 20
+                    min: 0,
+                    max: 20,
                     ticks: {
-                        stepSize: 5 // Adjust the tick intervals
+                        stepSize: 5
                     }
                 }
             },
             plugins: {
+                legend: {
+                    display: false
+                },
                 tooltip: {
                     callbacks: {
                         title: function(tooltipItems) {
-                            return tooltipItems[0].label; // Show the QCM title
+                            return tooltipItems[0].label;
                         },
                         label: function(tooltipItem) {
                             var normalizedScore = tooltipItem.dataset.data[tooltipItem.dataIndex];
+                            var realScore = qcmScores[tooltipItem.dataIndex];
+                            var maxScore = qcmMaxScores[tooltipItem.dataIndex];
+                            var qcmDate = qcmDates[tooltipItem.dataIndex];
                             return [
-                                normalizedScore.toFixed(2) + '/20'
-                            ]; 
+                                'Note : ' + realScore + '/' + maxScore,
+                                'Note sur 20 : ' + normalizedScore.toFixed(2),
+                                'Date : ' + qcmDate
+                            ];
                         }
                     }
                 }
             }
-            
         }
     });
-
-
-
-
-    });
+    
+    
+    
+    
+    
+});
 
     function getRandomColor() {
         var letters = '0123456789ABCDEF';
@@ -231,5 +264,7 @@
     .fc-event {
         cursor: pointer; /* Ajoutez cette ligne pour changer le curseur en pointer */
     }
+
+    
 </style>
 {% endblock %}
