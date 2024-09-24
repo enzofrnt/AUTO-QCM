@@ -31,34 +31,6 @@ def enseignant_dashboard(request, pk=None):
     total_questions = Question.objects.filter(creator=enseignant).count()
     total_responses = ReponseQCM.objects.filter(qcm__questions__creator=enseignant).distinct().count()
 
-    # Calculer les statistiques pour chaque QCM
-    qcms = QCM.objects.filter(questions__creator=enseignant).distinct().prefetch_related('reponses_qcm')
-    qcms_stats = []
-    for qcm in qcms:
-        reponses = qcm.reponses_qcm.all()
-        total_responses = reponses.count()
-        
-        if total_responses > 0:
-            total_percentage = 0
-            
-            for reponse in reponses:
-                max_score = reponse.score_max if reponse.score_max > 0 else 1  # Éviter la division par zéro
-                percentage = (reponse.score / max_score) * 100
-                total_percentage += percentage
-            
-            avg_score_percentage = total_percentage / total_responses  # Moyenne des pourcentages
-        else:
-            avg_score_percentage = 0
-
-        qcms_stats.append({
-            'id': qcm.id,
-            'titre': qcm.titre,
-            'avg_score_percentage': avg_score_percentage,  # Utilisez le pourcentage moyen ici
-            'total_responses': total_responses
-        })
-
-        logger.error(f"QCM Stats: {qcms_stats}")
-
     context = {
         'enseignant': enseignant,
         'qcms_with_questions': qcms_with_questions,
@@ -66,7 +38,6 @@ def enseignant_dashboard(request, pk=None):
         'total_qcms': total_qcms,
         'total_questions': total_questions,
         'total_responses': total_responses,
-        'qcms_stats': qcms_stats,
     }
 
     return render(request, 'dashboard/enseignant_dashboard.html', context)
