@@ -1,0 +1,141 @@
+{% load color_filters %}
+{% load latexify %}
+{% load static %}
+
+{% block content %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/question_display.css' %}" />
+  {% include 'latexify/stylesheets.html' %}
+  {% if question %}
+    <div class="question-containeur position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
+      
+      <!-- En-tête de la question -->
+      <div class="d-flex justify-content-between align-items-center question-container">
+        <div class="question-header">{{ question.nom }}</div>
+
+        <!-- Boutons d'export, modification, suppression (affichés si show_buttons est vrai) -->
+        {% if show_buttons %}
+          <div class="button-list align-items-center" style="gap: 10px; display: none;">
+            <button type="button" class="btn btn-info btn-sm export-question-btn">
+              <i class="bi bi-arrow-bar-down"></i>
+            </button>
+
+            <button type="button" class="btn btn-warning btn-sm edit-question-btn">
+              <i class="bi bi-pencil"></i>
+            </button>
+
+            <button type="button" class="btn btn-danger btn-sm delete-question-btn">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        {% comment %} {% else %}
+          C pt {% endcomment %}
+        {% endif %}
+      </div>
+
+      <!-- Boucle pour afficher les tags associés -->
+      <div class="tags-container" style="margin-top: 10px;">
+        {% for tag in question.tags.all %}
+          <span class="badge badge-pill tag-badge position-relative question-tag"
+                style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
+            {{ tag.name }}
+          </span>
+        {% endfor %}
+      </div>
+
+      <!-- Section des réponses à afficher/cacher -->
+      <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
+        <br />
+        {% latexify question.texte parse_math=True %}
+        <br /><br />
+
+        <p>
+          Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b>
+        </p>
+
+        <ul class="list-group">
+          {% for reponse in question.reponses.all %}
+            <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
+              {{ reponse.texte }}
+              {% if reponse.is_correct %}
+                <span class="badge badge-success">Bonne réponse</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      console.log("coucou")
+      document.addEventListener('DOMContentLoaded', function() {
+        // Gestion du clic sur la question pour afficher ou cacher les réponses
+        const questionRows = document.querySelectorAll('.question-containeur');
+        questionRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+            // Empêche la propagation du clic si c'est un bouton qui est cliqué
+            if (e.target.closest('button')) {
+                return;
+            }
+    
+            // Récupération de l'élément answers-list associé à cette question
+            const questionId = row.getAttribute('data-question-id');
+            console.log("coucou")
+            console.log(questionId);
+            const answersDiv = document.getElementById('answers-' + questionId);
+            
+            // Toggle de l'affichage des réponses
+            if (answersDiv.style.display === 'none' || !answersDiv.style.display) {
+                answersDiv.style.display = 'block';
+            } else {
+                answersDiv.style.display = 'none';
+            }
+            });
+    
+            // Gestion du survol pour afficher les boutons d'actions (export, édition, suppression)
+            row.addEventListener('mouseover', function() {
+            const buttonList = row.querySelector('.button-list');
+            buttonList.style.display = 'flex';  // Affiche les boutons lorsque la question est survolée
+            });
+    
+            row.addEventListener('mouseout', function() {
+            const buttonList = row.querySelector('.button-list');
+            buttonList.style.display = 'none';  // Cache les boutons lorsque la souris quitte la zone de la question
+            });
+        });
+    
+        // Confirmation de suppression avant de supprimer la question
+        $(document).on('click', '.delete-question-btn', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            const questionRow = $(this).closest('.question-row')
+            const questionId = questionRow.data('question-id')
+        
+            if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
+              window.location.href = "{% url 'question-delete' question_id=0 %}".replace('0', questionId)
+            }
+          })
+        
+          // Exporter la question en XML
+          $(document).on('click', '.export-question-btn', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            const questionRow = $(this).closest('.question-row')
+            const questionId = questionRow.data('question-id')
+            window.location.href = "{% url 'question-export-xml' question_id=0 %}".replace('0', questionId)
+          })
+        
+          // Rediriger vers la page de modification de la question
+          $(document).on('click', '.edit-question-btn', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            const questionRow = $(this).closest('.question-row')
+            const questionId = questionRow.data('question-id')
+            window.location.href = "{% url 'question-edit' pk=0 %}".replace('0', questionId)
+          })
+      });
+    </script>
+  {% else %}
+    <p>Pas de question fournie.</p>
+  {% endif %}
+{% endblock %}
