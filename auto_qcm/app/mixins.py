@@ -25,7 +25,7 @@ class SelfRequiredMixin(LoginRequiredMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class TeacherOrStudentOwnDashboardRequiredMixin(LoginRequiredMixin):
+class TeacherOrSelfStudentRequiredMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         user_id = kwargs.get("pk")
         if (
