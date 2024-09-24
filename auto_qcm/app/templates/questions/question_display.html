@@ -1,0 +1,127 @@
+{% load color_filters %}
+{% load latexify %}
+{% load static %}
+
+{% block content %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/question_display.css' %}" />
+  {% include 'latexify/stylesheets.html' %}
+  {% if question %}
+    <div class="question-container-{{ question.id }} position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
+      
+      <!-- En-tête de la question -->
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="question-header">{{ question.nom }}</div>
+
+        <!-- Boutons d'export, modification, suppression (affichés si show_buttons est vrai) -->
+        {% if show_buttons %}
+          <div class="button-list-{{ question.id }} align-items-center" style="gap: 10px; display: flex; visibility: hidden;">
+            <button type="button" class="btn btn-info btn-sm export-question-btn-{{ question.id }}">
+              <i class="bi bi-arrow-bar-down"></i>
+            </button>
+
+            <button type="button" class="btn btn-warning btn-sm edit-question-btn-{{ question.id }}">
+              <i class="bi bi-pencil"></i>
+            </button>
+
+            <button type="button" class="btn btn-danger btn-sm delete-question-btn-{{ question.id }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Boucle pour afficher les tags associés -->
+      <div class="tags-container" style="margin-top: 10px;">
+        {% for tag in question.tags.all %}
+          <span class="badge badge-pill tag-badge position-relative question-tag"
+                style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
+            {{ tag.name }}
+          </span>
+        {% endfor %}
+      </div>
+
+      <!-- Section des réponses à afficher/cacher -->
+      <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
+        <br />
+        {% latexify question.texte parse_math=True %}
+        <br /><br />
+
+        <p>
+          Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b>
+        </p>
+
+        <ul class="list-group">
+          {% for reponse in question.reponses.all %}
+            <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
+              {{ reponse.texte }}
+              {% if reponse.is_correct %}
+                <span class="badge badge-success">Bonne réponse</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Gestion du clic sur la question pour afficher ou cacher les réponses avec animation
+        const questionId = {{ question.id }};
+        const questionRow = document.querySelector('.question-container-' + questionId);
+        const answersDiv = $('#answers-' + questionId); // Utilisation de jQuery pour l'élément de réponse
+
+        questionRow.addEventListener('click', function(e) {
+            // Empêche la propagation du clic si c'est un bouton qui est cliqué
+            if (e.target.closest('button')) {
+                return;
+            }
+
+            // Utilisation de slideToggle pour un effet d'animation fluide
+            answersDiv.slideToggle(300); // 300ms pour l'animation
+        });
+
+        // Gestion du survol pour afficher/masquer les boutons d'actions en utilisant visibility
+        questionRow.addEventListener('mouseover', function() {
+            const buttonList = document.querySelector('.button-list-' + questionId);
+            if (buttonList) {
+                buttonList.style.visibility = 'visible';  // Rend les boutons visibles
+            }
+        });
+
+        questionRow.addEventListener('mouseout', function() {
+            const buttonList = document.querySelector('.button-list-' + questionId);
+            if (buttonList) {
+                buttonList.style.visibility = 'hidden';  // Masque les boutons
+            }
+        });
+
+        // Confirmation de suppression avant de supprimer la question
+        $(document).on('click', '.delete-question-btn-' + questionId, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
+              window.location.href = "{% url 'question-delete' question_id=0 %}".replace('0', questionId);
+            }
+        });
+
+        // Exporter la question en XML
+        $(document).on('click', '.export-question-btn-' + questionId, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = "{% url 'question-export-xml' question_id=0 %}".replace('0', questionId);
+        });
+
+        // Rediriger vers la page de modification de la question
+        $(document).on('click', '.edit-question-btn-' + questionId, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = "{% url 'question-edit' pk=0 %}".replace('0', questionId);
+        });
+      });
+    </script>
+  {% else %}
+    <p>Pas de question fournie.</p>
+  {% endif %}
+{% endblock %}

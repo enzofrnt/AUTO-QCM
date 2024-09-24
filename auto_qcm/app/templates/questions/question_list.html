@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% load color_filters %}
-{% load latexify %}
+{% load color_filters %} 
+{% comment %} {% load latexify %} {% endcomment %}
 
 {% block content %}
-  {% include 'latexify/stylesheets.html' %}
+  {% comment %} {% include 'latexify/stylesheets.html' %} {% endcomment %}
 
   <div class="container mt-4">
     <h2>Liste des Questions</h2>
@@ -47,46 +47,7 @@
           {% for question in questions %}
             <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
               <td>
-                <div class="d-flex justify-content-between align-items-center question-container">
-                  <div class="question-header">{{ question.nom }}</div>
-
-                  <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
-                  <div class="button-list align-items-center" style="gap: 10px; display: none;">
-                    <button type="button" class="btn btn-info btn-sm export-question-btn"><i class="bi bi-arrow-bar-down"></i></button>
-
-                    <button type="button" class="btn btn-warning btn-sm edit-question-btn"><i class="bi bi-pencil"></i></button>
-
-                    <button type="button" class="btn btn-danger btn-sm delete-question-btn"><i class="bi bi-trash"></i></button>
-                  </div>
-                </div>
-
-                <!-- Boucle pour afficher les tags associés -->
-                {% for tag in question.tags.all %}
-                  <span class="badge badge-pill tag-badge position-relative question-tag" style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">{{ tag.name }}</span>
-                {% endfor %}
-
-                <!-- Section des réponses à afficher/cacher -->
-                <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
-                  <br />
-
-                  {% latexify question.texte parse_math=True %}
-
-                  <br /><br />
-
-                  <ul class="list-group">
-                    <p>
-                      Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b>
-                    </p>
-                    {% for reponse in question.reponses.all %}
-                      <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
-                        {{ reponse.texte }}
-                        {% if reponse.is_correct %}
-                          <span class="badge badge-success">Bonne réponse</span>
-                        {% endif %}
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
+                {% include 'questions/question_display.html' with question=question show_buttons=True %}
               </td>
             </tr>
           {% empty %}
@@ -98,20 +59,40 @@
       </table>
     </div>
   </div>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function () {
-      const filterForm = $('#filterForm')
-      const selectedTagsContainer = $('#selected-tags-container')
-    
-      // Fonction de debouncing
-      function debounce(func, delay) {
-        let debounceTimeout
-        return function () {
-          clearTimeout(debounceTimeout)
-          debounceTimeout = setTimeout(func, delay)
-        }
+      const filterForm = $('#filterForm');
+      const selectedTagsContainer = $('#selected-tags-container');
+      
+      function attachEvents() {
+        // Réattacher les événements pour chaque question après la mise à jour du contenu
+        $('.question-row').each(function() {
+          const questionRow = $(this);
+          const questionId = questionRow.data('question-id');
+          
+          // Gestion du clic pour ouvrir/fermer les réponses
+          questionRow.on('click', function(e) {
+            if (!$(e.target).closest('button').length) {
+              const answersDiv = $('#answers-' + questionId);
+              answersDiv.slideToggle(300);
+            }
+          });
+          
+          // Gestion du survol pour afficher/masquer les boutons d'actions
+          questionRow.on('mouseover', function() {
+            const buttonList = $('.button-list-' + questionId);
+            if (buttonList.length) {
+              buttonList.css('visibility', 'visible');
+            }
+          });
+          
+          questionRow.on('mouseout', function() {
+            const buttonList = $('.button-list-' + questionId);
+            if (buttonList.length) {
+              buttonList.css('visibility', 'hidden');
+            }
+          });
+        });
       }
     
       // Fonction pour soumettre le formulaire via AJAX
@@ -121,111 +102,31 @@
           type: 'GET',
           data: filterForm.serialize(),
           success: function (response) {
-            $('#questions-list').html($(response).find('#questions-list').html())
+            $('#questions-list').html($(response).find('#questions-list').html());
+            attachEvents(); // Réattacher les événements après la mise à jour du contenu
           }
-        })
+        });
       }
     
       // Appliquer le debouncing à la saisie dans la barre de recherche
-      const debouncedSubmit = debounce(submitFormAJAX, 300)
-      filterForm.find('input[name="nom"]').on('input', debouncedSubmit)
-    
-      // Interaction pour sélectionner/désélectionner les tags
-      $('#tags .tag-badge').click(function () {
-        const tagName = $(this).data('tag-name')
-    
-        if ($(this).hasClass('selected')) {
-          $(this).removeClass('selected').css('opacity', '0.6')
-          removeTagFromFilter(tagName)
-        } else {
-          $(this).addClass('selected').css('opacity', '1')
-          addTagToFilter(tagName)
-        }
-    
-        updateURLAndSubmit()
-      })
-    
-      // Fonction pour ajouter un tag au filtre
-      function addTagToFilter(tagName) {
-        selectedTagsContainer.append('<input type="hidden" name="tags" value="' + tagName + '">')
-      }
-    
-      // Fonction pour supprimer un tag du filtre
-      function removeTagFromFilter(tagName) {
-        selectedTagsContainer.find('input[value="' + tagName + '"]').remove()
-      }
-    
-      // Fonction pour mettre à jour l'URL et soumettre le formulaire
-      function updateURLAndSubmit() {
-        const queryString = filterForm.serialize()
-        const baseUrl = filterForm.attr('action') || window.location.pathname
-        const newUrl = baseUrl + '?' + queryString
-        window.history.pushState({}, '', newUrl)
-        submitFormAJAX()
-      }
-    
+      const debouncedSubmit = debounce(submitFormAJAX, 300);
+      filterForm.find('input[name="nom"]').on('input', debouncedSubmit);
+      
       // Initialiser les tags sélectionnés
-      $('#tags .tag-badge').each(function () {
-        if (selectedTagsContainer.find('input[value="' + $(this).data('tag-name') + '"]').length > 0) {
-          $(this).addClass('selected').css('opacity', '1')
+      $('#tags .tag-badge').click(function () {
+        const tagName = $(this).data('tag-name');
+        if ($(this).hasClass('selected')) {
+          $(this).removeClass('selected').css('opacity', '0.6');
+          removeTagFromFilter(tagName);
         } else {
-          $(this).css('opacity', '0.6')
+          $(this).addClass('selected').css('opacity', '1');
+          addTagToFilter(tagName);
         }
-      })
+        updateURLAndSubmit();
+      });
     
-      // Afficher les boutons sur le survol
-      $(document)
-        .on('mouseenter', '.question-row', function () {
-          $(this).find('.button-list').css('display', 'flex')
-        })
-        .on('mouseleave', '.question-row', function () {
-          $(this).find('.button-list').css('display', 'none')
-        })
-    
-      // Confirmation de suppression avant de supprimer la question
-      $(document).on('click', '.delete-question-btn', function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        const questionRow = $(this).closest('.question-row')
-        const questionId = questionRow.data('question-id')
-    
-        if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
-          window.location.href = "{% url 'question-delete' question_id=0 %}".replace('0', questionId)
-        }
-      })
-    
-      // Exporter la question en XML
-      $(document).on('click', '.export-question-btn', function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        const questionRow = $(this).closest('.question-row')
-        const questionId = questionRow.data('question-id')
-        window.location.href = "{% url 'question-export-xml' question_id=0 %}".replace('0', questionId)
-      })
-    
-      // Rediriger vers la page de modification de la question
-      $(document).on('click', '.edit-question-btn', function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        const questionRow = $(this).closest('.question-row')
-        const questionId = questionRow.data('question-id')
-        window.location.href = "{% url 'question-edit' pk=0 %}".replace('0', questionId)
-      })
-    
-      // Afficher/masquer les réponses des questions
-      $(document).on('click', '.question-row', function (e) {
-        const questionId = $(this).data('question-id')
-        const answersList = $('#answers-' + questionId)
-    
-        if (answersList.is(':visible')) {
-          answersList.slideUp()
-          $(this).find('.toggle-answers').text('Voir les réponses')
-        } else {
-          answersList.slideDown()
-          $(this).find('.toggle-answers').text('Masquer les réponses')
-        }
-      })
-    })
+      attachEvents(); // Attacher les événements à la première génération des questions
+    });
   </script>
 
   {% include 'latexify/scripts.html' %}
