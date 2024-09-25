@@ -19,3 +19,4 @@ from .reponse_qcm_dashboard_view import qcm_responses
 from .save_generated_questions_view import save_generated_questions
 from .search_students_view import search_student
 from .support_doc_view import support_doc
+from .qcm_statistique_view import qcm_statistics
