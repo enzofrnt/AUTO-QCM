@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from app.models import QCM
 from app.forms import QcmForm, ReponseFormSet
+from django.urls import reverse_lazy
+
 from app.decorators import teacher_required
 
-@login_required(login_url='login')
+@login_required(login_url=reverse_lazy('login'))
 @teacher_required
 def create_qcm(request):
     if request.method == 'POST':

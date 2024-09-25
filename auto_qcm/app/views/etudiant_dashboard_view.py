@@ -5,10 +5,12 @@ from django.contrib.auth.decorators import login_required
 from app.decorators import teacher_or_self_student_required
 from app.models import QCM, ReponseQCM, ReponseQuestion
 from django.db.models import Q
+from django.urls import reverse_lazy
+
 from datetime import timedelta
 
 
-@login_required(login_url='login')
+@login_required(login_url=reverse_lazy('login'))
 @teacher_or_self_student_required
 def etudiant_dashboard(request, pk):    
     utilisateur = get_object_or_404(User, pk=pk)

@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from app.models import QCM, Question
 from app.forms import QcmForm
+from django.urls import reverse_lazy
 
-@login_required(login_url='login')
+
+@login_required(login_url=reverse_lazy('login'))
 def create_or_edit_qcm(request,pk = None):
     if pk :
         qcm = get_object_or_404(QCM,pk=pk)
