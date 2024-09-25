@@ -1,4 +1,5 @@
 from .custom_permission_denied_view import custom_permission_denied_view
+from .delete_multiple_qcms_view import delete_multiple_qcms
 from .delete_qcm_view import delete_qcm
 from .delete_question_view import delete_question
 from .enseignant_dashboard_view import enseignant_dashboard
