@@ -6,14 +6,20 @@ class QCM(models.Model):
     titre = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     questions = models.ManyToManyField("Question", related_name="qcms", blank=True)
-    date_modif = models.DateTimeField(default=timezone.now)
-    plages = models.ManyToManyField("Plage", related_name="qcms", blank=True)
+    date_modif = (
+        models.DateTimeField()
+    )  # Apparement le auto_add c'est pas génial --> Me met pleins d'erreurs
     creator = models.ForeignKey(
         "Utilisateur", on_delete=models.CASCADE
     )  # 1 est l'ID d'un utilisateur par défaut
 
     def __str__(self):
         return self.titre
+
+    def save(self, *args, **kwargs):
+        """Quand on sauvegarde on met a jour la date de modification"""
+        self.date_modif = timezone.now()
+        return super(QCM, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "QCM"

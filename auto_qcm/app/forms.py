@@ -39,12 +39,7 @@ ReponseFormSet = inlineformset_factory(
 class QcmForm(forms.ModelForm):
     class Meta:
         model = QCM
-        fields = ["titre", "description", "date_modif"]
-        widgets = {
-            "date_modif": forms.DateInput(
-                attrs={"type": "datetime-local", "class": "form-control"}
-            )
-        }
+        fields = ["titre", "description"]
 
 
 class PlageForm(forms.ModelForm):
@@ -55,6 +50,9 @@ class PlageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PlageForm, self).__init__(*args, **kwargs)
 
+        self.fields["debut"].required = True
+        self.fields["fin"].required = True
+        self.fields["promo"].required = True
         self.fields["promo"].queryset = Group.objects.filter(name__startswith="BUT")
 
         self.fields["groupe"].queryset = Group.objects.filter(

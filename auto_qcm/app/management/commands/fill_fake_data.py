@@ -136,19 +136,18 @@ class Command(BaseCommand):
                 date_modif=demain,
                 creator=alex,
             )
-            plages = []
+            qcm.save()
+
             for _ in range(5):
                 plage = Plage.objects.create(
                     debut=fake.date_time_this_month(),
                     fin=fake.date_time_this_month(),
                     promo=random.choice([promo1, promo2, promo3]),
                     groupe=random.choice([g1a, g1b, g2a, g2b, g3a, g3b]),
+                    qcm=qcm,
                 )
-                plages.append(plage)
                 plage.save()
 
-            qcm.save()
-            qcm.plages.set(plages)
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
 
         # Récupérer un QCM aléatoire
