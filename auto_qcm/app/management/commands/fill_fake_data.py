@@ -6,11 +6,14 @@ from app.models import (
     ReponseQCM,
     ReponseQuestion,
     Utilisateur,
+    Plage,
 )  # Assurez-vous d'importer le bon modèle
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 from faker import Faker
 import random
+from django.utils import timezone
+
 
 class Command(BaseCommand):
     help = "Remplit la base de données avec des données factices."
@@ -125,7 +128,7 @@ class Command(BaseCommand):
                 )
 
         # Créer des QCM factices
-        demain = datetime.now() + timedelta(days=1)
+        demain = timezone.now()
         for _ in range(10):
             qcm = QCM(
                 titre=fake.word(),
@@ -133,7 +136,19 @@ class Command(BaseCommand):
                 date_modif=demain,
                 creator=alex,
             )
+            plages = []
+            for _ in range(5):
+                plage = Plage.objects.create(
+                    debut=fake.date_time_this_month(),
+                    fin=fake.date_time_this_month(),
+                    promo=random.choice([promo1, promo2, promo3]),
+                    groupe=random.choice([g1a, g1b, g2a, g2b, g3a, g3b]),
+                )
+                plages.append(plage)
+                plage.save()
+
             qcm.save()
+            qcm.plages.set(plages)
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
 
         # Récupérer un QCM aléatoire
@@ -141,7 +156,7 @@ class Command(BaseCommand):
 
         # Créer une instance de ReponseQCM pour Moquette
         rep = ReponseQCM.objects.create(
-            utilisateur=moquette, qcm=qcm_random, date_reponse=datetime.now()
+            utilisateur=moquette, qcm=qcm_random, date_reponse=timezone.now()
         )
 
         # Récupérer des réponses aléatoires associées aux questions du QCM
@@ -154,7 +169,7 @@ class Command(BaseCommand):
                 :1
             ]
             reponse_qcm = ReponseQuestion.objects.create(
-                utilisateur=moquette, question=question, date=datetime.now()
+                utilisateur=moquette, question=question, date=timezone.now()
             )
             reponse_qcm.reponse.set(
                 reponses_random
@@ -170,7 +185,7 @@ class Command(BaseCommand):
 
         # Créer une instance de ReponseQCM pour Moquette
         rep = ReponseQCM.objects.create(
-            utilisateur=moquette, qcm=qcm_random, date_reponse=datetime.now()
+            utilisateur=moquette, qcm=qcm_random, date_reponse=timezone.now()
         )
 
         # Récupérer des réponses aléatoires associées aux questions du QCM
@@ -183,7 +198,7 @@ class Command(BaseCommand):
                 :1
             ]
             reponse_qcm = ReponseQuestion.objects.create(
-                utilisateur=moquette, question=question, date=datetime.now()
+                utilisateur=moquette, question=question, date=timezone.now()
             )
             reponse_qcm.reponse.set(
                 reponses_random

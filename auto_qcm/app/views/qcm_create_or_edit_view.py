@@ -18,7 +18,7 @@ def create_or_edit_qcm(request, pk=None):
         plages = Plage.objects.none()
 
     # Formset pour les plages
-    PlageFormSet = modelformset_factory(Plage, form=PlageForm, extra=1, can_delete=True)
+    PlageFormSet = modelformset_factory(Plage, form=PlageForm, extra=0, can_delete=True)
 
     if request.method == "POST":
         form = QcmForm(request.POST, instance=qcm)
@@ -38,14 +38,11 @@ def create_or_edit_qcm(request, pk=None):
             # Sauvegarder les plages
             for form in formset:
                 if form.cleaned_data.get("DELETE"):
-                    # Si l'utilisateur a coché la suppression, supprimer l'instance
-                    if (
-                        form.instance.pk
-                    ):  # Ne pas essayer de supprimer une instance non existante
+                    if form.instance.pk:
                         form.instance.delete()
                 else:
                     plage = form.save(commit=False)
-                    plage.qcm = qcm  # Associer la plage au QCM
+                    plage.qcm = qcm
                     plage.save()
             return redirect("qcm-list")
     else:
