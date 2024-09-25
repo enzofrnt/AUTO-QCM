@@ -10,7 +10,7 @@ from app.models import (
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 from faker import Faker
-
+import random
 
 class Command(BaseCommand):
     help = "Remplit la base de données avec des données factices."
