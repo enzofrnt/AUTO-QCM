@@ -1,11 +1,15 @@
-from app.models import (
-    Question,
-    Tag,
-    Reponse,
+import random
+from datetime import datetime, timedelta
+
+from app.models import (  # Assurez-vous d'importer le bon modèle
     QCM,
+    Question,
+    Reponse,
     ReponseQCM,
+    ReponseQuestion,
+    Tag,
     Utilisateur,
-)  # Assurez-vous d'importer le bon modèle
+)
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from faker import Faker
@@ -84,54 +88,70 @@ class Command(BaseCommand):
             qcm.save()
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
 
+        # Créer une réponse à un QCM pour Moquette
+        moquette_user = User.objects.get(username="Moquette")
+
+        # Récupérer un QCM aléatoire
+        qcm_random = QCM.objects.order_by("?").first()
+
+        # Créer une instance de ReponseQCM pour Moquette
+        rep = ReponseQCM.objects.create(
+            utilisateur=moquette_user, qcm=qcm_random, date_reponse=datetime.now()
+        )
+
+        # Récupérer des réponses aléatoires associées aux questions du QCM
+        random_questions = qcm_random.questions.all()
+        reponses_qcm = []
+
+        for question in random_questions:
+            # Sélectionner des réponses aléatoires pour chaque question
+            reponses_random = Reponse.objects.filter(question=question).order_by("?")[
+                :1
+            ]
+            reponse_qcm = ReponseQuestion.objects.create(
+                utilisateur=moquette_user, question=question, date=datetime.now()
+            )
+            reponse_qcm.reponse.set(
+                reponses_random
+            )  # Associe les réponses aléatoires à la question
+            reponse_qcm.save()
+            reponses_qcm.append(reponse_qcm)
+
+        rep.reponses.set(reponses_qcm)
+        rep.save()
 
         # Créer une réponse à un QCM pour Moquette
         moquette_user = User.objects.get(username="Moquette")
-        
+
         # Récupérer un QCM aléatoire
-        qcm_random = QCM.objects.order_by('?').first()
-                
+        qcm_random = QCM.objects.order_by("?").first()
+
         # Créer une instance de ReponseQCM pour Moquette
-        rep = ReponseQCM.objects.create(utilisateur=moquette_user, qcm=qcm_random, date_reponse=datetime.now())
-        
+        rep = ReponseQCM.objects.create(
+            utilisateur=moquette_user, qcm=qcm_random, date_reponse=datetime.now()
+        )
+
         # Récupérer des réponses aléatoires associées aux questions du QCM
         random_questions = qcm_random.questions.all()
         reponses_qcm = []
-        
+
         for question in random_questions:
             # Sélectionner des réponses aléatoires pour chaque question
-            reponses_random = Reponse.objects.filter(question=question).order_by('?')[:1]
-            reponse_qcm = ReponseQuestion.objects.create(utilisateur=moquette_user, question=question, date=datetime.now())
-            reponse_qcm.reponse.set(reponses_random)  # Associe les réponses aléatoires à la question
+            reponses_random = Reponse.objects.filter(question=question).order_by("?")[
+                :1
+            ]
+            reponse_qcm = ReponseQuestion.objects.create(
+                utilisateur=moquette_user, question=question, date=datetime.now()
+            )
+            reponse_qcm.reponse.set(
+                reponses_random
+            )  # Associe les réponses aléatoires à la question
             reponse_qcm.save()
             reponses_qcm.append(reponse_qcm)
 
         rep.reponses.set(reponses_qcm)
         rep.save()
 
-                # Créer une réponse à un QCM pour Moquette
-        moquette_user = User.objects.get(username="Moquette")
-        
-        # Récupérer un QCM aléatoire
-        qcm_random = QCM.objects.order_by('?').first()
-                
-        # Créer une instance de ReponseQCM pour Moquette
-        rep = ReponseQCM.objects.create(utilisateur=moquette_user, qcm=qcm_random, date_reponse=datetime.now())
-        
-        # Récupérer des réponses aléatoires associées aux questions du QCM
-        random_questions = qcm_random.questions.all()
-        reponses_qcm = []
-        
-        for question in random_questions:
-            # Sélectionner des réponses aléatoires pour chaque question
-            reponses_random = Reponse.objects.filter(question=question).order_by('?')[:1]
-            reponse_qcm = ReponseQuestion.objects.create(utilisateur=moquette_user, question=question, date=datetime.now())
-            reponse_qcm.reponse.set(reponses_random)  # Associe les réponses aléatoires à la question
-            reponse_qcm.save()
-            reponses_qcm.append(reponse_qcm)
-
-        rep.reponses.set(reponses_qcm)
-        rep.save()
-
-
-        self.stdout.write(self.style.SUCCESS("Données factices et QCM générés avec succès."))
+        self.stdout.write(
+            self.style.SUCCESS("Données factices et QCM générés avec succès.")
+        )
