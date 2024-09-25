@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+
   <div class="container mt-4">
     <h2>
       {% if qcm.pk %}
@@ -21,11 +28,14 @@
           {% for error in form.non_field_errors %}
             <li>{{ error }}</li>
           {% endfor %}
-          {% for form in formset %}
-            {% for error in form.errors %}
-              <li>{{ error }}</li>
+          {% for formset_form in formset %}
+            {% for field in formset_form %}
+                {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
             {% endfor %}
           {% endfor %}
+
         </ul>
       </div>
     {% endif %}
@@ -48,27 +58,25 @@
       <!-- Plages associées au QCM -->
       <div class="d-flex align-items-center mb-2">
         <h3>Plages</h3>
-        <button type="button" id="addPlage" class="btn btn-sm btn-outline-primary ml-2" onclick="cloneMore()">+</button>
+        <button type="button" id="addPlage" class="btn btn-sm btn-outline-primary ml-2">+</button>
       </div>
 
       <div id="plagesFormset">
         {{ formset.management_form }}
         {% for formset_form in formset %}
           <div class="formset-row item" id="form_num0" style="display: flex; justify-content: space-between">
+            {{ formset_form.id }}
             <div class="form-group">{{ formset_form.debut.label_tag }} {{formset_form.debut}}</div>
             <div class="form-group">{{ formset_form.fin.label_tag }} {{formset_form.fin}}</div>
             <div class="form-group">{{ formset_form.promo.label_tag }} {{formset_form.promo}}</div>
             <div class="form-group">{{ formset_form.groupe.label_tag }} {{formset_form.groupe}}</div>
-
-            {% with index=forloop.counter0 %}
-
-            <div class="form-group col-md-1 mb-0 ml-2" style="position: relative;margin-top:2%">
+            <div class="form-group">
               <button style="margin-bottom:3% ;font-weight: bold;" type="button" class="btn btn-danger"  id="del-form-{{index}}" onclick="deleteForm({{index}})"><i class="bi bi-trash"></i></button>
             </div>
-
-            {% endwith %}
           </div>
         {% endfor %}
+
+        <div id='emptyPlage' class='hidden'>{{formset.empty_form}}</div>
       </div>
 
       <!-- Sélection des questions -->
@@ -165,30 +173,21 @@
     var hasGenerated = false;  // Indicateur pour savoir si des questions ont déjà été générées
     var questions = [];  // Variable pour stocker les questions générées
 
-    function cloneMore() { 
-      // Trouver l'élément à cloner
-      var newElement = document.getElementsByClassName('item')[0].cloneNode(true);
-      
-      // Récupérer le nombre total de formulaires actuels
-      var total = Number($("#id_form-TOTAL_FORMS").val());
-      var newTotal = total + 1;
-      $("#id_form-TOTAL_FORMS").val(newTotal);  // Met à jour le total des formulaires
+    const addMoreBtn = document.getElementById('addPlage');
+    addMoreBtn.addEventListener("click",addPlage);
 
-      // Remplacer les attributs name et id des inputs
-      newElement.querySelectorAll("input").forEach(function (input) {
-          var name = input.getAttribute("name").replace(/\d+/, total);  // Remplacer le nombre par le nouvel index
-          var id = input.getAttribute("id").replace(/\d+/, total);      // Pareil pour l'ID
-          input.setAttribute("name", name);
-          input.setAttribute("id", id);
-          input.value = "";  // Réinitialiser la valeur des inputs
-      });
+    function addPlage(event)
+    {
+      if(event)
+      {
+          event.preventDefault();
+      }
+      const formsetHolder = document.getElementById('plagesFormset');
+      const emptyPlageCopie = document.getElementById('emptyPlage').cloneNode(true);
+      emptyPlageCopie.setAttribute('class',"formset-row item");
+      formsetHolder.appendChild(emptyPlageCopie);
 
-      // Mettre à jour l'attribut onClick du bouton de suppression
-      newElement.querySelector("button").setAttribute("onClick", `deleteForm(${total})`);
-      newElement.id = `form_num${total}`;
 
-      // Ajouter le nouvel élément cloné à la fin de la liste des items
-      $("#plagesFormset").append(newElement);
     }
 
     function deleteForm(formNum) {

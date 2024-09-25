@@ -39,7 +39,6 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
-    create_or_edit_plage,
     qcm_statistics,
 )
 from django.contrib import admin
@@ -54,8 +53,6 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
-    path("plage/create/", create_or_edit_plage, name="plage_create"),
-    path("plage/edit/<int:plage_id>/", create_or_edit_plage, name="plage_edit"),
     # CRUD QUESTIONS
     path("question/list/", QuestionListView.as_view(), name="question-list"),
     path("question/create/", create_or_edit_question, name="question-create"),
