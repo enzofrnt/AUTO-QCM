@@ -21,7 +21,6 @@ from app.views import (
     CustomLoginView,
     QcmListView,
     QuestionListView,
-    afficher_questions,
     corriger_qcm,
     create_or_edit_qcm,
     create_or_edit_question,
