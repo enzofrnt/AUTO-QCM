@@ -64,6 +64,46 @@
     </div>
     <script src="{% static 'js/scripts.js' %}"></script>
   </body>
+
+  <style>
+    /* Style de base pour le lien de navigation */
+    .nav-list {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+  
+    .nav-list li {
+      width: 100%; /* Assure que chaque élément de la liste occupe 100% de la largeur disponible */
+    }
+  
+    .nav-item {
+      display: block; /* Le lien s'étend sur toute la largeur de l'élément parent */
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #000; /* Couleur par défaut du texte */
+      width: 100%; /* Prend toute la largeur du parent */
+    }
+  
+    /* Ajout d'un effet hover sur toute la zone */
+    .nav-item:hover {
+      background-color: #f8f9fa; /* Change le fond au survol */
+      color: #007bff; /* Change la couleur du texte */
+      border-radius: 5px; /* Ajoute un arrondi aux coins */
+      transition: all 0.3s ease; /* Transition douce pour un effet smooth */
+    }
+  
+    /* Effet hover sur l'icône également */
+    .nav-item i {
+      margin-right: 10px; /* Ajoute de l'espace entre l'icône et le texte */
+    }
+  
+    .nav-item:hover i {
+      color: #007bff; /* Change la couleur de l'icône au survol */
+    }
+  </style>
+  
+  
 </html>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
