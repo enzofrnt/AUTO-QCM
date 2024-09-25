@@ -1,4 +1,4 @@
-from .custom_permission_denied_view import custom_permission_denied_view
+from .custom_error_view import custom_permission_denied_view, custom_page_not_found_view, custom_server_error_view
 from .delete_qcm_view import delete_qcm
 from .delete_question_view import delete_question
 from .enseignant_dashboard_view import enseignant_dashboard
@@ -19,4 +19,5 @@ from .save_generated_questions_view import save_generated_questions
 from .search_students_view import search_student
 from .support_doc_view import support_doc
 from .qcm_statistique_view import qcm_statistics
+
 
