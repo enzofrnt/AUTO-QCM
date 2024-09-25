@@ -8,6 +8,7 @@ class Plage(models.Model):
     fin = models.DateTimeField()
     promo = models.ForeignKey(Group, related_name="promos", on_delete=models.CASCADE)
     groupe = models.ForeignKey(Group, related_name="groupes", on_delete=models.CASCADE)
+    qcm = models.ForeignKey("QCM", related_name="plages", on_delete=models.CASCADE)
 
     def clean(self):
         # Valider que la date de début est bien avant la date de fin

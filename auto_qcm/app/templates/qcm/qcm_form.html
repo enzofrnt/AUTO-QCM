@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-
   <style>
-    .hidden {
+    label[for^="id_form-"][for$="-DELETE"],
+    input[type="checkbox"][name$="-DELETE"] {
       display: none;
     }
   </style>
@@ -58,25 +58,19 @@
       <!-- Plages associées au QCM -->
       <div class="d-flex align-items-center mb-2">
         <h3>Plages</h3>
-        <button type="button" id="addPlage" class="btn btn-sm btn-outline-primary ml-2">+</button>
+        <button type="button" id="add-plage" class="btn btn-sm btn-outline-primary ml-2">+</button>
       </div>
 
       <div id="plagesFormset">
         {{ formset.management_form }}
         {% for formset_form in formset %}
-          <div class="formset-row item" id="form_num0" style="display: flex; justify-content: space-between">
-            {{ formset_form.id }}
-            <div class="form-group">{{ formset_form.debut.label_tag }} {{formset_form.debut}}</div>
-            <div class="form-group">{{ formset_form.fin.label_tag }} {{formset_form.fin}}</div>
-            <div class="form-group">{{ formset_form.promo.label_tag }} {{formset_form.promo}}</div>
-            <div class="form-group">{{ formset_form.groupe.label_tag }} {{formset_form.groupe}}</div>
+          <div class="formset-row item" style="display: flex; justify-content: space-between">
+            {{ formset_form.as_p }}
             <div class="form-group">
-              <button style="margin-bottom:3% ;font-weight: bold;" type="button" class="btn btn-danger"  id="del-form-{{index}}" onclick="deleteForm({{index}})"><i class="bi bi-trash"></i></button>
+              <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
             </div>
           </div>
         {% endfor %}
-
-        <div id='emptyPlage' class='hidden'>{{formset.empty_form}}</div>
       </div>
 
       <!-- Sélection des questions -->
@@ -173,55 +167,44 @@
     var hasGenerated = false;  // Indicateur pour savoir si des questions ont déjà été générées
     var questions = [];  // Variable pour stocker les questions générées
 
-    const addMoreBtn = document.getElementById('addPlage');
-    addMoreBtn.addEventListener("click",addPlage);
+    $(document).ready(function() {
+      // Conteneur des formulaires de plages
+      let formsetContainer = $('#plagesFormset');
+      let totalForms = $('#id_form-TOTAL_FORMS');
 
-    function addPlage(event)
-    {
-      if(event)
-      {
-          event.preventDefault();
-      }
-      const formsetHolder = document.getElementById('plagesFormset');
-      const emptyPlageCopie = document.getElementById('emptyPlage').cloneNode(true);
-      emptyPlageCopie.setAttribute('class',"formset-row item");
-      formsetHolder.appendChild(emptyPlageCopie);
+      // Fonction pour ajouter un nouveau formulaire
+      $('#add-plage').click(function() {
+        let formCount = $('.formset-row').length;  // Nombre de formulaires actuels
+        let newForm = $('.formset-row:first').clone();  // Cloner le premier formulaire
+        let formRegex = /form-(\d){1,2}-/g;
 
+        // Remplacer les indices des noms et IDs par le nouveau formulaire
+        newForm.html(newForm.html().replace(formRegex, 'form-' + formCount + '-'));
 
-    }
+        // Réinitialiser les valeurs des champs du nouveau formulaire
+        newForm.find('input[type="text"]').val('');  // Vider les champs texte
+        newForm.find('input[type="checkbox"]').prop('checked', false);  // Décocher DELETE
 
-    function deleteForm(formNum) {
-      var totalForms = Number($("#id_form-TOTAL_FORMS").val());
+        // Ajouter le nouveau formulaire dans le conteneur
+        formsetContainer.append(newForm);
 
-      if (totalForms <= 1) {
-          return;  // Ne rien faire si on ne veut pas supprimer le dernier formulaire
-      }
+        // Mettre à jour le nombre total de formulaires
+        totalForms.val(formCount + 1);
+      });
 
-      // Décrémenter le nombre total de formulaires
-      totalForms--;
-      $("#id_form-TOTAL_FORMS").val(totalForms);
+      // Fonction pour marquer un formulaire pour suppression
+      formsetContainer.on('click', '.remove-plage', function() {
+        let formToDelete = $(this).closest('.formset-row');
 
-      // Supprimer le formulaire actuel
-      $(`#form_num${formNum}`).remove();
+        // Cacher le formulaire et cocher le champ DELETE associé
+        formToDelete.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true);
+        formToDelete.hide();  // Masquer le formulaire mais il sera supprimé
 
-      // Re-numéroter les formulaires restants
-      var forms = $('div[id^="form_num"]');
-      for (var i = 0; i < totalForms; i++) {
-          var form = $(forms[i]);
-          form.attr('id', `form_num${i}`);
-
-          // Mettre à jour les inputs avec les nouveaux index
-          form.find('input').each(function() {
-              var name = $(this).attr('name').replace(/\d+/, i);
-              var id = $(this).attr('id').replace(/\d+/, i);
-              $(this).attr('name', name);
-              $(this).attr('id', id);
-          });
-
-        // Mettre à jour le bouton de suppression avec le bon index
-        form.find('button').attr('onClick', `deleteForm(${i})`);
-    }
-}
+        // Mettre à jour le nombre total de formulaires affichés
+        let formCount = $('.formset-row:visible').length;
+        totalForms.val(formCount);
+      });
+    });
 
 
     $(document).ready(function() {
