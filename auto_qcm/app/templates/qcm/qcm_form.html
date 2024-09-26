@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load color_filters %}
+{% load static %}
 
 {% block content %}
   <style>
@@ -47,33 +48,9 @@
       </div>
     {% endif %}
 
-    <!-- Formulaire de filtre (déplacé en dehors du formulaire principal) -->
-    {% comment %} <h3>Sélectionnez les questions :</h3>
-    <form method="get" class="mb-4" id="filterForm" action="">
-      <div class="form-row align-items-center">
-        <div class="col-auto">
-          <input type="text" name="nom" class="form-control" placeholder="Filtrer par nom" value="{{ nom_filtre }}" />
-        </div>
-        <div class="col-auto">
-          <div class="form-group">
-            <label for="tags">Filtrer par tags :</label>
-            <div id="tags" class="d-flex flex-wrap">
-              {% for tag in tags %}
-                <span class="badge tag-badge form-check-label {% if tag.name in tag_filtre %}selected{% endif %}" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">
-                  {{ tag.name }}
-                </span>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-        <!-- Champs cachés pour les tags sélectionnés -->
-        <div id="selected-tags-container">
-          {% for tag_name in tag_filtre %}
-            <input type="hidden" name="tags" value="{{ tag_name }}">
-          {% endfor %}
-        </div>
-      </div>
-    </form> {% endcomment %}
+    <!-- Formulaire de filtrage (en dehors du formulaire principal) -->
+    <h3>Sélectionnez les questions :</h3>
+    {% include 'questions/question_filter_form.html' %}
 
     <!-- Formulaire principal -->
     <form method="post" id="qcmForm">
@@ -109,40 +86,9 @@
         {% endfor %}
       </div>
 
-      <!-- Boutons pour créer ou générer des questions -->
-      {% comment %} <div class="d-inline-flex mb-4">
-        <a href="{% url 'question-create' %}" class="btn btn-primary ml-2">Créer une nouvelle Question</a>
-        <button type="button" class="btn btn-success ml-2" id="openModal">Générer automatiquement des questions</button>
-      </div> {% endcomment %}
-
       <!-- Liste des questions -->
       <div id="questions-list">
-        
-        {% comment %} <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Sélection</th>
-              <th>Texte de la Question et Tags</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for question in questions %}
-              <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
-                <td style="width: 50px;">
-                  <input type="checkbox" name="selected_questions" value="{{ question.id }}" {% if question.id|stringformat:"s" in selected_question_ids %}checked{% endif %}>
-                </td>
-                <td>
-                  {% include 'questions/question_display.html' with question=question show_buttons=False %}
-                </td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="2">Aucune question disponible.</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table> {% endcomment %}
-        {% include 'questions/question_list.html' with selectable=True %}
+        {% include 'questions/question_list_content.html' with selectable=True %}
       </div>
 
       <button type="submit" class="btn btn-success">
@@ -154,125 +100,62 @@
       </button>
     </form>
 
-  </div>
+  </div> 
 
-  <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
-  <!-- Votre code de modal existant -->
-
-  <!-- Scripts -->
+  <!-- Inclusion de jQuery et du script de filtrage -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- Vos autres scripts -->
+  <script src="{% static 'js/question_filter.js' %}"></script>
+
+  <!-- Code JavaScript pour gérer les plages -->
   <script>
     $(document).ready(function() {
       // Gestion des formulaires de plages
-      // Votre code JavaScript pour gérer les plages
+      var formsetPrefix = '{{ formset.prefix }}'
+      var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
+      var formsetContainer = $('#plagesFormset')
 
-      // Fonction pour mettre à jour les tags sélectionnés et soumettre le formulaire
-      function updateURLAndSubmit() {
-        const selectedTags = $('#tags .tag-badge.selected').map(function () {
-          return $(this).data('tag-name');
-        }).get();
+      $('#add-plage').click(function() {
+        var formCount = parseInt(totalForms.val())
+        var newFormHtml = formsetContainer.find('.formset-row:first').clone()
 
-        // Mettre à jour les champs cachés pour les tags
-        $('#selected-tags-container').empty();
-        selectedTags.forEach(function (tagName) {
-          $('#selected-tags-container').append(`<input type="hidden" name="tags" value="${tagName}">`);
-        });
+        // Mise à jour des attributs 'id' et 'name' pour chaque élément cloné
+        newFormHtml.find('input, select, textarea').each(function () {
+          var newId = $(this)
+            .attr('id')
+            .replace('-0-', '-' + formCount + '-')
+          var newName = $(this)
+            .attr('name')
+            .replace('-0-', '-' + formCount + '-')
+          $(this).attr({ name: newName, id: newId })
 
-        // Soumettre le formulaire de filtrage
-        $('#filterForm').submit();
-      }
+          // Effacer les valeurs des champs
+          if ($(this).attr('type') !== 'hidden') {
+            $(this).val('')
+          }
+        })
 
-      // Gérer la sélection des tags
-      $('#tags .tag-badge').click(function () {
-        $(this).toggleClass('selected');
-        updateURLAndSubmit();
-      });
+        newFormHtml.find('.remove-plage').show()
 
-      // Fonction de debounce pour éviter les soumissions excessives
-      function debounce(func, delay) {
-        let debounceTimer;
-        return function() {
-          const context = this;
-          const args = arguments;
-          clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(() => func.apply(context, args), delay);
+        formsetContainer.append(newFormHtml)
+        totalForms.val(formCount + 1)
+      })
+
+      // Gestion de la suppression des plages
+      $(document).on('click', '.remove-plage', function() {
+        // Marquer le formulaire pour suppression en cochant le champ 'DELETE'
+        var formRow = $(this).closest('.formset-row')
+        formRow.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true)
+
+        // Masquer le formulaire, mais le garder dans le DOM pour l'envoyer à Django
+        formRow.hide()
+      })
+
+      // Initialiser le bouton supprimer
+      $('.remove-plage').each(function () {
+        if ($(this).closest('.formset-row').index() === 0) {
+          $(this).hide()
         }
-      }
-
-      // Appliquer le debounce à la saisie dans le champ de recherche
-      $('#filterForm').find('input[name="nom"]').on('input', debounce(function () {
-        $('#filterForm').submit();
-      }, 500));
-
-      // Filtrer les questions sans recharger la page
-      $('#filterForm').on('submit', function(e) {
-        e.preventDefault();
-        $.ajax({
-          url: '',  // Laisser vide pour soumettre à la même URL
-          type: 'GET',
-          data: $(this).serialize(),
-          success: function(data) {
-            // Remplacer le contenu de la liste des questions
-            var newQuestionsList = $(data).find('#questions-list').html();
-            $('#questions-list').html(newQuestionsList);
-
-            // Réappliquer les événements après la mise à jour du contenu
-            reattachEvents();
-          },
-          error: function(xhr, status, error) {
-            console.error(xhr.responseText);
-          }
-        });
-      });
-
-      // Fonction pour réattacher les événements après mise à jour du contenu
-      function reattachEvents() {
-        // Gérer le clic sur les questions pour afficher/cacher les détails
-        $('.question-row').off('click').on('click', function(e) {
-          if (!$(e.target).is('input[type="checkbox"]')) {
-            const questionId = $(this).data('question-id');
-            $('#answers-' + questionId).slideToggle(300);
-          }
-        });
-
-        // Conserver les cases cochées après le filtrage
-        $('input[name="selected_questions"]').each(function() {
-          const questionId = $(this).val();
-          if (selectedQuestionIds.includes(questionId)) {
-            $(this).prop('checked', true);
-          }
-        });
-
-        // Mettre à jour les tags sélectionnés
-        $('#tags .tag-badge').each(function() {
-          const tagName = $(this).data('tag-name');
-          if (selectedTags.includes(tagName)) {
-            $(this).addClass('selected');
-          } else {
-            $(this).removeClass('selected');
-          }
-        });
-      }
-
-      // Stocker les IDs des questions sélectionnées
-      let selectedQuestionIds = [];
-      // Mettre à jour la liste des questions sélectionnées au chargement
-      updateSelectedQuestions();
-
-      // Mettre à jour la liste des questions sélectionnées lors du changement
-      $(document).on('change', 'input[name="selected_questions"]', function() {
-        updateSelectedQuestions();
-      });
-
-      function updateSelectedQuestions() {
-        selectedQuestionIds = $('input[name="selected_questions"]:checked').map(function() {
-          return $(this).val();
-        }).get();
-      }
-
-      // Appeler reattachEvents au chargement initial
-      reattachEvents();
+      })
     });
   </script>
 {% endblock %}
