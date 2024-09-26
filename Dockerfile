@@ -36,4 +36,6 @@ RUN pip install --no-cache-dir -r requirements.prod.txt
 
 RUN rm ./requirements.prod.txt
 
-CMD [ "gunicorn", "auto_qcm.wsgi:application", "--bind", "0.0.0.0:8000" ]
+CMD python manage.py wait_for_db \
+    && python manage.py migrate --noinput \
+    && gunicorn auto_qcm.wsgi --bind 0.0.0.0:8000
