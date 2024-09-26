@@ -34,7 +34,6 @@ $(document).ready(function () {
           window.selectedQuestionIds.push(questionId);
         }
       });
-      console.log('Selected Question IDs after initialization:', window.selectedQuestionIds);
     }
   
     // Appeler la fonction d'initialisation après que la page est complètement chargée
@@ -73,7 +72,6 @@ $(document).ready(function () {
         } else {
           window.selectedQuestionIds = window.selectedQuestionIds.filter(id => id !== questionId);
         }
-        console.log('Selected Question IDs after change:', window.selectedQuestionIds);
       });
   
       // Mettre à jour les cases à cocher en fonction de selectedQuestionIds
@@ -105,7 +103,5 @@ $(document).ready(function () {
   
       // Ajouter le conteneur au formulaire
       $(this).append(hiddenInputsContainer);
-  
-      console.log('Selected Question IDs before submission:', window.selectedQuestionIds);
-    });
+      });
   });
