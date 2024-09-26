@@ -5,5 +5,10 @@
 }
 .qcm-list td:nth-child(2) {
     display: flex;
-    justify-content: space-between
+    flex-direction: column !important;
+}
+
+.qcm-table{
+    border-radius: 15px;
+    
 }

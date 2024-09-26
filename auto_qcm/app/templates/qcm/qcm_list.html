@@ -8,59 +8,69 @@
 
   <!-- Liste des qcm -->
   <div id="qcm-list">
-    <a href="{% url 'qcm-create' %}" class="btn btn-primary mb-4">Créer un nouveau qcm</a>
+    <div class="d-flex align-items-center"
+    > <a href="{% url 'qcm-create' %}" class="btn btn-primary ">Créer un nouveau qcm</a>
+    <button type="submit" class="btn btn-danger">Supprimer les QCM sélectionnés</button></div> 
+      
+    
     <form id="qcm-form" method="POST" action="{% url 'qcm-delete-multiple' %}">
       {% csrf_token %}
-      <table class="table table-bordered rounded bg-light">
+      <table class="table  bg-light qcm-table">
         <thead class="rounded">
           <tr>
             <th>
-              <input type="checkbox" id="select-all"> Tout sélectionner
+              <input type="checkbox" id="select-all">
             </th>
             <th>Nom des qcms</th>
           </tr>
         </thead>
         <tbody class="qcm-list">
           {% for qcm in qcms %}
-          <tr class="qcm-row position-relative" data-qcm-id="{{ qcm.id }}" style="cursor: pointer;">
-            <td class="px-4">
+          <tr class="qcm-row position-relative qcm-header" data-qcm-id="{{ qcm.id }}" style="cursor: pointer;">
+            <td class="">
               
                 <div class="form-check ">
                   <input class="form-check-input" type="checkbox" name="selected_qcms" value="{{ qcm.id }}">
                 </div>
               
             </td>
-            <td>
-              <div class="qcm-header p-2">{{ qcm.titre }}</div>
+            <td class="w-100 qcm-header-btn">
+            <div style="display: flex; flex-direction: column">
+              <div style="display: flex; justify-content: space-between;">
+                <div style="display: flex; align-items: center;" class=" ">{{ qcm.titre }}</div>
 
-                  <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
-                  <div class="button-list align-items-center" style="gap: 50px; display: flex;">
-                    <button type="button" class="btn btn-info btn-sm answer-qcm-btn"><i class="bi bi-eye"></i></button>
-{% comment %} 
-                    <button type="button" class="btn btn-info btn-sm export-qcm-xml-btn">XML<i class="bi bi-arrow-bar-down"></i></button>
-                    <button type="button" class="btn btn-info btn-sm export-qcm-latex-btn">AMC<i class="bi bi-arrow-bar-down"></i></button> {% endcomment %}
-                    <button type="button" class="btn btn-info btn-sm export-qcm-xml-btn"><i class="bi bi-arrow-bar-down"></i></button>
-                    <button type="button" class="btn btn-warning btn-sm edit-qcm-btn"><i class="bi bi-pencil"></i></button>
-                    {% comment %} <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button> {% endcomment %}
-                  </div>
-                </div>
+                    <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
+                    <div class="button-list align-items-center" style="gap: 50px; display: flex;">
+                      <button type="button" class="btn btn-info btn-sm answer-qcm-btn"><i class="bi bi-eye"></i></button>
+                      
+                      <button type="button" class="btn btn-info btn-sm export-qcm-xml-btn">XML<i class="bi bi-arrow-bar-down"></i></button>
+                      <button type="button" class="btn btn-info btn-sm export-qcm-latex-btn">AMC<i class="bi bi-arrow-bar-down"></i></button>
+
+                      {% comment %} <button type="button" class="btn btn-info btn-sm export-qcm-xml-btn"><i class="bi bi-arrow-bar-down"></i></button> {% endcomment %}
+
+                      <button type="button" class="btn btn-warning btn-sm edit-qcm-btn"><i class="bi bi-pencil"></i></button>
+                      {% comment %} <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button> {% endcomment %}
+                    </div>
+                    
+              </div>
 
                 <!-- Section des questions du qcm à afficher/cacher -->
-                <div class="qcm-list" id="questions-{{ qcm.id }}" style="display: none; margin-top: 10px;">
-                  <p>{{ qcm.description }}</p>
-                  <ul class="list-group">
-                    <p>
-                      Nombre de questions : <b>{{ qcm.number_of_questions }}</b>
-                    </p>
+                  <div class="qcm-list" id="questions-{{ qcm.id }}" style="display: none; margin-top: 10px;">
+                    <p>{{ qcm.description }}</p>
+                    <ul class="list-group">
+                      <p>
+                        Nombre de questions : <b>{{ qcm.number_of_questions }}</b>
+                      </p>
 
-                    {% for question in qcm.questions.all %}
-                      <li class="list-group-item">
-                        {{ question.nom }} <br />
-                        {{ question.texte }}
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
+                      {% for question in qcm.questions.all %}
+                        <li class="list-group-item">
+                          {{ question.nom }} <br />
+                          {{ question.texte }}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+            </div>
               </td>
             </tr>
             {% empty %}
@@ -71,7 +81,7 @@
           </tbody>
         </table>
   
-        <button type="submit" class="btn btn-danger">Supprimer les QCM sélectionnés</button>
+        
       </form>
     </div>
   </div>
@@ -156,17 +166,21 @@
         window.location.href = "{% url 'qcm-export-latex' qcm_id=0 %}".replace('0', qcmId)
       })
     
-      // JavaScript pour afficher/masquer les questions des qcm
-      $(document).on('click', '.qcm-header', function (e) {
-        const qcmId = $(this).data('qcm-id')
-        const questionList = $('#questions-' + qcmId)
-    
+      const qcmHeader = $('.qcm-header');
+      qcmHeader.on('click', '.qcm-header-btn', function(e) { 
+        const qcmParent = $(this).closest('.qcm-header');
+        const qcmId = qcmParent.data('qcm-id');
+          
+
+        const questionList = $('#questions-' + qcmId);
+          
         if (questionList.is(':visible')) {
-          questionList.slideUp()
+          questionList.slideUp();
         } else {
-          questionList.slideDown()
+          questionList.slideDown();
         }
-      })
+      });
+     
     })
   </script>
 {% endblock %}
