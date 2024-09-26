@@ -40,6 +40,9 @@ RUN pip install --no-cache-dir -r requirements.prod.txt
 
 RUN rm ./requirements.prod.txt
 
+RUN mkdir /app/log
+RUN touch /app/log/log.txt
+
 RUN python manage.py collectstatic --noinput
 
 CMD python manage.py wait_for_db \
