@@ -16,6 +16,8 @@ COPY ./auto_qcm .
 
 FROM base AS dev
 
+ENV env=dev
+
 COPY ./requirements.dev.txt .
 
 RUN pip install --no-cache-dir -r requirements.dev.txt
@@ -30,11 +32,15 @@ CMD python manage.py wait_for_db \
 
 FROM base AS prod
 
+ENV env=prod
+
 COPY ./requirements.prod.txt .
 
 RUN pip install --no-cache-dir -r requirements.prod.txt
 
 RUN rm ./requirements.prod.txt
+
+RUN python manage.py collectstatic --noinput
 
 CMD python manage.py wait_for_db \
     && python manage.py migrate --noinput \
