@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from app.models import Question, Reponse, Tag
 from app.forms import QuestionForm, ReponseFormSet
+from django.urls import reverse_lazy
 
-@login_required(login_url='login')
+
+@login_required(login_url=reverse_lazy('login'))
 def create_question(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST)
