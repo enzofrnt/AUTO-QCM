@@ -90,7 +90,7 @@
 
       <!-- Liste des questions -->
       <div id="questions-list">
-        {% include 'questions/question_list_content.html' with selectable=True %}
+        {% include 'questions/question_list_content.html' with selectable=True  %}
       </div>
 
       <button type="submit" class="btn btn-success">
@@ -104,17 +104,15 @@
 
   </div> 
 
-  <!-- Inclusion de jQuery et du script de filtrage -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{% static 'js/questions/question_filter.js' %}"></script>
-  <script src="{% static 'js/questions/question_events.js' %}"></script>
   <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
-  <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+  <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="fileModalLabel">Envoyer un fichier PDF de cours pour générer des questions</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
           <form id="fileUploadForm">
@@ -126,7 +124,7 @@
           </form>
           <!-- Indicateur de chargement -->
           <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display:none;">
-            <span class="visually-hidden">Chargement...</span>
+            <span class="sr-only">Chargement...</span>
           </div>
           <!-- Conteneur pour les questions générées -->
           <div id="generatedQuestionsContainer" style="display: none;">
@@ -136,113 +134,117 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="closeModal" data-bs-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-secondary" id="closeModal" data-dismiss="modal">Fermer</button>
           <button type="button" class="btn btn-primary" id="generateBtn">Générer</button>
         </div>
       </div>
     </div>
   </div>
+  {% endblock %}
+  {% comment %} <!-- Inclusion de jQuery et des scripts Bootstrap 4.5 -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <!-- Inclure Popper.js avant Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <!-- Inclure Bootstrap 4.5 CSS et JS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> {% endcomment %}
 
-  <!-- Inclusion des scripts Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+  {% block extra_scripts %}
+  <script src="{% static 'js/questions/question_filter.js' %}"></script>
+  <script src="{% static 'js/questions/question_events.js' %}"></script>
   <!-- Votre code JavaScript -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    $(document).ready(function() {
       // Ouvrir la modal lors du clic sur le bouton
-      document.getElementById('openModal').addEventListener('click', function() {
-        var myModal = new bootstrap.Modal(document.getElementById('fileModal'), {});
-        myModal.show();
+      $('#openModal').click(function() {
+        $('#fileModal').modal('show');
       });
 
       // Gestion des formulaires de plages
-      var formsetPrefix = '{{ formset.prefix }}'
-      var totalForms = document.getElementById('id_' + formsetPrefix + '-TOTAL_FORMS')
-      var formsetContainer = document.getElementById('plagesFormset')
+      var formsetPrefix = '{{ formset.prefix }}';
+      var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS');
+      var formsetContainer = $('#plagesFormset');
 
-      document.getElementById('add-plage').addEventListener('click', function() {
-        var formCount = parseInt(totalForms.value)
-        var newFormHtml = formsetContainer.querySelector('.formset-row').cloneNode(true)
+      $('#add-plage').click(function() {
+        var formCount = parseInt(totalForms.val());
+        var newFormHtml = formsetContainer.find('.formset-row:first').clone();
 
         // Mise à jour des attributs 'id' et 'name' pour chaque élément cloné
-        var inputs = newFormHtml.querySelectorAll('input, select, textarea')
-        inputs.forEach(function(input) {
-          var newId = input.id.replace('-0-', '-' + formCount + '-')
-          var newName = input.name.replace('-0-', '-' + formCount + '-')
-          input.setAttribute('name', newName)
-          input.setAttribute('id', newId)
+        newFormHtml.find('input, select, textarea').each(function() {
+          var newId = $(this).attr('id').replace('-0-', '-' + formCount + '-');
+          var newName = $(this).attr('name').replace('-0-', '-' + formCount + '-');
+          $(this).attr({ name: newName, id: newId });
 
           // Effacer les valeurs des champs
-          if (input.type !== 'hidden') {
-            input.value = ''
+          if ($(this).attr('type') !== 'hidden') {
+            $(this).val('');
           }
-        })
+        });
 
-        newFormHtml.querySelector('.remove-plage').style.display = 'block'
+        newFormHtml.find('.remove-plage').show();
 
-        formsetContainer.appendChild(newFormHtml)
-        totalForms.value = formCount + 1
-      })
+        formsetContainer.append(newFormHtml);
+        totalForms.val(formCount + 1);
+      });
 
       // Gestion de la suppression des plages
-      document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('remove-plage')) {
-          var formRow = event.target.closest('.formset-row')
-          formRow.querySelector('input[type="checkbox"][name$="-DELETE"]').checked = true
-          formRow.style.display = 'none'
-        }
-      })
+      $(document).on('click', '.remove-plage', function() {
+        var formRow = $(this).closest('.formset-row');
+        formRow.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true);
+        formRow.hide();
+      });
 
       // Initialiser le bouton supprimer
-      var removeButtons = document.querySelectorAll('.remove-plage')
-      removeButtons.forEach(function(button, index) {
+      $('.remove-plage').each(function(index) {
         if (index === 0) {
-          button.style.display = 'none'
+          $(this).hide();
         }
-      })
+      });
 
       // Variables pour la génération de questions
       var hasGenerated = false;  // Indicateur pour savoir si des questions ont déjà été générées
       var questions = [];  // Variable pour stocker les questions générées
 
-      // Envoyer le fichier via Fetch API lors du clic sur le bouton "Générer" ou "Régénérer"
-      document.getElementById('generateBtn').addEventListener('click', function() {
-        var formData = new FormData(document.getElementById('fileUploadForm'))
+      // Envoyer le fichier via Ajax lors du clic sur le bouton "Générer" ou "Régénérer"
+      $('#generateBtn').click(function() {
+        var formData = new FormData($('#fileUploadForm')[0]);
 
         // Afficher l'indicateur de chargement
-        document.getElementById('loadingSpinner').style.display = 'block'
-        document.getElementById('generatedQuestionsContainer').style.display = 'none'
+        $('#loadingSpinner').show();
+        $('#generatedQuestionsContainer').hide();
 
-        fetch('/question/generation/', {
-          method: 'POST',
-          body: formData,
+        $.ajax({
+          url: '/question/generation/',  // URL de ta vue Django
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
           headers: {
             'X-CSRFToken': '{{ csrf_token }}'
+          },
+          success: function(response) {
+            $('#loadingSpinner').hide();
+            $('#generatedQuestionsContainer').show();
+            questions = response.questions;  // Stocker les questions générées dans la variable
+
+            displayGeneratedQuestions(questions);
+
+            // Changer le bouton en "Régénérer"
+            hasGenerated = true;
+            $('#generateBtn').text('Régénérer');
+          },
+          error: function(xhr, status, error) {
+            $('#loadingSpinner').hide();
+            console.error(xhr.responseText);  // Afficher les erreurs dans la console
           }
-        })
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('loadingSpinner').style.display = 'none'
-          document.getElementById('generatedQuestionsContainer').style.display = 'block'
-          questions = data.questions;  // Stocker les questions générées dans la variable
-
-          displayGeneratedQuestions(questions);
-
-          // Changer le bouton en "Régénérer"
-          hasGenerated = true;
-          document.getElementById('generateBtn').textContent = 'Régénérer';
-        })
-        .catch(error => {
-          document.getElementById('loadingSpinner').style.display = 'none'
-          console.error('Erreur:', error);
         });
       });
 
       // Fonction pour afficher les questions générées dans la popup
       function displayGeneratedQuestions(questions) {
-        var questionsList = document.getElementById('generatedQuestionsList');
-        questionsList.innerHTML = '';  // Vider la liste avant d'afficher les nouvelles questions
+        var questionsList = $('#generatedQuestionsList');
+        questionsList.empty();  // Vider la liste avant d'afficher les nouvelles questions
 
         questions.forEach(function(question, index) {
           var questionHtml = `
@@ -259,18 +261,17 @@
 
           questionHtml += `</ul></label></div>`;
 
-          questionsList.insertAdjacentHTML('beforeend', questionHtml);
+          questionsList.append(questionHtml);
         });
       }
 
       // Sauvegarder les questions sélectionnées
-      document.getElementById('saveSelectedQuestions').addEventListener('click', function() {
+      $('#saveSelectedQuestions').click(function() {
         var selectedQuestions = [];
 
         // Récupérer les questions cochées
-        var checkboxes = document.querySelectorAll('#generatedQuestionsList input:checked');
-        checkboxes.forEach(function(checkbox) {
-          var questionIndex = checkbox.value;  // Utiliser l'index pour récupérer la question complète
+        $('#generatedQuestionsList input:checked').each(function() {
+          var questionIndex = $(this).val();  // Utiliser l'index pour récupérer la question complète
           var questionData = questions[questionIndex];
 
           // Ajouter la question complète avec ses réponses dans selectedQuestions
@@ -288,23 +289,23 @@
 
         if (selectedQuestions.length > 0) {
           // Envoyer les données sous forme de JSON
-          fetch('/save-questions/', {
-            method: 'POST',
+          $.ajax({
+            url: '/save-questions/',  // URL pour sauvegarder les questions
+            type: 'POST',
+            data: JSON.stringify({
+              'questions': selectedQuestions
+            }),
+            contentType: 'application/json',
             headers: {
-              'Content-Type': 'application/json',
               'X-CSRFToken': '{{ csrf_token }}'
             },
-            body: JSON.stringify({
-              'questions': selectedQuestions
-            })
-          })
-          .then(response => response.json())
-          .then(data => {
-            alert('Questions sauvegardées avec succès !');
-            window.location.reload();  // Rafraîchir la page pour voir les nouvelles questions dans la liste de QCM
-          })
-          .catch(error => {
-            console.error('Erreur:', error);
+            success: function(response) {
+              alert('Questions sauvegardées avec succès !');
+              window.location.reload();  // Rafraîchir la page pour voir les nouvelles questions dans la liste de QCM
+            },
+            error: function(xhr, status, error) {
+              console.error(xhr.responseText);  // Afficher les erreurs dans la console
+            }
           });
         } else {
           alert('Veuillez sélectionner au moins une question.');
@@ -312,16 +313,17 @@
       });
 
       // Vider les variables liées à la réponse du POST lorsqu'on ferme la modal
-      document.getElementById('closeModal').addEventListener('click', function() {
+      $('#closeModal').click(function() {
         if (!hasGenerated) {
           // Réinitialiser les champs du formulaire de génération
-          document.getElementById('fileInput').value = '';  // Vider le fichier sélectionné
-          document.getElementById('generatedQuestionsList').innerHTML = '';  // Vider la liste des questions générées
-          document.getElementById('generateBtn').textContent = 'Générer';  // Réinitialiser le texte du bouton
+          $('#fileInput').val('');  // Vider le fichier sélectionné
+          $('#generatedQuestionsList').empty();  // Vider la liste des questions générées
+          $('#generateBtn').text('Générer');  // Réinitialiser le texte du bouton
         }
       });
     });
   </script>
+    <!-- Inclusion des scripts personnalisés -->
+   
+  {% endblock %}
 
-
-{% endblock %}
