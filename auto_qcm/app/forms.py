@@ -1,8 +1,9 @@
 from django import forms
 from django.forms import inlineformset_factory
 from django.db.models import Q
-from .models import Question, Reponse, QCM, Utilisateur, Plage
+from app.models import Question, Reponse, QCM, Utilisateur, Plage
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 
 
 class QuestionForm(forms.ModelForm):
@@ -26,13 +27,31 @@ class QuestionForm(forms.ModelForm):
         }
 
 
-# Formset pour gérer les réponses associées à une question
+class BaseReponseFormSet(forms.BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+
+        # Vérifier qu'il y a au moins une réponse correcte
+        has_correct_answer = False
+        for form in self.forms:
+            if form.cleaned_data.get("is_correct") and not form.cleaned_data.get(
+                "DELETE", False
+            ):
+                has_correct_answer = True
+                break
+
+        if not has_correct_answer:
+            raise ValidationError("Il doit y avoir au moins une réponse correcte.")
+
+
+# Utiliser le formset avec la validation personnalisée
 ReponseFormSet = inlineformset_factory(
     Question,
     Reponse,
     fields=["texte", "is_correct"],
     extra=1,  # Nombre de formulaires de réponse vierges à afficher par défaut
     can_delete=True,  # Permettre de supprimer des réponses
+    formset=BaseReponseFormSet,  # Utiliser le formset avec la validation
 )
 
 
