@@ -1,0 +1,32 @@
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      {% if selectable %}
+        <th>Sélection</th>
+      {% endif %}
+      <th>Texte de la Question et Tags</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for question in questions %}
+      <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
+        {% if selectable %}
+          <td style="width: 50px;">
+            <input type="checkbox" name="selected_questions" value="{{ question.id }}" {% if question.id|stringformat:"s" in selected_question_ids %}checked{% endif %}>
+          </td>
+        {% endif %}
+        <td>
+          {% if selectable %}
+            {% include 'questions/question_display.html' with question=question show_buttons=False %}
+          {% else %}
+            {% include 'questions/question_display.html' with question=question show_buttons=True %}
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="{% if selectable %}2{% else %}1{% endif %}">Aucune question disponible.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
