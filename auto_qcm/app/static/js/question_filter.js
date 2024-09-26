@@ -1,4 +1,3 @@
-// static/js/question_filter.js
 $(document).ready(function () {
   const filterForm = $('#filterForm');
   const selectedTagsContainer = $('#selected-tags-container');
@@ -6,10 +5,19 @@ $(document).ready(function () {
   // Variable pour stocker les IDs des questions sélectionnées
   let selectedQuestionIds = [];
 
-  // URL templates pour les actions (définis dans le template)
-  var deleteUrlTemplate = window.deleteUrlTemplate || '';
-  var exportUrlTemplate = window.exportUrlTemplate || '';
-  var editUrlTemplate = window.editUrlTemplate || '';
+  // Initialiser selectedQuestionIds au chargement de la page
+  function initializeSelectedQuestions() {
+    $('input[name="selected_questions"]:checked').each(function() {
+      const questionId = $(this).val().toString();
+      if (!selectedQuestionIds.includes(questionId)) {
+        selectedQuestionIds.push(questionId);
+      }
+    });
+    console.log('Selected Question IDs after initialization:', selectedQuestionIds);
+  }
+
+  // Appeler la fonction d'initialisation après que la page est complètement chargée
+  initializeSelectedQuestions();
 
   // Fonction pour mettre à jour les tags sélectionnés et effectuer la requête AJAX
   function updateURLAndFetch() {
@@ -49,19 +57,8 @@ $(document).ready(function () {
     updateURLAndFetch();
   }, 500));
 
-  // Intercepter la soumission du formulaire pour éviter le rechargement complet
-  filterForm.on('submit', function(e) {
-    e.preventDefault();
-    fetchQuestions();
-  });
-
   // Fonction pour effectuer la requête AJAX et mettre à jour la liste des questions
   function fetchQuestions() {
-    // Stocker les IDs des questions sélectionnées
-    selectedQuestionIds = $('input[name="selected_questions"]:checked').map(function() {
-      return $(this).val();
-    }).get();
-
     $.ajax({
       url: filterForm.attr('action') || window.location.href,
       type: 'GET',
@@ -70,15 +67,8 @@ $(document).ready(function () {
         // Remplacer le contenu de la liste des questions
         $('#questions-list').html(response.html);
 
-        // Réattacher les événements
+        // Ré-attacher les événements
         reattachQuestionEvents();
-
-        // Restaurer les cases à cocher sélectionnées
-        $('input[name="selected_questions"]').each(function() {
-          if (selectedQuestionIds.includes($(this).val())) {
-            $(this).prop('checked', true);
-          }
-        });
       },
       error: function(xhr, status, error) {
         console.error('Erreur lors du chargement des questions:', error);
@@ -86,7 +76,7 @@ $(document).ready(function () {
     });
   }
 
-  // Fonction pour réattacher les événements aux questions
+  // Fonction pour ré-attacher les événements aux questions
   function reattachQuestionEvents() {
     // Gérer le clic sur les questions pour afficher/cacher les détails
     $('.question-row').off('click').on('click', function(e) {
@@ -95,7 +85,7 @@ $(document).ready(function () {
         $('#answers-' + questionId).slideToggle(300);
       }
     });
-  
+
     // Gestion du survol pour afficher/masquer les boutons d'actions en utilisant visibility
     $('.question-container').off('mouseenter mouseleave').on('mouseenter', function() {
       var buttonList = $(this).find('.button-list');
@@ -108,50 +98,50 @@ $(document).ready(function () {
         buttonList.css('visibility', 'hidden');
       }
     });
-  
-    // Attacher les événements de clic sur les boutons seulement si les boutons existent
-    if ($('.delete-question-btn').length > 0) {
-      $('.delete-question-btn').off('click').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const questionId = $(this).data('question-id');
-        if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
-          window.location.href = deleteUrlTemplate.replace('0', questionId);
-        }
-      });
-    }
-  
-    if ($('.export-question-btn').length > 0) {
-      $('.export-question-btn').off('click').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const questionId = $(this).data('question-id');
-        window.location.href = exportUrlTemplate.replace('0', questionId);
-      });
-    }
-  
-    if ($('.edit-question-btn').length > 0) {
-      $('.edit-question-btn').off('click').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const questionId = $(this).data('question-id');
-        window.location.href = editUrlTemplate.replace('0', questionId);
-      });
-    }
-  
+
     // Gérer les changements sur les cases à cocher
     $('input[name="selected_questions"]').off('change').on('change', function() {
-      updateSelectedQuestions();
+      const questionId = $(this).val().toString();
+      if ($(this).is(':checked')) {
+        if (!selectedQuestionIds.includes(questionId)) {
+          selectedQuestionIds.push(questionId);
+        }
+      } else {
+        selectedQuestionIds = selectedQuestionIds.filter(id => id !== questionId);
+      }
+      console.log('Selected Question IDs after change:', selectedQuestionIds);
     });
-  }
 
-  // Fonction pour mettre à jour la liste des questions sélectionnées
-  function updateSelectedQuestions() {
-    selectedQuestionIds = $('input[name="selected_questions"]:checked').map(function() {
-      return $(this).val();
-    }).get();
+    // Mettre à jour les cases à cocher en fonction de selectedQuestionIds
+    $('input[name="selected_questions"]').each(function() {
+      const questionId = $(this).val().toString();
+      if (selectedQuestionIds.includes(questionId)) {
+        $(this).prop('checked', true);
+      } else {
+        $(this).prop('checked', false);
+      }
+    });
   }
 
   // Initialiser les événements
   reattachQuestionEvents();
+
+  // Avant la soumission du formulaire principal, ajouter des champs cachés pour les questions sélectionnées
+  $('#qcmForm').on('submit', function() {
+    // Supprimer les champs cachés existants pour éviter les doublons
+    $('#selected-questions-container').remove();
+
+    // Créer un conteneur pour les champs cachés
+    const hiddenInputsContainer = $('<div id="selected-questions-container"></div>');
+
+    // Ajouter un champ caché pour chaque question sélectionnée
+    selectedQuestionIds.forEach(function(questionId) {
+      hiddenInputsContainer.append(`<input type="hidden" name="selected_questions" value="${questionId}">`);
+    });
+
+    // Ajouter le conteneur au formulaire
+    $(this).append(hiddenInputsContainer);
+
+    console.log('Selected Question IDs before submission:', selectedQuestionIds);
+  });
 });
