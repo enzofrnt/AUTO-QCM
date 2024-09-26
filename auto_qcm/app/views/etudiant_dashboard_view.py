@@ -7,10 +7,14 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 
 from datetime import timedelta
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @login_required(login_url=reverse_lazy("login"))
 @teacher_or_self_student_required
+
 def etudiant_dashboard(request, pk):
     utilisateur = get_object_or_404(Utilisateur, pk=pk)
 
@@ -24,14 +28,16 @@ def etudiant_dashboard(request, pk):
     today = timezone.now().date()
     three_months_later = today + timedelta(days=90)
     upcoming_qcms = QCM.objects.filter(
-        Q(date_modif__gte=today) & Q(date_modif__lte=three_months_later)
-    ).order_by("date_modif")
 
-    return render(
-        request,
-        "dashboard/etudiant_dashboard.html",
-        {
-            "upcoming_qcms": upcoming_qcms,
-            "reponse_qcm": reponse_qcm,
-        },
-    )
+        Q(date__gte=today) & Q(date__lte=three_months_later)
+    ).order_by('date')
+
+    logger.error(utilisateur)
+
+
+    return render(request, 'dashboard/etudiant_dashboard.html', {
+        'upcoming_qcms': upcoming_qcms,
+        'reponse_qcm': reponse_qcm,
+        'utilisateur': utilisateur,
+    })
+
