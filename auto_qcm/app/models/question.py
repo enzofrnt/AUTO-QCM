@@ -13,8 +13,8 @@ class Question(models.Model):
     note = models.IntegerField(default=1)
     melange_rep = models.BooleanField(default=True)
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
-    creator = models.ForeignKey("auth.User", on_delete=models.CASCADE)
-    
+    creator = models.ForeignKey("Utilisateur", on_delete=models.CASCADE)
+
     def __str__(self):
         return self.texte
 

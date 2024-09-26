@@ -1,6 +1,10 @@
-from .custom_permission_denied_view import custom_permission_denied_view
-from .delete_qcm_view import delete_qcm
-from .delete_question_view import delete_question
+from .custom_error_view import (
+    custom_permission_denied_view,
+    custom_page_not_found_view,
+    custom_server_error_view,
+)
+from .qcm_delete_view import delete_qcm
+from .question_delete_view import delete_question
 from .enseignant_dashboard_view import enseignant_dashboard
 from .etudiant_dashboard_view import etudiant_dashboard
 from .export_view import export_qcm_latex, export_qcm_xml, export_question_xml
