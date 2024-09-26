@@ -30,7 +30,7 @@ CMD python manage.py wait_for_db \
 
 FROM base AS prod
 
-COPY ./requirements.pro.txt .
+COPY ./requirements.prod.txt .
 
 RUN pip install --no-cache-dir -r requirements.prod.txt
 
