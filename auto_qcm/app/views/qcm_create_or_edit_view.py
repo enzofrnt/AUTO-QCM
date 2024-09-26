@@ -5,12 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from app.models import QCM, Question, Plage
 from app.forms import QcmForm, PlageForm
+from django.urls import reverse_lazy
 
 
 logger = getLogger(__name__)
 
 
-@login_required(login_url="login")
+@login_required(login_url=reverse_lazy("login"))
 def create_or_edit_qcm(request, pk=None):
     if pk:
         qcm = get_object_or_404(QCM, pk=pk)

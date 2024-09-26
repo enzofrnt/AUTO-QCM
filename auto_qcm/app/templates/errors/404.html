@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>404 - Page non trouvée</h1>
+    <p>La page que vous recherchez n'existe pas ou a été déplacée.</p>
+    <a href="{% url 'home' %}">Retour à la page d'accueil</a>
+{% endblock %}
