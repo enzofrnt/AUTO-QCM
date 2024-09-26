@@ -9,6 +9,8 @@ services:
       - auto_qcm_db
     env_file:
       - .env
+    volumes:
+      - ../auto_qcm/log/:/app/log/
     ports:
       - "8000:8000"
 
