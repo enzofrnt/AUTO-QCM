@@ -1,38 +1,16 @@
 {% extends 'base.html' %}
-  
+
 {% load color_filters %} 
+{% load static %}
+
 {% block content %}
   <div class="container mt-4">
     {% if not selectable %}
       <h2>Liste des Questions</h2>
     {% endif %}
 
-    <!-- Formulaire de filtre -->
-    <form method="get" class="mb-4" id="filterForm" action="{% url 'question-list' %}">
-      <div class="form-row align-items-center">
-        <div class="col-auto">
-          <input type="text" name="nom" class="form-control" placeholder="Filtrer par nom" value="{{ nom_filtre }}" />
-        </div>
-        <div class="col-auto">
-          <div class="form-group">
-            <label for="tags">Filtrer par tags :</label>
-            <div id="tags" class="d-flex flex-wrap">
-              {% for tag in tags %}
-                <span class="badge tag-badge form-check-label {% if tag.name in tag_filtre %}selected{% endif %}" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">
-                  {{ tag.name }}
-                </span>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-        <!-- Champs cachés pour les tags sélectionnés -->
-        <div id="selected-tags-container">
-          {% for tag_name in tag_filtre %}
-            <input type="hidden" name="tags" value="{{ tag_name }}">
-          {% endfor %}
-        </div>
-      </div>
-    </form>
+    <!-- Inclure le formulaire de filtre -->
+    {% include 'questions/question_filter_form.html' %}
 
     <!-- Liste des questions -->
     <div id="questions-list">
@@ -42,121 +20,10 @@
       {% include 'questions/question_list_content.html' %}
     </div>
   </div>
+ 
 
-  <!-- Inclusion de jQuery avant vos scripts -->
+  <!-- Inclure jQuery et le script de filtrage -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
-  <!-- Vos scripts pour le filtre -->
-  <script>
-    $(document).ready(function () {
-      const filterForm = $('#filterForm');
-      const selectedTagsContainer = $('#selected-tags-container');
-
-      // Variable pour stocker les IDs des questions sélectionnées
-      let selectedQuestionIds = [];
-
-      // Fonction pour mettre à jour les tags sélectionnés et effectuer la requête AJAX
-      function updateURLAndFetch() {
-        const selectedTags = $('#tags .tag-badge.selected').map(function () {
-          return $(this).data('tag-name');
-        }).get();
-
-        // Mettre à jour les champs cachés pour les tags
-        selectedTagsContainer.empty();
-        selectedTags.forEach(function (tagName) {
-          selectedTagsContainer.append(`<input type="hidden" name="tags" value="${tagName}">`);
-        });
-
-        // Effectuer une requête AJAX pour récupérer les questions filtrées
-        fetchQuestions();
-      }
-
-      // Gérer la sélection des tags
-      $('#tags .tag-badge').click(function () {
-        $(this).toggleClass('selected');
-        updateURLAndFetch();
-      });
-
-      // Fonction de debounce pour éviter les soumissions excessives
-      function debounce(func, delay) {
-        let debounceTimer;
-        return function() {
-          const context = this;
-          const args = arguments;
-          clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(() => func.apply(context, args), delay);
-        }
-      }
-
-      // Appliquer le debounce à la saisie dans le champ de recherche
-      filterForm.find('input[name="nom"]').on('input', debounce(function () {
-        updateURLAndFetch();
-      }, 500));
-
-      // Intercepter la soumission du formulaire pour éviter le rechargement complet
-      filterForm.on('submit', function(e) {
-        e.preventDefault();
-        fetchQuestions();
-      });
-
-      // Fonction pour effectuer la requête AJAX et mettre à jour la liste des questions
-      function fetchQuestions() {
-        // Stocker les IDs des questions sélectionnées
-        selectedQuestionIds = $('input[name="selected_questions"]:checked').map(function() {
-          return $(this).val();
-        }).get();
-
-        $.ajax({
-          url: filterForm.attr('action'),
-          type: 'GET',
-          data: filterForm.serialize(),
-          success: function(response) {
-            // Remplacer le contenu de la liste des questions
-            $('#questions-list').html(response.html);
-
-            // Réattacher les événements
-            reattachQuestionEvents();
-
-            // Restaurer les cases à cocher sélectionnées
-            $('input[name="selected_questions"]').each(function() {
-              if (selectedQuestionIds.includes($(this).val())) {
-                $(this).prop('checked', true);
-              }
-            });
-          },
-          error: function(xhr, status, error) {
-            console.error('Erreur lors du chargement des questions:', error);
-          }
-        });
-      }
-
-      // Fonction pour réattacher les événements aux questions
-      function reattachQuestionEvents() {
-        // Gérer le clic sur les questions pour afficher/cacher les détails
-        $('.question-row').off('click').on('click', function(e) {
-          if (!$(e.target).is('input[type="checkbox"]')) {
-            const questionId = $(this).data('question-id');
-            $('#answers-' + questionId).slideToggle(300);
-          }
-        });
-
-        // Gérer les changements sur les cases à cocher
-        $('input[name="selected_questions"]').off('change').on('change', function() {
-          updateSelectedQuestions();
-        });
-      }
-
-      // Fonction pour mettre à jour la liste des questions sélectionnées
-      function updateSelectedQuestions() {
-        selectedQuestionIds = $('input[name="selected_questions"]:checked').map(function() {
-          return $(this).val();
-        }).get();
-      }
-
-      // Initialiser les événements
-      reattachQuestionEvents();
-    });
-  </script>
-
+  <script src="{% static 'js/question_filter.js' %}"></script>
   {% include 'latexify/scripts.html' %}
 {% endblock %}

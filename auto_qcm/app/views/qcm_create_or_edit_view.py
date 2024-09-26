@@ -4,7 +4,9 @@ from app.forms import PlageForm, QcmForm
 from app.models import QCM, Plage, Question, Tag
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 
 logger = getLogger(__name__)
@@ -99,6 +101,14 @@ def create_or_edit_qcm(request, pk=None):
         "tags": tags,
         "nom_filtre": nom_filtre,
         "tag_filtre": tag_filtre,
+        "selectable": True,  # Indiquer que les questions sont sélectionnables
     }
+
+    # Gérer les requêtes AJAX pour le filtrage
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        html = render_to_string(
+            "questions/question_list_content.html", context, request=request
+        )
+        return JsonResponse({"html": html})
 
     return render(request, "qcm/qcm_form.html", context)
