@@ -2,11 +2,11 @@
 {% load latexify %}
 {% load static %}
 
-<div class="question-container position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
+<div class="question-container position-relative">
 
   <!-- En-tête de la question -->
-  <div class="d-flex justify-content-between align-items-center">
-    <div class="question-header">{{ question.nom }}</div>
+  <div class="d-flex justify-content-between align-items-center question-header" data-question-id="{{ question.id }}" style="cursor: pointer;">
+    <div>{{ question.nom }}</div>
 
     <!-- Boutons d'export, modification, suppression (affichés si show_buttons est vrai) -->
     {% if show_buttons %}
@@ -43,7 +43,7 @@
     <br /><br />
 
     <p>
-      Nombre de bonne réponses : <b>{{ question.number_of_correct_answers }}</b>
+      Nombre de bonnes réponses : <b>{{ question.number_of_correct_answers }}</b>
     </p>
 
     <ul class="list-group">
@@ -58,7 +58,6 @@
     </ul>
   </div>
 </div>
-
 
 <script>
   var deleteUrlTemplate = "{% url 'question-delete' question_id=0 %}";
