@@ -19,7 +19,7 @@
                             <ul class="list-group">
                                 {% for reponse in reponse_qcm %}
                                 <li class="list-group-item">
-                                    <strong>{{ reponse.qcm.titre }}</strong> - {{ reponse.qcm.date|date:"d/m/Y" }}
+                                    <strong>{{ reponse.qcm.titre }}</strong> - {{ reponse.date_reponse|date:"d/m/Y" }}
                                     <ul>
                                         <li>
                                             <a href="{% url 'qcm-correct' reponse.id %}">Voir ma réponse</a>
@@ -74,7 +74,7 @@
             {% for qcm in upcoming_qcms %}
             {
                 title: '{{ qcm.titre|escapejs }}',
-                start: '{{ qcm.date|date:"Y-m-d\\TH:i:s" }}',
+                start: '{{ qcm.date_modif|date:"Y-m-d\\TH:i:s" }}',
                 backgroundColor: getRandomColor(),
                 borderColor: getRandomColor(),
                 textColor: 'black',
@@ -142,7 +142,7 @@
 
     var qcmDates = [
     {% for reponse in reponse_qcm %}
-        '{{ reponse.qcm.date|date:"d/m/Y"|escapejs }}',
+        '{{ reponse.qcm.date_modif|date:"d/m/Y"|escapejs }}',
     {% endfor %}
     ];
 
