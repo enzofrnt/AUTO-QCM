@@ -1,12 +1,11 @@
 from logging import getLogger
-from django.utils import timezone
-from django.shortcuts import render, redirect, get_object_or_404
+
+from app.forms import PlageForm, QcmForm
+from app.models import QCM, Plage, Question, Tag
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
-from app.models import QCM, Question, Plage
-from app.forms import QcmForm, PlageForm
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-
 
 logger = getLogger(__name__)
 
@@ -38,8 +37,8 @@ def create_or_edit_qcm(request, pk=None):
             qcm.save()
 
             # Gérer les questions sélectionnées
-            selected_questions = request.POST.getlist("selected_questions")
-            qcm.questions.set(selected_questions)
+            selected_question_ids = request.POST.getlist("selected_questions")
+            qcm.questions.set(selected_question_ids)
             qcm.save()
 
             # Sauvegarder les plages
@@ -70,16 +69,36 @@ def create_or_edit_qcm(request, pk=None):
         form = QcmForm(instance=qcm)
         formset = PlageFormSet(queryset=plages)
 
+    # Gestion du filtrage des questions
+    nom_filtre = request.GET.get("nom", "")
+    tag_filtre = request.GET.getlist("tags")
+    tags = Tag.objects.all()
+
     questions = Question.objects.all()
 
-    return render(
-        request,
-        "qcm/qcm_form.html",
-        {
-            "form": form,
-            "formset": formset,
-            "questions": questions,
-            "selected_questions": selected_questions,
-            "qcm": qcm,
-        },
-    )
+    # Filtrer par nom
+    if nom_filtre:
+        questions = questions.filter(nom__icontains=nom_filtre)
+
+    # Filtrer par tags
+    if tag_filtre:
+        for tag_name in tag_filtre:
+            questions = questions.filter(tags__name__icontains=tag_name)
+
+    questions = questions.distinct()
+
+    # Préparer les IDs des questions sélectionnées pour les utiliser dans le template
+    selected_question_ids = [str(q.id) for q in selected_questions]
+
+    context = {
+        "form": form,
+        "formset": formset,
+        "questions": questions,
+        "selected_question_ids": selected_question_ids,
+        "qcm": qcm,
+        "tags": tags,
+        "nom_filtre": nom_filtre,
+        "tag_filtre": tag_filtre,
+    }
+
+    return render(request, "qcm/qcm_form.html", context)

@@ -1,9 +1,17 @@
 {% extends 'base.html' %}
+{% load color_filters %}
+
 {% block content %}
   <style>
     label[for^="id_form-"][for$="-DELETE"],
     input[type="checkbox"][name$="-DELETE"] {
       display: none;
+    }
+    .tag-badge.selected {
+      opacity: 1;
+    }
+    .tag-badge {
+      opacity: 0.6;
     }
   </style>
 
@@ -35,11 +43,39 @@
                 {% endfor %}
             {% endfor %}
           {% endfor %}
-
         </ul>
       </div>
     {% endif %}
 
+    <!-- Formulaire de filtre (déplacé en dehors du formulaire principal) -->
+    {% comment %} <h3>Sélectionnez les questions :</h3>
+    <form method="get" class="mb-4" id="filterForm" action="">
+      <div class="form-row align-items-center">
+        <div class="col-auto">
+          <input type="text" name="nom" class="form-control" placeholder="Filtrer par nom" value="{{ nom_filtre }}" />
+        </div>
+        <div class="col-auto">
+          <div class="form-group">
+            <label for="tags">Filtrer par tags :</label>
+            <div id="tags" class="d-flex flex-wrap">
+              {% for tag in tags %}
+                <span class="badge tag-badge form-check-label {% if tag.name in tag_filtre %}selected{% endif %}" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">
+                  {{ tag.name }}
+                </span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <!-- Champs cachés pour les tags sélectionnés -->
+        <div id="selected-tags-container">
+          {% for tag_name in tag_filtre %}
+            <input type="hidden" name="tags" value="{{ tag_name }}">
+          {% endfor %}
+        </div>
+      </div>
+    </form> {% endcomment %}
+
+    <!-- Formulaire principal -->
     <form method="post" id="qcmForm">
       {% csrf_token %}
 
@@ -73,46 +109,40 @@
         {% endfor %}
       </div>
 
-      <!-- Sélection des questions -->
-      <h3>Sélectionnez les questions :</h3>
+      <!-- Boutons pour créer ou générer des questions -->
+      {% comment %} <div class="d-inline-flex mb-4">
+        <a href="{% url 'question-create' %}" class="btn btn-primary ml-2">Créer une nouvelle Question</a>
+        <button type="button" class="btn btn-success ml-2" id="openModal">Générer automatiquement des questions</button>
+      </div> {% endcomment %}
 
-      <!-- Champ pour rechercher une question -->
-      <div class="d-inline-flex">
-        <div class="form-group">
-          <label for="searchQuestion">Rechercher une question :</label>
-          <input type="text" class="form-control" id="searchQuestion" placeholder="Rechercher">
-        </div>
-        <!-- Bouton pour ouvrir la popup -->
-        <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 m-4">Créer une nouvelle Question</a>
-        <button type="button" class="btn btn-success ml-2 w-10 m-4" id="openModal">Générer automatiquement des questions</button>
-      </div>
-
-      <!-- Liste des questions avec tags, case à cocher et boutons d'action -->
-      <div class="form-group" id="questionsList">
-        {% for question in questions %}
-          <div class="form-check question-item d-flex align-items-center justify-content-between">
-            <div>
-              <input class="form-check-input" type="checkbox" name="selected_questions" value="{{ question.id }}" id="question_{{ question.id }}" {% if question in selected_questions %}checked{% endif %}>
-              <label class="form-check-label" for="question_{{ question.id }}">
-                <div>
-                  <strong>{{ question.nom }} :</strong> {{ question.texte }}
-                </div>
-                <div>
-                  {% for tag in question.tags.all %}
-                    <span class="badge" style="background-color: {{ tag.color }}; color: #fff;">{{ tag.name }}</span>
-                  {% endfor %}
-                </div>
-              </label>
-            </div>
-
-            <!-- Boutons d'action pour modifier, supprimer, exporter -->
-            <div class="btn-group" role="group">
-              <a href="{% url 'question-edit' pk=question.id %}" class="btn btn-warning btn-sm">Modifier</a>
-              <a href="{% url 'question-delete' question.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?');">Supprimer</a>
-              <a href="{% url 'question-export-xml' question.id %}" class="btn btn-info btn-sm">Exporter</a>
-            </div>
-          </div>
-        {% endfor %}
+      <!-- Liste des questions -->
+      <div id="questions-list">
+        
+        {% comment %} <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Sélection</th>
+              <th>Texte de la Question et Tags</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for question in questions %}
+              <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
+                <td style="width: 50px;">
+                  <input type="checkbox" name="selected_questions" value="{{ question.id }}" {% if question.id|stringformat:"s" in selected_question_ids %}checked{% endif %}>
+                </td>
+                <td>
+                  {% include 'questions/question_display.html' with question=question show_buttons=False %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="2">Aucune question disponible.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table> {% endcomment %}
+        {% include 'questions/question_list.html' with selectable=True %}
       </div>
 
       <button type="submit" class="btn btn-success">
@@ -127,216 +157,122 @@
   </div>
 
   <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
-  <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="fileModalLabel">Envoyer un fichier PDF de cours pour générer des questions</h5>
-        </div>
-        <div class="modal-body">
-          <form id="fileUploadForm">
-            {% csrf_token %}
-            <div class="mb-3">
-              <label for="fileInput" class="form-label">Choisir un fichier PDF</label>
-              <input type="file" class="form-control" id="fileInput" name="file" accept=".pdf" required>
-            </div>
-          </form>
-          <!-- Indicateur de chargement -->
-          <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display:none;">
-            <span class="visually-hidden"></span>
-          </div>
-          <!-- Conteneur pour les questions générées -->
-          <div id="generatedQuestionsContainer" style="display: none;">
-            <h4>Questions générées</h4>
-            <div id="generatedQuestionsList"></div>
-            <button type="button" class="btn btn-primary" id="saveSelectedQuestions">Ajouter les questions sélectionnées</button>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="closeModal" data-bs-dismiss="modal">Fermer</button>
-          <button type="button" class="btn btn-primary" id="generateBtn">Générer</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Votre code de modal existant -->
 
-
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Vos autres scripts -->
   <script>
-    var hasGenerated = false;  // Indicateur pour savoir si des questions ont déjà été générées
-    var questions = [];  // Variable pour stocker les questions générées
-
     $(document).ready(function() {
-      // Conteneur des formulaires de plages
-      let formsetContainer = $('#plagesFormset');
-      let totalForms = $('#id_form-TOTAL_FORMS');
+      // Gestion des formulaires de plages
+      // Votre code JavaScript pour gérer les plages
 
-      // Fonction pour ajouter un nouveau formulaire
-      $('#add-plage').click(function() {
-        let formCount = $('.formset-row').length;  // Nombre de formulaires actuels
-        let newForm = $('.formset-row:first').clone();  // Cloner le premier formulaire
-        let formRegex = /form-(\d){1,2}-/g;
+      // Fonction pour mettre à jour les tags sélectionnés et soumettre le formulaire
+      function updateURLAndSubmit() {
+        const selectedTags = $('#tags .tag-badge.selected').map(function () {
+          return $(this).data('tag-name');
+        }).get();
 
-        // Remplacer les indices des noms et IDs par le nouveau formulaire
-        newForm.html(newForm.html().replace(formRegex, 'form-' + formCount + '-'));
+        // Mettre à jour les champs cachés pour les tags
+        $('#selected-tags-container').empty();
+        selectedTags.forEach(function (tagName) {
+          $('#selected-tags-container').append(`<input type="hidden" name="tags" value="${tagName}">`);
+        });
 
-        // Réinitialiser les valeurs des champs du nouveau formulaire
-        newForm.find('input[type="text"]').val('');  // Vider les champs texte
-        newForm.find('input[type="checkbox"]').prop('checked', false);  // Décocher DELETE
+        // Soumettre le formulaire de filtrage
+        $('#filterForm').submit();
+      }
 
-        // Ajouter le nouveau formulaire dans le conteneur
-        formsetContainer.append(newForm);
-
-        // Mettre à jour le nombre total de formulaires
-        totalForms.val(formCount + 1);
+      // Gérer la sélection des tags
+      $('#tags .tag-badge').click(function () {
+        $(this).toggleClass('selected');
+        updateURLAndSubmit();
       });
 
-      // Fonction pour marquer un formulaire pour suppression
-      formsetContainer.on('click', '.remove-plage', function() {
-        let formToDelete = $(this).closest('.formset-row');
+      // Fonction de debounce pour éviter les soumissions excessives
+      function debounce(func, delay) {
+        let debounceTimer;
+        return function() {
+          const context = this;
+          const args = arguments;
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => func.apply(context, args), delay);
+        }
+      }
 
-        // Cacher le formulaire et cocher le champ DELETE associé
-        formToDelete.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true);
-        formToDelete.hide();  // Masquer le formulaire mais il sera supprimé
+      // Appliquer le debounce à la saisie dans le champ de recherche
+      $('#filterForm').find('input[name="nom"]').on('input', debounce(function () {
+        $('#filterForm').submit();
+      }, 500));
 
-        // Mettre à jour le nombre total de formulaires affichés
-        let formCount = $('.formset-row:visible').length;
-        totalForms.val(formCount);
-      });
-    });
-
-
-    $(document).ready(function() {
-      // Ouvrir la modal lors du clic sur le bouton
-      $('#openModal').click(function() {
-        $('#fileModal').modal('show');
-      });
-
-      // Envoyer le fichier via Ajax lors du clic sur le bouton "Générer" ou "Régénérer"
-      $('#generateBtn').click(function() {
-        var formData = new FormData($('#fileUploadForm')[0]);
-  
-        // Afficher l'indicateur de chargement
-        $('#loadingSpinner').show();
-        $('#generatedQuestionsContainer').hide();
-  
+      // Filtrer les questions sans recharger la page
+      $('#filterForm').on('submit', function(e) {
+        e.preventDefault();
         $.ajax({
-          url: '/question/generation/',  // URL de ta vue Django
-          type: 'POST',
-          data: formData,
-          processData: false,
-          contentType: false,
-          success: function(response) {
-            $('#loadingSpinner').hide();
-            $('#generatedQuestionsContainer').show();
-            questions = response.questions;  // Stocker les questions générées dans la variable
-            
-            displayGeneratedQuestions(questions);
-            
-            // Changer le bouton en "Régénérer"
-            hasGenerated = true;
-            $('#generateBtn').text('Régénérer');
+          url: '',  // Laisser vide pour soumettre à la même URL
+          type: 'GET',
+          data: $(this).serialize(),
+          success: function(data) {
+            // Remplacer le contenu de la liste des questions
+            var newQuestionsList = $(data).find('#questions-list').html();
+            $('#questions-list').html(newQuestionsList);
+
+            // Réappliquer les événements après la mise à jour du contenu
+            reattachEvents();
           },
           error: function(xhr, status, error) {
-            $('#loadingSpinner').hide();
-            console.error(xhr.responseText);  // Afficher les erreurs dans la console
+            console.error(xhr.responseText);
           }
         });
       });
-  
-      // Fonction pour afficher les questions générées dans la popup
-      function displayGeneratedQuestions(questions) {
-        var questionsList = $('#generatedQuestionsList');
-        questionsList.empty();  // Vider la liste avant d'afficher les nouvelles questions
 
-        questions.forEach(function(question, index) {
-          var questionHtml = `
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="${index}" id="generatedQuestion_${index}">
-              <label class="form-check-label" for="generatedQuestion_${index}">
-                <strong>${question.nom}</strong><br>
-                ${question.texte}
-                <ul>`;
-          
-          question.reponses.forEach(function(reponse) {
-            questionHtml += `<li>${reponse.texte} ${reponse.is_correct ? '(Bonne réponse)' : ''}</li>`;
-          });
+      // Fonction pour réattacher les événements après mise à jour du contenu
+      function reattachEvents() {
+        // Gérer le clic sur les questions pour afficher/cacher les détails
+        $('.question-row').off('click').on('click', function(e) {
+          if (!$(e.target).is('input[type="checkbox"]')) {
+            const questionId = $(this).data('question-id');
+            $('#answers-' + questionId).slideToggle(300);
+          }
+        });
 
-          questionHtml += `</ul></label></div>`;
+        // Conserver les cases cochées après le filtrage
+        $('input[name="selected_questions"]').each(function() {
+          const questionId = $(this).val();
+          if (selectedQuestionIds.includes(questionId)) {
+            $(this).prop('checked', true);
+          }
+        });
 
-          questionsList.append(questionHtml);
+        // Mettre à jour les tags sélectionnés
+        $('#tags .tag-badge').each(function() {
+          const tagName = $(this).data('tag-name');
+          if (selectedTags.includes(tagName)) {
+            $(this).addClass('selected');
+          } else {
+            $(this).removeClass('selected');
+          }
         });
       }
 
-      // Sauvegarder les questions sélectionnées
-      $('#saveSelectedQuestions').click(function() {
-        var selectedQuestions = [];
+      // Stocker les IDs des questions sélectionnées
+      let selectedQuestionIds = [];
+      // Mettre à jour la liste des questions sélectionnées au chargement
+      updateSelectedQuestions();
 
-        // Récupérer les questions cochées
-        $('#generatedQuestionsList input:checked').each(function() {
-          var questionIndex = $(this).val();  // Utiliser l'index pour récupérer la question complète
-          var questionData = questions[questionIndex];
-
-          // Ajouter la question complète avec ses réponses dans selectedQuestions
-          selectedQuestions.push({
-            "nom": questionData.nom,
-            "texte": questionData.texte,
-            "reponses": questionData.reponses.map(function(reponse) {
-              return {
-                "texte": reponse.texte,
-                "is_correct": reponse.is_correct
-              };
-            })
-          });
-        });
-
-        if (selectedQuestions.length > 0) {
-          // Envoyer les données sous forme de JSON
-          $.ajax({
-            url: '/save-questions/',  // URL pour sauvegarder les questions
-            type: 'POST',
-            data: JSON.stringify({
-              'questions': selectedQuestions
-            }),
-            contentType: 'application/json',
-            success: function(response) {
-              alert('Questions sauvegardées avec succès !');
-              window.location.reload();  // Rafraîchir la page pour voir les nouvelles questions dans la liste de QCM
-            },
-            error: function(xhr, status, error) {
-              console.error(xhr.responseText);  // Afficher les erreurs dans la console
-            }
-          });
-        } else {
-          alert('Veuillez sélectionner au moins une question.');
-        }
+      // Mettre à jour la liste des questions sélectionnées lors du changement
+      $(document).on('change', 'input[name="selected_questions"]', function() {
+        updateSelectedQuestions();
       });
 
-      // Vider les variables liées à la réponse du POST lorsqu'on ferme la modal
-      $('#closeModal').click(function() {
-        if (!hasGenerated) {
-          // Réinitialiser les champs du formulaire de génération
-          $('#fileInput').val('');  // Vider le fichier sélectionné
-          $('#generatedQuestionsList').empty();  // Vider la liste des questions générées
-          $('#generateBtn').text('Générer');  // Réinitialiser le texte du bouton
-        }
-      });
+      function updateSelectedQuestions() {
+        selectedQuestionIds = $('input[name="selected_questions"]:checked').map(function() {
+          return $(this).val();
+        }).get();
+      }
 
-      // Filtrer les questions par recherche
-      $('#searchQuestion').on('input', function() {
-        var searchValue = $(this).val().toLowerCase();
-        $('#questionsList .question-item').each(function() {
-          var questionText = $(this).text().toLowerCase();
-          if (questionText.includes(searchValue)) {
-            $(this).show();
-          } else {
-            $(this).hide();
-          }
-        });
-      });
+      // Appeler reattachEvents au chargement initial
+      reattachEvents();
     });
-
-    
   </script>
 {% endblock %}
