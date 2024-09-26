@@ -13,6 +13,7 @@ from django.core.management.base import BaseCommand
 from faker import Faker
 import random
 from django.utils import timezone
+from datetime import timedelta
 
 
 class Command(BaseCommand):
@@ -139,9 +140,13 @@ class Command(BaseCommand):
             qcm.save()
 
             for _ in range(5):
+                dateDeb = timezone.make_aware(
+                    fake.date_time_this_month(), timezone.get_current_timezone()
+                )
+                dateFin = dateDeb + timedelta(days=random.randint(1, 10))
                 plage = Plage.objects.create(
-                    debut=fake.date_time_this_month(),
-                    fin=fake.date_time_this_month(),
+                    debut=dateDeb,
+                    fin=dateFin,
                     promo=random.choice([promo1, promo2, promo3]),
                     groupe=random.choice([g1a, g1b, g2a, g2b, g3a, g3b]),
                     qcm=qcm,
