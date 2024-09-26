@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from app.models import QCM, ReponseQCM, ReponseQuestion, Reponse
 import datetime
+from django.urls import reverse_lazy
+
 
 @login_required
 def repondre_qcm(request, qcm_id):

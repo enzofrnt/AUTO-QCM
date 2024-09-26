@@ -41,6 +41,7 @@ from app.views import (
     support_doc,
     qcm_statistics,
 )
+from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
@@ -91,4 +92,6 @@ urlpatterns = [
 if os.environ.get("env", "dev") == "dev":
     urlpatterns.append(path("__reload__/", include("django_browser_reload.urls")))
 
-handler403 = "app.views.custom_permission_denied_view"
+handler403 = "app.views.custom_error_view.custom_permission_denied_view"
+handler404 = "app.views.custom_error_view.custom_page_not_found_view"
+handler500 = "app.views.custom_error_view.custom_server_error_view"

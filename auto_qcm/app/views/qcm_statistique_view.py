@@ -6,12 +6,13 @@ from app.models import ReponseQCM, Question, QCM, ReponseQuestion
 from app.decorators import self_required, teacher_required
 from django.contrib.auth.decorators import login_required
 from datetime import timedelta
+from django.urls import reverse_lazy
 
 import logging
 
 logger = logging.getLogger(__name__)
 
-@login_required(login_url='login')
+@login_required(login_url=reverse_lazy('login'))
 @self_required
 @teacher_required
 def qcm_statistics(request, pk=None):

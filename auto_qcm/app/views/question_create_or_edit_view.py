@@ -3,8 +3,10 @@ from django.contrib.auth.decorators import login_required
 from app.models import Question, Reponse, Tag
 from app.forms import QuestionForm, ReponseFormSet
 from app.decorators import teacher_required
+from django.urls import reverse_lazy
 
-@login_required(login_url='login')
+
+@login_required(login_url=reverse_lazy('login'))
 @teacher_required
 def create_or_edit_question(request, pk=None):
     # Si un pk est passé, c'est une modification, sinon c'est une création
