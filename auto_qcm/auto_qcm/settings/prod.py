@@ -15,6 +15,13 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 
+INSTALLED_APPS.append("django_minify_html")
+
+MIDDLEWARE += (
+    "django.middleware.gzip.GZipMiddleware",
+    "django_minify_html.middleware.MinifyHtmlMiddleware",
+)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
