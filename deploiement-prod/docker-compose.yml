@@ -5,6 +5,8 @@ services:
       context: ../
       dockerfile: Dockerfile
       target: ${env}
+    depends_on:
+      - auto_qcm_db
     env_file:
       - .env
     ports:
