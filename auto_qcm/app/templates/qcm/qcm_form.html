@@ -87,11 +87,11 @@
       </div>
 
       <div id="plageVide" class="hidden">
-          {{formset.empty_form.as_p }}
-          <div class="form-group">
-            <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
-          </div>
+        {{formset.empty_form.as_p }}
+        <div class="form-group">
+          <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
         </div>
+      </div>
 
       <!-- Sélection des questions -->
       <h3>Sélectionnez les questions :</h3>
@@ -197,9 +197,6 @@
         let formCount = $('.formset-row').length;
         let newForm = $('#plageVide').clone(); 
 
-        //Vider le formulaire
-        newForm.find('input[type="text"]').val('');
-        newForm.find('input[type="checkbox"]').prop('checked', false);
         newForm.removeClass('hidden');
         newForm.addClass('formset-row item');
         
@@ -208,7 +205,6 @@
         newForm.html(newForm.html().replace(regex, formCount));
         
         formsetContainer.append(newForm);
-
         totalForms.val(formCount + 1);
       });
 
