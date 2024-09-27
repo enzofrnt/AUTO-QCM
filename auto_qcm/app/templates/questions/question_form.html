@@ -122,8 +122,9 @@
     </form>
   </div>
 
-  {% include 'latexify/scripts.html' %}
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  {% include 'latexify/scripts.html' %} 
+{% endblock %}
+{% block extra_scripts %}
   <script>
     $(document).ready(function () {
       var formsetPrefix = '{{ formset.prefix }}'
