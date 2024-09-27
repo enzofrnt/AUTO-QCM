@@ -16,6 +16,8 @@ COPY ./auto_qcm .
 
 FROM base AS dev
 
+ENV env=dev
+
 COPY ./requirements.dev.txt .
 
 RUN pip install --no-cache-dir -r requirements.dev.txt
@@ -30,10 +32,19 @@ CMD python manage.py wait_for_db \
 
 FROM base AS prod
 
-COPY ./requirements.pro.txt .
+ENV env=prod
+
+COPY ./requirements.prod.txt .
 
 RUN pip install --no-cache-dir -r requirements.prod.txt
 
 RUN rm ./requirements.prod.txt
 
-CMD [ "gunicorn", "auto_qcm.wsgi:application", "--bind", "0.0.0.0:8000" ]
+RUN mkdir -p /app/log
+RUN touch /app/log/log.txt
+
+RUN python manage.py collectstatic --noinput
+
+CMD python manage.py wait_for_db \
+    && python manage.py migrate --noinput \
+    && gunicorn auto_qcm.wsgi --bind 0.0.0.0:8000
