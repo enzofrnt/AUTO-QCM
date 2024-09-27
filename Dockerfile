@@ -40,7 +40,7 @@ RUN pip install --no-cache-dir -r requirements.prod.txt
 
 RUN rm ./requirements.prod.txt
 
-RUN mkdir /app/log
+RUN mkdir -p /app/log
 RUN touch /app/log/log.txt
 
 RUN python manage.py collectstatic --noinput

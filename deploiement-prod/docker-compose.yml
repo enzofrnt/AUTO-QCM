@@ -12,7 +12,7 @@ services:
     volumes:
       - ../auto_qcm/log/:/app/log/
     ports:
-      - "8000:8000"
+      - "80:8000"
 
   auto_qcm_db:
     container_name: auto_qcm_db
