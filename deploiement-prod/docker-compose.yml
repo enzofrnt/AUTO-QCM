@@ -5,10 +5,14 @@ services:
       context: ../
       dockerfile: Dockerfile
       target: ${env}
+    depends_on:
+      - auto_qcm_db
     env_file:
       - .env
+    volumes:
+      - ../auto_qcm/log/:/app/log/
     ports:
-      - "8000:8000"
+      - "80:8000"
 
   auto_qcm_db:
     container_name: auto_qcm_db

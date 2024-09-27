@@ -17,7 +17,7 @@
         {% endif %}
         <td>
           {% if selectable %}
-            {% include 'questions/question_display.html' with question=question show_buttons=False %}
+            {% include 'questions/question_display.html' with question=question show_buttons=True %}
           {% else %}
             {% include 'questions/question_display.html' with question=question show_buttons=True %}
           {% endif %}

@@ -166,3 +166,4 @@ cython_debug/
 
 
 database/
+/auto_qcm/log

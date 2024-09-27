@@ -34,13 +34,13 @@ from app.views import (
     export_question_xml,
     home,
     qcm_responses,
+    qcm_statistics,
     question_generation_view,
     remove_tag,
     repondre_qcm,
     save_generated_questions,
     search_student,
     support_doc,
-    qcm_statistics,
 )
 from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin

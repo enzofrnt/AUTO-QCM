@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% load color_filters %}
+{% load static %}
+
 
 {% block content %}
 <div class="container mt-4">
@@ -62,15 +64,13 @@
                         Nombre de questions : <b>{{ qcm.number_of_questions }}</b>
                       </p>
 
-                      {% for question in qcm.questions.all %}
-                        <li class="list-group-item">
-                          {{ question.nom }} <br />
-                          {{ question.texte }}
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-            </div>
+                    {% for question in qcm.questions.all %}
+                      <li class="list-group-item">
+                        {% include 'questions/question_display.html' with question=question show_buttons=True %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </td>
             </tr>
             {% empty %}
@@ -87,6 +87,7 @@
   </div>
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'js/questions/question_events.js' %}"></script>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <script>
     $(document).ready(function () {
