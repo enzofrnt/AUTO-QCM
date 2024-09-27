@@ -3,20 +3,18 @@ from datetime import datetime, timedelta
 
 from app.models import (  # Assurez-vous d'importer le bon modèle
     QCM,
+    Plage,
     Question,
     Reponse,
     ReponseQCM,
     ReponseQuestion,
-    Utilisateur,
-    Plage,
     Tag,
-)  # Assurez-vous d'importer le bon modèle
+    Utilisateur,
+)
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
-from faker import Faker
-import random
 from django.utils import timezone
-from datetime import timedelta
+from faker import Faker
 
 
 class Command(BaseCommand):
@@ -40,6 +38,7 @@ class Command(BaseCommand):
         g3b = Group.objects.create(name="3B")
 
         # Création des utilisateurs
+        professeur = Utilisateur.objects.create_user("prof", "prof@gamil.com", "prof")
         lois = Utilisateur.objects.create_user("Lois", "lois@gmail.com", "LoisLeBeau31")
         nath = Utilisateur.objects.create_user("Nathan", "nath@gmail.com", "TheBest31")
         enzo = Utilisateur.objects.create_user("Enzo", "enzo@gmail.com", "AppleNul12")
@@ -51,6 +50,8 @@ class Command(BaseCommand):
         )
         alex = Utilisateur.objects.create_user("Alexi", "alexi@gmail.com", "LPBLPM81")
 
+        professeur.groups.add(prof)
+        professeur.save()
         lois.groups.add(eleve)
         lois.groups.add(promo1)
         lois.groups.add(g1a)
