@@ -6,11 +6,20 @@ class QCM(models.Model):
     titre = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     questions = models.ManyToManyField("Question", related_name="qcms", blank=True)
-    date = models.DateTimeField(default=timezone.now)  # Définir une date par défaut
-    creator = models.ForeignKey("auth.User", on_delete=models.CASCADE)  # 1 est l'ID d'un utilisateur par défaut
-    
+    date_modif = (
+        models.DateTimeField()
+    )  # Apparement le auto_add c'est pas génial --> Me met pleins d'erreurs
+    creator = models.ForeignKey(
+        "Utilisateur", on_delete=models.CASCADE
+    )  # 1 est l'ID d'un utilisateur par défaut
+
     def __str__(self):
         return self.titre
+
+    def save(self, *args, **kwargs):
+        """Quand on sauvegarde on met a jour la date de modification"""
+        self.date_modif = timezone.now()
+        return super(QCM, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "QCM"
@@ -27,8 +36,7 @@ class QCM(models.Model):
             texte += quest.convertToXml()
         texte += "</quiz>"
         return texte
-    
-    
+
     def convert_to_latex(self):
         """
         Convertit un QCM en document LaTeX.
@@ -51,8 +59,12 @@ class QCM(models.Model):
         # Boucle à travers les questions associées au QCM
         for question in self.questions.all():
             # Déterminer le type de question
-            question_type = "questionmult" if question.reponses.filter(is_correct=True).count() > 1 else "question"
-            
+            question_type = (
+                "questionmult"
+                if question.reponses.filter(is_correct=True).count() > 1
+                else "question"
+            )
+
             # Ajouter la question LaTeX
             latex_content += f"  \\begin{{{question_type}}}{{{question.nom}}}\n"
             latex_content += "    \\bareme{b=2}\n"  # Ajustez le barème si nécessaire
@@ -70,7 +82,7 @@ class QCM(models.Model):
             latex_content += "      \\end{reponses}\n"
             latex_content += "    \\end{multicols}\n"
             latex_content += f"  \\end{{{question_type}}}\n"
-        
+
         # Fermer l'environnement \element{amc}
         latex_content += "}\n"
 

@@ -9,6 +9,9 @@
         Auto QCM
       {% endblock %}
     </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
     <link rel="icon" href="{% static 'img/logo.ico' %}" />
@@ -22,38 +25,35 @@
       <div style="width: 300px;">
         <div style="height: 100%; position: fixed;">
           <div style="display: flex; align-items: center;">
-          <nav class="sidebar">
-            <ul class="nav-list">
-              <!-- Dark Mode Switch Button -->
-              <li>
-                <label class="switch">
-                  <input type="checkbox" id="theme-switch">
-                  <span class="slider round"></span>
-                  DarkMode
-                </label>
-              </li>
-              
-              <!-- Navigation Links -->
-              <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-house-door"></i> Accueil</a></li>
-              {% if user.utilisateur.user_type == 'Enseignant' %}
-                  <li><a class="nav-item" href="{% url 'question-list' %}"> <i class="bi bi-card-checklist"></i> Liste des questions</a></li>
-                  <li><a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a></li>
-                  <li><a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a></li>
-                  <li><a class="nav-item" href="{% url 'qcm-list' %}"><i class="bi bi-card-checklist"></i> Liste des qcm (temp)</a></li>
-              {% endif %}
+            <nav class="sidebar">
+              <ul class="nav-list">
+                <!-- Dark Mode Switch Button -->
+                <li>
+                  <label class="switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider round"></span>
+                    DarkMode
+                  </label>
+                </li>
+                
+                <!-- Navigation Links -->
+                <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-house-door"></i> Accueil</a></li>
+                {% if user.is_tutor %}
+                    <li><a class="nav-item" href="{% url 'question-list' %}"> <i class="bi bi-card-checklist"></i> Liste des questions</a></li>
+                    <li><a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a></li>
+                    <li><a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a></li>
+                    <li><a class="nav-item" href="{% url 'qcm-list' %}"><i class="bi bi-card-checklist"></i> Liste des qcm (temp)</a></li>
+                {% else %}
+                    <li><a class="nav-item" href="{% url 'etudiant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord étudiant</a></li>
+                {% endif %}
 
-              {% if user.utilisateur.user_type == 'Etudiant' %}
-                  <li><a class="nav-item" href="{% url 'etudiant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord étudiant</a></li>
-              {% endif %}
-
-              <li><a class="nav-item" href="{% url 'support-doc' %}"> <i class="bi bi-info-circle"></i> Support & documentation</a></li>
-            </ul>
-          
-          
-        <button class="toggle-btn" onclick="toggleSidebar()"></button>
-            <i class="bi bi-caret-left"></i> <!-- Icône initiale -->
-        </button></nav>
-        </div>
+                <li><a class="nav-item" href="{% url 'support-doc' %}"> <i class="bi bi-info-circle"></i> Support & documentation</a></li>
+              </ul>
+              <button class="toggle-btn" onclick="toggleSidebar()"></button>
+                  <i class="bi bi-caret-left"></i> <!-- Icône initiale -->
+              </button>
+            </nav>
+          </div>
         </div>
       </div>
       <main class="content">
@@ -65,6 +65,30 @@
     </div>
     <script src="{% static 'js/scripts.js' %}"></script>
   </body>
+
+  <style>
+
+  
+    .nav-item {
+      display: block; /* Le lien s'étend sur toute la largeur de l'élément parent */
+      text-decoration: none;
+      color: #000; /* Couleur par défaut du texte */
+      width: 100%; /* Prend toute la largeur du parent */
+    }
+  
+    /* Ajout d'un effet hover sur toute la zone */
+    .nav-item:hover {
+      background-color: #f8f9fa; /* Change le fond au survol */
+      color: #007bff; /* Change la couleur du texte */
+      border-radius: 5px; /* Ajoute un arrondi aux coins */
+      transition: all 0.3s ease; /* Transition douce pour un effet smooth */
+    }
+    .nav-item:hover i {
+      color: #007bff; /* Change la couleur de l'icône au survol */
+    }
+  </style>
+  
+  
 </html>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

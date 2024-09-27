@@ -42,7 +42,7 @@ from app.views import (
     support_doc,
     qcm_statistics,
 )
-from django.conf.urls import handler403
+from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
@@ -62,22 +62,26 @@ urlpatterns = [
     path("question/delete/<int:question_id>/", delete_question, name="question-delete"),
     path("question/generation/", question_generation_view, name="generate-questions"),
     path("save-questions/", save_generated_questions, name="save-questions"),
-    #DASHBOARD
-    path('etudiant-dashboard/<int:pk>/', etudiant_dashboard, name="etudiant-dashboard"),
-    path('enseignant-dashboard/<int:pk>/', enseignant_dashboard, name="enseignant-dashboard"),
-    path('search-student/', search_student, name='search-student'),
-    path('qcm/responses/<int:qcm_id>/', qcm_responses, name='qcm-responses'),
-    path('qcm/statistiques/<int:pk>/', qcm_statistics, name='qcm-statistics'),
-    #CRUD QCM
-    path('qcm/create/',create_or_edit_qcm, name="qcm-create"),
-    path('qcm/edit/<int:pk>/',create_or_edit_qcm, name='qcm-edit'),
-    path('qcm/list/',QcmListView.as_view(),name='qcm-list'),
-    path('qcm/delete/<int:qcm_id>/',delete_qcm,name="qcm-delete"),
-    #Reponse QCM
-    path('qcm/anwser/<int:qcm_id>/',repondre_qcm,name="qcm-answer"),
-    path('qcm/correct/<int:repqcm_id>/',corriger_qcm,name="qcm-correct"),
+    # DASHBOARD
+    path("etudiant-dashboard/<int:pk>/", etudiant_dashboard, name="etudiant-dashboard"),
+    path(
+        "enseignant-dashboard/<int:pk>/",
+        enseignant_dashboard,
+        name="enseignant-dashboard",
+    ),
+    path("search-student/", search_student, name="search-student"),
+    path("qcm/responses/<int:qcm_id>/", qcm_responses, name="qcm-responses"),
+    path("qcm/statistiques/<int:pk>/", qcm_statistics, name="qcm-statistics"),
+    # CRUD QCM
+    path("qcm/create/", create_or_edit_qcm, name="qcm-create"),
+    path("qcm/edit/<int:pk>/", create_or_edit_qcm, name="qcm-edit"),
+    path("qcm/list/", QcmListView.as_view(), name="qcm-list"),
+    path("qcm/delete/<int:qcm_id>/", delete_qcm, name="qcm-delete"),
+    # Reponse QCM
+    path("qcm/anwser/<int:qcm_id>/", repondre_qcm, name="qcm-answer"),
+    path("qcm/correct/<int:repqcm_id>/", corriger_qcm, name="qcm-correct"),
     path('delete-multiple/', delete_multiple_qcms, name='qcm-delete-multiple'),
-    #Export
+    # Export
     path(
         "question/export-xml/<int:question_id>/",
         export_question_xml,
@@ -90,4 +94,6 @@ urlpatterns = [
 if os.environ.get("env", "dev") == "dev":
     urlpatterns.append(path("__reload__/", include("django_browser_reload.urls")))
 
-handler403 = "app.views.custom_permission_denied_view"
+handler403 = "app.views.custom_error_view.custom_permission_denied_view"
+handler404 = "app.views.custom_error_view.custom_page_not_found_view"
+handler500 = "app.views.custom_error_view.custom_server_error_view"
