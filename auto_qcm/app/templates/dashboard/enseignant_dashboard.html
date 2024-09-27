@@ -30,7 +30,7 @@
                     <div style="max-height: 243px; overflow-y: auto;">
                         <ul class="list-group">
                             {% for qcm in qcms_with_questions %}
-                            <li class="list-group-item">
+                            <li class="list-group-item text-dark">
                                 <strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
                                 <ul>
                                     {% if qcm.reponses_qcm.count > 0 %}
@@ -61,6 +61,13 @@
             </div>
         </div>
     </div>
+
+        <!-- Style pour changer la couleur du texte du mois -->
+        <style>
+            .fc-toolbar-title {
+            color: black;
+            }
+        </style>
 
     <!-- Lien vers les statistiques des QCM -->
     <div class="row">
