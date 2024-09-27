@@ -1,67 +1,95 @@
 {% extends 'base.html' %}
 
 {% load color_filters %}
+{% load static %}
+
 
 {% block content %}
-  <div class="container mt-4">
-    <h2>Liste des QCM</h2>
+<div class="container mt-4">
+  <h2>Liste des QCM</h2>
 
-    <!-- Liste des qcm -->
-    <div id="qcm-list">
-      <a href="{% url 'qcm-create' %}" class="btn btn-primary mb-4">Créer un nouveau qcm</a>
-      <table class="table table-bordered">
-        <thead>
+  <!-- Liste des qcm -->
+  <div id="qcm-list">
+    
+      
+    
+    <form id="qcm-form" method="POST" action="{% url 'qcm-delete-multiple' %}">
+      {% csrf_token %}
+      <div class="d-flex align-items-center">
+      <a href="{% url 'qcm-create' %}" class="btn btn-primary ">Créer un nouveau qcm</a>
+      <button type="submit" class="btn btn-danger">Supprimer les QCM sélectionnés</button>
+    </div> 
+      <table class="table  bg-light qcm-table">
+        <thead class="rounded">
           <tr>
+            <th>
+              <input type="checkbox" id="select-all">
+            </th>
             <th>Nom des qcms</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="qcm-list">
           {% for qcm in qcms %}
-            <tr class="qcm-row position-relative" data-qcm-id="{{ qcm.id }}" style="cursor: pointer; position: relative;">
-              <td>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="qcm-header">{{ qcm.titre }}</div>
-
-                  <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
-                  <div class="button-list align-items-center" style="gap: 10px; display: none;">
-                    <button type="button" class="btn btn-info btn-sm answer-qcm-btn"><i class="bi bi-eye"></i></button>
-
-                    <button type="button" class="btn btn-info btn-sm export-qcm-xml-btn">XML<i class="bi bi-arrow-bar-down"></i></button>
-                    <button type="button" class="btn btn-info btn-sm export-qcm-latex-btn">AMC<i class="bi bi-arrow-bar-down"></i></button>
-                    <button type="button" class="btn btn-warning btn-sm edit-qcm-btn"><i class="bi bi-pencil"></i></button>
-                    <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button>
-                  </div>
+          <tr class="qcm-row position-relative qcm-header" data-qcm-id="{{ qcm.id }}" style="cursor: pointer;">
+            <td class="">
+              
+                <div class="form-check ">
+                  <input class="form-check-input" type="checkbox" name="selected_qcms" value="{{ qcm.id }}">
                 </div>
+              
+            </td>
+            <td class="w-100 qcm-header-btn">
+            <div style="display: flex; flex-direction: column">
+              <div style="display: flex; justify-content: space-between;">
+                <div style="display: flex; align-items: center;" class=" ">{{ qcm.titre }}</div>
+
+                    <!-- Boutons d'export, modification, suppression (alignement horizontal) -->
+                    <div class="button-list align-items-center" style="gap: 50px; display: flex;">
+                      <button type="button" class="btn btn-info btn-sm answer-qcm-btn"><i class="bi bi-eye"></i></button>
+                      
+                      <button type="button" class="btn btn-info btn-sm export-qcm-xml-btn">XML<i class="bi bi-arrow-bar-down"></i></button>
+                      <button type="button" class="btn btn-info btn-sm export-qcm-latex-btn">AMC<i class="bi bi-arrow-bar-down"></i></button>
+
+                      {% comment %} <button type="button" class="btn btn-info btn-sm export-qcm-xml-btn"><i class="bi bi-arrow-bar-down"></i></button> {% endcomment %}
+
+                      <button type="button" class="btn btn-warning btn-sm edit-qcm-btn"><i class="bi bi-pencil"></i></button>
+                      {% comment %} <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button> {% endcomment %}
+                    </div>
+                    
+              </div>
 
                 <!-- Section des questions du qcm à afficher/cacher -->
-                <div class="qcm-list" id="questions-{{ qcm.id }}" style="display: none; margin-top: 10px;">
-                  <p>{{ qcm.description }}</p>
-                  <ul class="list-group">
-                    <p>
-                      Nombre de questions : <b>{{ qcm.number_of_questions }}</b>
-                    </p>
+                  <div class="qcm-list" id="questions-{{ qcm.id }}" style="display: none; margin-top: 10px;">
+                    <p>{{ qcm.description }}</p>
+                    <ul class="list-group">
+                      <p>
+                        Nombre de questions : <b>{{ qcm.number_of_questions }}</b>
+                      </p>
 
                     {% for question in qcm.questions.all %}
                       <li class="list-group-item">
-                        {{ question.nom }} <br />
-                        {{ question.texte }}
+                        {% include 'questions/question_display.html' with question=question show_buttons=True %}
                       </li>
                     {% endfor %}
                   </ul>
                 </div>
               </td>
             </tr>
-          {% empty %}
+            {% empty %}
             <tr>
-              <td>Aucun qcm disponible.</td>
+              <td colspan="2">Aucun qcm disponible.</td>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+            {% endfor %}
+          </tbody>
+        </table>
+  
+        
+      </form>
     </div>
   </div>
-
+  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'js/questions/question_events.js' %}"></script>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <script>
     $(document).ready(function () {
@@ -69,13 +97,13 @@
       const selectedTagsContainer = $('#selected-tags-container')
     
       // Afficher les boutons
-      $(document)
-        .on('mouseenter', '.qcm-row', function () {
-          $(this).find('.button-list').css('display', 'flex')
-        })
-        .on('mouseleave', '.qcm-row', function () {
-          $(this).find('.button-list').css('display', 'none')
-        })
+      //$(document)
+        //.on('mouseenter', '.qcm-row', function () {
+        //  $(this).find('.button-list').css('display', 'flex')
+        //})
+        //.on('mouseleave', '.qcm-row', function () {
+        //  $(this).find('.button-list').css('display', 'none')
+        //})
     
       // Confirmation de suppression avant de supprimer le qcm
       $(document).on('click', '.delete-qcm-btn', function (e) {
@@ -88,6 +116,24 @@
           window.location.href = "{% url 'qcm-delete' qcm_id=0 %}".replace('0', qcmId)
         }
       })
+
+      $(document).ready(function () {
+        // Sélectionner / désélectionner tous les QCM
+        $('#select-all').on('click', function () {
+          $('input[name="selected_qcms"]').prop('checked', this.checked);
+        });
+    
+        // Si tous les QCM sont cochés ou non
+        $('input[name="selected_qcms"]').on('click', function () {
+          if ($('input[name="selected_qcms"]:checked').length === $('input[name="selected_qcms"]').length) {
+            $('#select-all').prop('checked', true);
+          } else {
+            $('#select-all').prop('checked', false);
+          }
+        });
+      });
+
+      
     
       // Previsualiser le qcm
       $(document).on('click', '.answer-qcm-btn', function (e) {
@@ -125,17 +171,21 @@
         window.location.href = "{% url 'qcm-export-latex' qcm_id=0 %}".replace('0', qcmId)
       })
     
-      // JavaScript pour afficher/masquer les questions des qcm
-      $(document).on('click', '.qcm-row', function (e) {
-        const qcmId = $(this).data('qcm-id')
-        const questionList = $('#questions-' + qcmId)
-    
+      const qcmHeader = $('.qcm-header');
+      qcmHeader.on('click', '.qcm-header-btn', function(e) { 
+        const qcmParent = $(this).closest('.qcm-header');
+        const qcmId = qcmParent.data('qcm-id');
+          
+
+        const questionList = $('#questions-' + qcmId);
+          
         if (questionList.is(':visible')) {
-          questionList.slideUp()
+          questionList.slideUp();
         } else {
-          questionList.slideDown()
+          questionList.slideDown();
         }
-      })
+      });
+     
     })
   </script>
 {% endblock %}

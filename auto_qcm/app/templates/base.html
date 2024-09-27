@@ -9,6 +9,7 @@
         Auto QCM
       {% endblock %}
     </title>
+    <!-- Polices et styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -18,6 +19,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     <link rel="stylesheet" href="{% static 'css/home_page.css' %}" />
     <link rel="stylesheet" href="{% static 'css/question_list.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/qcm_list_style.css' %}" />
   </head>
   <body>
     <div class="" style="display: flex; width: 100%;">
@@ -49,7 +51,7 @@
                 <li><a class="nav-item" href="{% url 'support-doc' %}"> <i class="bi bi-info-circle"></i> Support & documentation</a></li>
               </ul>
               <button class="toggle-btn" onclick="toggleSidebar()"></button>
-                  <i class="bi bi-caret-left"></i> <!-- Icône initiale -->
+                  <i class="bi bi-caret-left"></i>
               </button>
             </nav>
           </div>
@@ -58,59 +60,21 @@
       <main class="content">
         {% include 'pp.html' %}
         {% block content %}
-
         {% endblock %}
       </main>
     </div>
+
+    <!-- 1. jQuery 3.5.1 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- 2. Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <!-- 3. Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Scripts personnalisés -->
     <script src="{% static 'js/scripts.js' %}"></script>
+    
+    <!-- Bloc pour les scripts spécifiques des pages -->
+    {% block extra_scripts %}{% endblock %}
   </body>
-
-  <style>
-
-  
-    .nav-item {
-      display: block; /* Le lien s'étend sur toute la largeur de l'élément parent */
-      text-decoration: none;
-      color: #000; /* Couleur par défaut du texte */
-      width: 100%; /* Prend toute la largeur du parent */
-    }
-  
-    /* Ajout d'un effet hover sur toute la zone */
-    .nav-item:hover {
-      background-color: #f8f9fa; /* Change le fond au survol */
-      color: #007bff; /* Change la couleur du texte */
-      border-radius: 5px; /* Ajoute un arrondi aux coins */
-      transition: all 0.3s ease; /* Transition douce pour un effet smooth */
-    }
-    .nav-item:hover i {
-      color: #007bff; /* Change la couleur de l'icône au survol */
-    }
-  </style>
-  
-  
 </html>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  window.onpageshow = function (event) {
-    if (event.persisted) {
-      // Effectue un appel HTTP de type HEAD à la racine du serveur
-      fetch('/', {
-        method: 'HEAD'
-      })
-        .then((response) => {
-          if (response.status === 200) {
-          } else if (response.redirected) {
-            // Si le serveur renvoie une redirection, on redirige
-            window.location.href = response.url
-          } else {
-            // Si autre chose que 200 ou redirection, log 'hessoule'
-            console.log('Hessoule')
-          }
-        })
-        .catch((error) => {
-          console.log('Erreur lors de la requête:', error)
-        })
-    }
-  }
-</script>

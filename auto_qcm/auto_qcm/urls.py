@@ -24,6 +24,7 @@ from app.views import (
     corriger_qcm,
     create_or_edit_qcm,
     create_or_edit_question,
+    delete_multiple_qcms,
     delete_qcm,
     delete_question,
     enseignant_dashboard,
@@ -33,13 +34,13 @@ from app.views import (
     export_question_xml,
     home,
     qcm_responses,
+    qcm_statistics,
     question_generation_view,
     remove_tag,
     repondre_qcm,
     save_generated_questions,
     search_student,
     support_doc,
-    qcm_statistics,
 )
 from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin
@@ -79,6 +80,7 @@ urlpatterns = [
     # Reponse QCM
     path("qcm/anwser/<int:qcm_id>/", repondre_qcm, name="qcm-answer"),
     path("qcm/correct/<int:repqcm_id>/", corriger_qcm, name="qcm-correct"),
+    path('delete-multiple/', delete_multiple_qcms, name='qcm-delete-multiple'),
     # Export
     path(
         "question/export-xml/<int:question_id>/",
