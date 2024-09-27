@@ -28,9 +28,9 @@ def create_or_edit_question(request, pk=None):
             Question,
             Reponse,
             fields=["texte", "is_correct"],
-            extra=1,  # Nombre de formulaires de réponse vierges à afficher par défaut
-            can_delete=True,  # Permettre de supprimer des réponses
-            formset=BaseReponseFormSet,  # Utiliser le formset avec la validation
+            extra=1,
+            can_delete=True,
+            formset=BaseReponseFormSet,
         )
 
     if request.method == "POST":
