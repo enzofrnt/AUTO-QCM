@@ -1,7 +1,6 @@
 from django import forms
-from django.forms import inlineformset_factory
 from django.db.models import Q
-from app.models import Question, Reponse, QCM, Utilisateur, Plage
+from app.models import Question, Reponse, QCM, Plage
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 
@@ -42,17 +41,6 @@ class BaseReponseFormSet(forms.BaseInlineFormSet):
 
         if not has_correct_answer:
             raise ValidationError("Il doit y avoir au moins une réponse correcte.")
-
-
-# Utiliser le formset avec la validation personnalisée
-ReponseFormSet = inlineformset_factory(
-    Question,
-    Reponse,
-    fields=["texte", "is_correct"],
-    extra=1,  # Nombre de formulaires de réponse vierges à afficher par défaut
-    can_delete=True,  # Permettre de supprimer des réponses
-    formset=BaseReponseFormSet,  # Utiliser le formset avec la validation
-)
 
 
 class QcmForm(forms.ModelForm):
