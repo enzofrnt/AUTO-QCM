@@ -33,16 +33,16 @@ def create_or_edit_qcm(request, pk=None):
         form = QcmForm(request.POST, instance=qcm)
         formset = PlageFormSet(request.POST, queryset=plages)
 
+        selected_question_ids = request.POST.getlist("selected_questions")
+        if len(selected_question_ids) == 0:
+            form.add_error(None, "Vous devez sélectionner au moins une question")
         if form.is_valid() and formset.is_valid():
             qcm = form.save(commit=False)
             qcm.creator = request.user
             qcm.save()
 
-            # Gérer les questions sélectionnées
-            selected_question_ids = request.POST.getlist("selected_questions")
             qcm.questions.set(selected_question_ids)
             qcm.save()
-
             # Sauvegarder les plages
             for formPlage in formset:
                 if formPlage.cleaned_data.get("DELETE"):
