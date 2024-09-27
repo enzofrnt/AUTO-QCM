@@ -76,19 +76,34 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
+        // Création des événements à partir des plages de chaque QCM
         var events = [
             {% for qcm in upcoming_qcms %}
-            {
-                title: '{{ qcm.titre|escapejs }}',
-                start: '{{ qcm.date_modif|date:"Y-m-d\\TH:i:s" }}',
-                backgroundColor: getRandomColor(),
-                borderColor: getRandomColor(),
-                textColor: 'black',
-                url: '{% url "qcm-edit" qcm.id %}' 
-            },
+                {% for plage in qcm.plages.all %}
+                {
+                    title: '{{ qcm.titre|escapejs }} s\'ouvre pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',
+                    start: '{{ plage.debut|date:"Y-m-d\\TH:i:s" }}',
+                    end: '{{ plage.debut|date:"Y-m-d\\TH:i:s" }}',
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    textColor: 'black',
+                    url: '{% url "qcm-edit" qcm.id %}' 
+                },
+                {
+                    title: '{{ qcm.titre|escapejs }} se termine pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',
+                    start: '{{ plage.fin|date:"Y-m-d\\TH:i:s" }}',
+                    end: '{{ plage.fin|date:"Y-m-d\\TH:i:s" }}',
+                    endblock: true,
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    textColor: 'black',
+                    url: '{% url "qcm-edit" qcm.id %}'
+                },
+                {% endfor %}
             {% endfor %}
         ];
 
+        // Initialisation du calendrier avec les événements
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             headerToolbar: {
@@ -130,6 +145,7 @@
         return color;
     }
 </script>
+
 
 <style>
     .fc-daygrid-event {
