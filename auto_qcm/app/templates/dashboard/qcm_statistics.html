@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Statistiques des QCM</h1>
+
+    <div class="form-group">
+        <label for="qcm-select">Sélectionnez un QCM :</label>
+        <select id="qcm-select" class="form-control">
+            <option value="all">Tous les QCM</option>
+            {% for qcm in qcms_stats %}
+                <option value="{{ qcm.id }}">{{ qcm.titre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <canvas id="stats-graph" width="400" height="200"></canvas>
+    <div id="questions-container" class="mt-4">
+        <ul id="questions-list"></ul>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('stats-graph').getContext('2d');
+        var qcmsStats = {{ qcms_stats|safe }};
+        var chart;
+
+        function updateChart(selectedQcmId) {
+            var data = [];
+            var labels = [];
+            var questionsHTML = '';
+
+            if (selectedQcmId === 'all') {
+                data = qcmsStats.map(qcm => qcm.avg_score_percentage);
+                labels = qcmsStats.map(qcm => qcm.titre);
+            } else {
+                var selectedQcm = qcmsStats.find(qcm => qcm.id === parseInt(selectedQcmId));
+                if (selectedQcm) {
+                    data = selectedQcm.questions_stats.map(q => q.avg_score_percentage);
+                    labels = selectedQcm.questions_stats.map(q => q.nom);
+                    questionsHTML = selectedQcm.questions_stats.map(q => 
+                        `<li>${q.nom}: ${q.avg_score_percentage.toFixed(2)}% (${q.total_responses} réponses)</li>`
+                    ).join('');
+                }
+            }
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Score moyen (%)',
+                        data: data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Score (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Statistiques des QCM'
+                        }
+                    }
+                }
+            });
+
+            // Update the questions list
+            document.getElementById('questions-list').innerHTML = questionsHTML;
+        }
+
+        document.getElementById('qcm-select').addEventListener('change', function() {
+            updateChart(this.value);
+        });
+
+        // Initial chart with all QCMs
+        updateChart('all');
+    });
+</script>
+{% endblock %}

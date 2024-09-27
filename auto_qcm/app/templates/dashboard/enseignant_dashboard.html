@@ -2,65 +2,79 @@
 
 {% block content %}
 <div class="container mt-5">
-	<h1 class="mb-4">Tableau de bord Enseignant</h1>
-	<p>Gérez vos QCM, suivez les résultats et planifiez vos sessions</p>
+    <h1 class="mb-4">Tableau de bord Enseignant</h1>
+    <p>Gérez vos QCM, suivez les résultats et planifiez vos sessions</p>
 
-	<div class="row">
-		<!-- Colonne de gauche : Barre de recherche et Liste des QCM -->
-		<div class="col-md-6">
-			<div class="card shadow-sm mb-3">
-				<div class="card-header bg-success text-white">
-					<h3>Rechercher un élève</h3>
-				</div>
-				<div class="card-body">
-					<form method="GET" action="{% url 'search-student' %}">
-						<div class="input-group">
-							<input type="text" class="form-control" name="q" placeholder="Nom ou Prénom de l'élève">
-							<button class="btn btn-success" type="submit">Rechercher</button>
-						</div>
-					</form>
-				</div>
-			</div>
+    <div class="row">
+        <!-- Colonne de gauche : Barre de recherche et Liste des QCM -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success">
+                    <h3>Rechercher un élève</h3>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'search-student' %}">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" placeholder="Nom ou Prénom de l'élève">
+                            <button class="btn btn-success" type="submit">Rechercher</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-			<div class="card shadow-sm mb-3">
-				<div class="card-header bg-primary text-white">
-					<h3>QCM avec vos questions</h3>
-				</div>
-				<div class="card-body">
-					<div style="max-height: 243px; overflow-y: auto;">
-						<ul class="list-group">
-							{% for qcm in qcms_with_questions %}
-							<li class="list-group-item">
-								<strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
-								<ul>
-									{% if qcm.reponses_qcm.count > 0 %}
-									<li>
-										{{ qcm.reponses_qcm.count }} réponses - 
-										<a href="{% url 'qcm-responses' qcm.id %}">Voir toutes les réponses</a>
-									</li>
-									{% else %}
-									<li>Aucune réponse pour ce QCM.</li>
-									{% endif %}
-								</ul>
-							</li>
-							{% empty %}
-							<li class="list-group-item">Aucun QCM trouvé.</li>
-							{% endfor %}
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary">
+                    <h3>QCM avec vos questions</h3>
+                </div>
+                <div class="card-body">
+                    <div style="max-height: 243px; overflow-y: auto;">
+                        <ul class="list-group">
+                            {% for qcm in qcms_with_questions %}
+                            <li class="list-group-item text-dark">
+                                <strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
+                                <ul>
+                                    {% if qcm.reponses_qcm.count > 0 %}
+                                    <li>
+                                        {{ qcm.reponses_qcm.count }} réponses - 
+                                        <a href="{% url 'qcm-responses' qcm.id %}">Voir toutes les réponses</a>
+                                    </li>
+                                    {% else %}
+                                    <li>Aucune réponse pour ce QCM.</li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">Aucun QCM trouvé.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<!-- Colonne de droite : Calendrier -->
-		<div class="col-md-6">
-			<div class="card shadow-sm mb-4">
-				<div class="card-body">
-					<div id="calendar" style="width: 100%; height: 500px;"></div>
-				</div>
-			</div>
-		</div>
-	</div>
+        <!-- Colonne de droite : Calendrier -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div id="calendar" style="width: 100%; height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Style pour changer la couleur du texte du mois -->
+        <style>
+            .fc-toolbar-title {
+            color: black;
+            }
+        </style>
+
+    <!-- Lien vers les statistiques des QCM -->
+    <div class="row">
+        <div class="col-md-12 mt-4 mb-5">
+            <a href="{% url 'qcm-statistics' enseignant.pk %}" class="btn btn-info">Voir les statistiques des QCM</a>
+        </div>
+    </div>
 </div>
 
 <!-- Script pour le calendrier FullCalendar -->
@@ -69,19 +83,34 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
+        // Création des événements à partir des plages de chaque QCM
         var events = [
             {% for qcm in upcoming_qcms %}
-            {
-                title: '{{ qcm.titre|escapejs }}',
-                start: '{{ qcm.date|date:"Y-m-d\\TH:i:s" }}',
-                backgroundColor: getRandomColor(),
-                borderColor: getRandomColor(),
-                textColor: 'black',
-                url: '{% url "qcm-edit" qcm.id %}' 
-            },
+                {% for plage in qcm.plages.all %}
+                {
+                    title: '{{ qcm.titre|escapejs }} s\'ouvre pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',
+                    start: '{{ plage.debut|date:"Y-m-d\\TH:i:s" }}',
+                    end: '{{ plage.debut|date:"Y-m-d\\TH:i:s" }}',
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    textColor: 'black',
+                    url: '{% url "qcm-edit" qcm.id %}' 
+                },
+                {
+                    title: '{{ qcm.titre|escapejs }} se termine pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',
+                    start: '{{ plage.fin|date:"Y-m-d\\TH:i:s" }}',
+                    end: '{{ plage.fin|date:"Y-m-d\\TH:i:s" }}',
+                    endblock: true,
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    textColor: 'black',
+                    url: '{% url "qcm-edit" qcm.id %}'
+                },
+                {% endfor %}
             {% endfor %}
         ];
 
+        // Initialisation du calendrier avec les événements
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             headerToolbar: {
@@ -99,9 +128,8 @@
             events: events,
             allDaySlot: false,
             eventMaxStack: 2,
-            dayMaxEvents: 1, // This will limit the number of events displayed per day to at least one
+            dayMaxEvents: 1,
             eventClick: function(info) {
-                // Redirection vers l'URL de l'événement
                 window.location.href = info.event.url;
             },
             views: {
@@ -109,12 +137,7 @@
                     titleFormat: { year: 'numeric', month: 'long' }
                 }
             },
-            eventOrder: 'title', // Ordre des événements dans la pile
-            eventDidMount: function(info) {
-								if (info.view.type === 'dayGridMonth' && info.event._def.extendedProps.more) {
-										info.el.querySelector('.fc-daygrid-day-top').innerHTML += `<span class="fc-more-events">${info.event._def.extendedProps.more} more...</span>`;
-								}
-						}
+            eventOrder: 'title',
         });
 
         calendar.render();
@@ -130,22 +153,16 @@
     }
 </script>
 
+
 <style>
-	.fc-daygrid-event {
-		padding: 5px;
-		font-size: 14px;
-		border-radius: 5px;
-	}
+    .fc-daygrid-event {
+        padding: 5px;
+        font-size: 14px;
+        border-radius: 5px;
+    }
 
-	.fc-more-events {
-		display: inline-block;
-		font-size: 12px;
-		color: #007bff;
-		cursor: pointer;
-	}
-
-	.fc-event {
-		cursor: pointer; /* Ajoutez cette ligne pour changer le curseur en pointer */
-	}
+    .fc-event {
+        cursor: pointer;
+    }
 </style>
 {% endblock %}

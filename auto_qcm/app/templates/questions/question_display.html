@@ -1,0 +1,66 @@
+{% load color_filters %}
+{% load latexify %}
+{% load static %}
+
+<div class="question-container position-relative">
+
+  <!-- En-tête de la question -->
+  <div class="d-flex justify-content-between align-items-center question-header" data-question-id="{{ question.id }}" style="cursor: pointer;">
+    <div>{{ question.nom }}</div>
+
+    <!-- Boutons d'export, modification, suppression (affichés si show_buttons est vrai) -->
+    {% if show_buttons %}
+      <div class="button-list align-items-center" style="gap: 10px; display: flex; visibility: hidden;">
+        <button type="button" class="btn btn-info btn-sm export-question-btn" data-question-id="{{ question.id }}">
+          <i class="bi bi-arrow-bar-down"></i>
+        </button>
+
+        <button type="button" class="btn btn-warning btn-sm edit-question-btn" data-question-id="{{ question.id }}">
+          <i class="bi bi-pencil"></i>
+        </button>
+
+        <button type="button" class="btn btn-danger btn-sm delete-question-btn" data-question-id="{{ question.id }}">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Boucle pour afficher les tags associés -->
+  <div class="tags-container" style="margin-top: 10px;">
+    {% for tag in question.tags.all %}
+      <span class="badge badge-pill tag-badge position-relative question-tag"
+            style="background-color: {{ tag.color }}; color: #fff; padding: 6px 12px; margin: 5px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }};">
+        {{ tag.name }}
+      </span>
+    {% endfor %}
+  </div>
+
+  <!-- Section des réponses à afficher/cacher -->
+  <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
+    <br />
+    {% latexify question.texte parse_math=True %}
+    <br /><br />
+
+    <p>
+      Nombre de bonnes réponses : <b>{{ question.number_of_correct_answers }}</b>
+    </p>
+
+    <ul class="list-group">
+      {% for reponse in question.reponses.all %}
+        <li class="list-group-item {% if reponse.is_correct %}list-group-item-success{% endif %}">
+          {{ reponse.texte }}
+          {% if reponse.is_correct %}
+            <span class="badge badge-success">Bonne réponse</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script>
+  var deleteUrlTemplate = "{% url 'question-delete' question_id=0 %}";
+  var exportUrlTemplate = "{% url 'question-export-xml' question_id=0 %}";
+  var editUrlTemplate = "{% url 'question-edit' pk=0 %}";
+</script>

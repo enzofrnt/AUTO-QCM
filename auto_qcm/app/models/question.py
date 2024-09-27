@@ -13,7 +13,7 @@ class Question(models.Model):
     note = models.IntegerField(default=1)
     melange_rep = models.BooleanField(default=True)
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
-    creator = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    creator = models.ForeignKey("Utilisateur", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.texte
@@ -45,11 +45,15 @@ class Question(models.Model):
             + self.texte
             + "<br></p>]]>"
             + "</text></questiontext>"
-            + "<defaultgrade>"+self.note+"</defaultgrade>"
+            + "<defaultgrade>"
+            + str(self.note)
+            + "</defaultgrade>"
             + "<single>"
             + ("false" if self.number_of_correct_answers > 1 else "true")
             + "</single>"
-            + "<shuffleanswers>"+self.melange_rep+"</shuffleanswers> "
+            + "<shuffleanswers>"
+            + ("true" if self.melange_rep else "false")
+            + "</shuffleanswers> "
             + "<answernumbering>abc</answernumbering>"
             + '<correctfeedback format="html">'
             + "<text>Votre réponse est correcte.</text>"
@@ -84,11 +88,15 @@ class Question(models.Model):
             + self.texte
             + "<br></p>]]>"
             + "</text></questiontext>"
-            + "<defaultgrade>"+self.note+"</defaultgrade>"
+            + "<defaultgrade>"
+            + str(self.note)
+            + "</defaultgrade>"
             + "<single>"
             + ("false" if self.number_of_correct_answers > 1 else "true")
             + "</single>"
-            + "<shuffleanswers>"+self.melange_rep+"</shuffleanswers> "
+            + "<shuffleanswers>"
+            + ("true" if self.melange_rep else "false")
+            + "</shuffleanswers> "
             + "<answernumbering>abc</answernumbering>"
             + '<correctfeedback format="html">'
             + "<text>Votre réponse est correcte.</text>"

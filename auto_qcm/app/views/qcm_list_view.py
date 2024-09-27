@@ -1,8 +1,10 @@
-from django.shortcuts import render
-from django.views.generic import ListView
-from app.models import QCM, Tag
-from django.db.models import Q
 from app.mixins import TeacherRequiredMixin
+from app.models import QCM, Tag
+from django.contrib import messages
+from django.db.models import Q
+from django.shortcuts import redirect, render
+from django.views.generic import ListView
+
 
 class QcmListView(TeacherRequiredMixin, ListView):
     model = QCM
@@ -17,3 +19,5 @@ class QcmListView(TeacherRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+    

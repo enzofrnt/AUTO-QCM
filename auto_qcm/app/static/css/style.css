@@ -1,5 +1,8 @@
+@import url("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css");
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Montserrat", sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
@@ -127,8 +130,8 @@ body.dark-mode {
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 20px;
+  width: 40px; /* Réduit de 50px à 40px */
+  height: 20px; /* Réduit de 26px à 20px */
 }
 
 .switch input {
@@ -145,29 +148,33 @@ body.dark-mode {
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  transition: .4s;
-}
-
-.slider.round {
-  border-radius: 34px;
+  transition: 0.4s;
+  border-radius: 30px; /* Ajusté pour correspondre à la nouvelle taille */
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 14px;
-  width: 14px;
-  left: 4px;
-  bottom: 3px;
+  height: 16px; /* Réduit de 22px à 16px */
+  width: 16px; /* Réduit de 22px à 16px */
+  left: 2px;
+  bottom: 2px;
   background-color: white;
-  transition: .4s;
+  transition: 0.4s;
+  border-radius: 50%;
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #0da2d8;
 }
 
 input:checked + .slider:before {
-  transform: translateX(20px);
+  transform: translateX(20px); /* Ajusté pour correspondre à la nouvelle taille */
 }
 
+/* Optionnel pour le texte du mode sombre */
+.darkmode-text {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  vertical-align: middle;
+}

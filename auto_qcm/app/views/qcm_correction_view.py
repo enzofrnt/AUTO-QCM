@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from app.models import ReponseQCM
-from app.decorators import teacher_or_student_own_dashboard_required
+from app.decorators import teacher_or_self_student_required
+from django.urls import reverse_lazy
 
-@login_required(login_url='login')
-@teacher_or_student_own_dashboard_required
+
+@login_required(login_url=reverse_lazy('login'))
+# @teacher_or_self_student_required
 def corriger_qcm(request, repqcm_id):
     reponse_qcm = get_object_or_404(ReponseQCM, id=repqcm_id)
     qcm = reponse_qcm.qcm
