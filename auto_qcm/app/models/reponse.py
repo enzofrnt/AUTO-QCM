@@ -6,9 +6,7 @@ class Reponse(models.Model):
         "Question", on_delete=models.CASCADE, related_name="reponses"
     )
     texte = models.CharField(max_length=255)
-    is_correct = models.BooleanField(
-        default=False, help_text="Cette réponse est-elle correcte ?"
-    )
+    is_correct = models.BooleanField(default=False)
     creator = models.ForeignKey(
         "Utilisateur", on_delete=models.CASCADE, default=1
     )  # 1 est l'ID d'un utilisateur par défaut

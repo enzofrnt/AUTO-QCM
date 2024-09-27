@@ -23,8 +23,10 @@
  
 
   <!-- Inclure jQuery et le script de filtrage -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  {% include 'latexify/scripts.html' %}
+{% endblock %}
+{% block extra_scripts %}
   <script src="{% static 'js/questions/question_filter.js' %}"></script>
   <script src="{% static 'js/questions/question_events.js' %}"></script>
-  {% include 'latexify/scripts.html' %}
 {% endblock %}
