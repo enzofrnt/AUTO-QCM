@@ -2,6 +2,13 @@
 <!DOCTYPE html>
 <html lang="fr">
   <head>
+    <script>
+      (function() {
+        if (sessionStorage.getItem('theme') === 'dark') {
+          document.body.classList.add('dark-mode');
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
@@ -32,8 +39,8 @@
                   <label class="switch">
                     <input type="checkbox" id="theme-switch">
                     <span class="slider round"></span>
-                    DarkMode
                   </label>
+                  <span class="darkmode-text">Dark Mode</span>
                 </li>
                 
                 <!-- Navigation Links -->
@@ -69,6 +76,8 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <!-- 3. Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
 
     <!-- Scripts personnalisés -->
     <script src="{% static 'js/scripts.js' %}"></script>

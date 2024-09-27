@@ -1,62 +1,38 @@
-function toggleSidebar() {
-    
-    document.querySelector('.sidebar').classList.toggle('collapsed');
-    document.querySelector('.toggle-btn').classList.toggle('collapsed');
-    
-    const icon = document.querySelector('.toggle-btn i');
+$(document).ready(function() {
 
-    if (icon.classList.contains('bi-caret-left')) {
-        icon.classList.remove('bi-caret-left');
-        icon.classList.add('bi-caret-right');
-    } else {
-        icon.classList.remove('bi-caret-right');
-        icon.classList.add('bi-caret-left');
+    // Initialisation du thème en fonction du sessionStorage
+    function initializeTheme() {
+        if (sessionStorage.getItem('theme') === 'dark') {
+            applyDarkMode();
+            $('#theme-switch').prop('checked', true); // Activer l'interrupteur du thème sombre
+        } else {
+            removeDarkMode();
+            $('#theme-switch').prop('checked', false); // Désactiver l'interrupteur
+        }
     }
-    
-    console.log('toggled');
-}
 
-if (sessionStorage.getItem('theme') === 'dark') {
-  document.body.classList.add('dark-mode');
-  document.body.querySelector('.sidebar').classList.add('dark-mode');
-  document.body.querySelectorAll('.nav-item').forEach(element => {
-      element.classList.add('dark-mode');
-  });
-  document.body.querySelector('.main-content').querySelectorAll('.button-home').forEach(element => {
-      element.classList.add('dark-mode');
-  });
+    // Fonction pour appliquer le thème sombre
+    function applyDarkMode() {
+        $('body, .sidebar, .nav-item, .main-content .button-home').addClass('dark-mode');
+    }
 
-  document.getElementById('theme-switch').checked = true; // Assurez-vous que le bouton de basculement est en mode "activé"
-}
+    // Fonction pour désactiver le thème sombre
+    function removeDarkMode() {
+        $('body, .sidebar, .nav-item, .main-content .button-home').removeClass('dark-mode');
+    }
 
-document.getElementById('theme-switch').addEventListener('change', function() {
-  if (this.checked) {
-      // Applique le thème sombre
-      document.body.classList.add('dark-mode');
-      document.body.querySelector('.sidebar').classList.add('dark-mode');
-      document.body.querySelectorAll('.nav-item').forEach(element => {
-          element.classList.add('dark-mode');
-      });
-      
-      document.body.querySelector('.main-content').querySelectorAll('.button-home').forEach(element => {
-          element.classList.add('dark-mode');
-      });
+    // Toggle du thème sombre lors du changement du switch
+    $('#theme-switch').on('change', function() {
+        if ($(this).is(':checked')) {
+            applyDarkMode();
+            sessionStorage.setItem('theme', 'dark');
+        } else {
+            removeDarkMode();
+            sessionStorage.setItem('theme', 'light'); // Ajout de l'état light dans le sessionStorage
+        }
+    });
 
-      console.log('dark mode');
-      sessionStorage.setItem('theme', 'dark');
-  } else {
-      // Retire le thème sombre
-      document.body.classList.remove('dark-mode');
-      document.body.querySelector('.sidebar').classList.remove('dark-mode');
-      document.body.querySelectorAll('.nav-item').forEach(element => {
-          element.classList.remove('dark-mode');
-      });
-      document.body.querySelector('.main-content').querySelectorAll('.button-home').forEach(element => {
-          element.classList.remove('dark-mode');
-      });
+    // Initialisation du thème lors du chargement de la page
+    initializeTheme();
 
-      // Retire le thème du sessionStorage
-      console.log('light mode');
-      sessionStorage.removeItem('theme');
-  }
 });
