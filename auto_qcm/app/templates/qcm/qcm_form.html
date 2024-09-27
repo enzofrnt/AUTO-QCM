@@ -8,6 +8,15 @@
     input[type="checkbox"][name$="-DELETE"] {
       display: none;
     }
+
+    .hidden {
+      display: none;
+    }
+
+    .formset-row {
+      display: flex; 
+      justify-content: space-between;
+    }
     .tag-badge.selected {
       opacity: 1;
     }
@@ -37,19 +46,21 @@
           {% for error in form.non_field_errors %}
             <li>{{ error }}</li>
           {% endfor %}
+          <!-- Affichage des erreurs du formset -->
           {% for formset_form in formset %}
-            {% for field in formset_form %}
-                {% for error in field.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            {% endfor %}
+            {% if formset_form.errors %}
+              {% for field, errors in formset_form.errors.items %}
+                <li>{{ field }}: {{ errors|join:', ' }}</li>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+          {% for error in formset.non_field_errors %}
+            <li>{{ error }}</li>
           {% endfor %}
         </ul>
       </div>
     {% endif %}
 
-    <!-- Formulaire de filtrage (en dehors du formulaire principal) -->
-    <h3>Sélectionnez les questions :</h3>
     {% include 'questions/question_filter_form.html' %}
 
     <!-- Formulaire principal -->
@@ -77,7 +88,7 @@
       <div id="plagesFormset">
         {{ formset.management_form }}
         {% for formset_form in formset %}
-          <div class="formset-row item" style="display: flex; justify-content: space-between">
+          <div class="formset-row item">
             {{ formset_form.as_p }}
             <div class="form-group">
               <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
@@ -86,6 +97,15 @@
         {% endfor %}
       </div>
 
+      <div id="plageVide" class="hidden">
+        {{formset.empty_form.as_p }}
+        <div class="form-group">
+          <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
+        </div>
+      </div>
+
+      <!-- Sélection des questions -->
+      <h3>Sélectionnez les questions :</h3>
       <button type="button" class="btn btn-success ml-2 w-10 m-4" id="openModal">Générer automatiquement des questions</button>
 
       <!-- Liste des questions -->
@@ -153,33 +173,6 @@
         $('#fileModal').modal('show');
       });
 
-      // Gestion des formulaires de plages
-      var formsetPrefix = '{{ formset.prefix }}';
-      var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS');
-      var formsetContainer = $('#plagesFormset');
-
-      $('#add-plage').click(function() {
-        var formCount = parseInt(totalForms.val());
-        var newFormHtml = formsetContainer.find('.formset-row:first').clone();
-
-        // Mise à jour des attributs 'id' et 'name' pour chaque élément cloné
-        newFormHtml.find('input, select, textarea').each(function() {
-          var newId = $(this).attr('id').replace('-0-', '-' + formCount + '-');
-          var newName = $(this).attr('name').replace('-0-', '-' + formCount + '-');
-          $(this).attr({ name: newName, id: newId });
-
-          // Effacer les valeurs des champs
-          if ($(this).attr('type') !== 'hidden') {
-            $(this).val('');
-          }
-        });
-
-        newFormHtml.find('.remove-plage').show();
-
-        formsetContainer.append(newFormHtml);
-        totalForms.val(formCount + 1);
-      });
-
       // Gestion de la suppression des plages
       $(document).on('click', '.remove-plage', function() {
         var formRow = $(this).closest('.formset-row');
@@ -187,11 +180,37 @@
         formRow.hide();
       });
 
-      // Initialiser le bouton supprimer
-      $('.remove-plage').each(function(index) {
-        if (index === 0) {
-          $(this).hide();
-        }
+      // Conteneur des formulaires de plages
+      let formsetContainer = $('#plagesFormset');
+      let totalForms = $('#id_form-TOTAL_FORMS');
+
+      // Fonction pour ajouter un nouveau formulaire
+      $('#add-plage').click(function() {
+        let formCount = $('.formset-row').length;
+        let newForm = $('#plageVide').clone(); 
+
+        newForm.removeClass('hidden');
+        newForm.addClass('formset-row item');
+        
+        //On remplate le __prefix__ par la bonne valeur
+        const regex = new RegExp('__prefix__', 'g');
+        newForm.html(newForm.html().replace(regex, formCount));
+        
+        formsetContainer.append(newForm);
+        totalForms.val(formCount + 1);
+      });
+
+      // Fonction pour marquer un formulaire pour suppression
+      formsetContainer.on('click', '.remove-plage', function() {
+        let formToDelete = $(this).closest('.formset-row');
+
+        // Cacher le formulaire et cocher le champ DELETE associé
+        formToDelete.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true);
+        formToDelete.hide();  // Masquer le formulaire mais il sera supprimé
+
+        // Mettre à jour le nombre total de formulaires affichés
+        let formCount = $('.formset-row:visible').length;
+        totalForms.val(formCount);
       });
 
       // Variables pour la génération de questions
