@@ -1,25 +1,29 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/pp_style.css' %}">
+<link rel="stylesheet" href="{% static 'css/pp_style.css' %}" />
 <div class="pp">
-    {% if request.path == '/' %}
+  {% if request.path == '/' %}
     <div class="profile-header">
-        {% if user.username %}
-            <p class="texteUser">Bienvenue, {{ user.username }} ! </p>
-        {% endif %}
+      {% if user.username %}
+        <p class="texteUser">Bienvenue, {{ user.username }} !</p>
+      {% endif %}
     </div>
-    {% endif %}
-    <div class="pp-btn">
-        <i class="bi bi-person-circle"></i>
-        <div class="user-hover-box">
-            <i class="bi bi-person-circle user-icon-hover"></i>
-            <p class="user-info">{{ user.username }}</p>
-            <p class="user-type">{{ user.utilisateur.get_user_type_display }}</p>
-            <form action="{% url 'logout' %}" method="post" class="logout-form">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">
-                    Déconnexion
-                </button>
-            </form>
-        </div>
+  {% endif %}
+  <div class="pp-btn">
+    <i class="bi bi-person-circle"></i>
+    <div class="user-hover-box">
+      <i class="bi bi-person-circle user-icon-hover"></i>
+      <p class="user-info">{{ user.username }}</p>
+      {% if user.is_tutor %}
+        <p class="user-type">Enseignant</p>
+      {% else %}
+        <p class="user-type">Etudiant</p>
+        <p class="user-data">{{ user.promotion }} - {{ user.groupe }}</p>
+      {% endif %}
+
+      <form action="{% url 'logout' %}" method="post" class="logout-form">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Déconnexion</button>
+      </form>
     </div>
+  </div>
 </div>

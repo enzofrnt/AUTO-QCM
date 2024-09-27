@@ -1,7 +1,7 @@
 from app.mixins import TeacherRequiredMixin
 from app.models import Question, Tag
-from django.db.models import Q
-from django.shortcuts import render
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.views.generic import ListView
 
 
@@ -13,9 +13,7 @@ class QuestionListView(TeacherRequiredMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         nom_filtre = self.request.GET.get("nom", "")
-        tags_filtre = self.request.GET.getlist(
-            "tags"
-        )  # Utiliser getlist pour obtenir plusieurs tags
+        tags_filtre = self.request.GET.getlist("tags")
 
         # Filtrer par nom de question
         if nom_filtre:
@@ -39,3 +37,12 @@ class QuestionListView(TeacherRequiredMixin, ListView):
             "tags"
         )  # Récupérer plusieurs tags pour la pré-sélection
         return context
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
+            html = render_to_string(
+                "questions/question_list_content.html", context, request=self.request
+            )
+            return JsonResponse({"html": html})
+        else:
+            return super().render_to_response(context, **response_kwargs)
