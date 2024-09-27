@@ -6,8 +6,8 @@ from django.contrib.auth.models import Group
 class Plage(models.Model):
     debut = models.DateTimeField()
     fin = models.DateTimeField()
-    promo = models.ForeignKey(Group, related_name="promos", on_delete=models.CASCADE)
-    groupe = models.ForeignKey(Group, related_name="groupes", on_delete=models.CASCADE)
+    promo = models.ForeignKey(Group, related_name="plagespromo", on_delete=models.CASCADE)
+    groupe = models.ForeignKey(Group, related_name="plagesgroup", on_delete=models.CASCADE)
     qcm = models.ForeignKey("QCM", related_name="plages", on_delete=models.CASCADE)
 
     def clean(self):
