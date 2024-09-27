@@ -213,10 +213,10 @@
       // Gestion de l'ajout dynamique de nouveaux tags
       $('#addNewTag').click(function () {
         var newTagHtml = `
-                                                                                                                            <div class="input-group mb-2">
-                                                                                                                                <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
-                                                                                                                                <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
-                                                                                                                            </div>`
+                                                                                                                                <div class="input-group mb-2">
+                                                                                                                                    <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+                                                                                                                                    <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+                                                                                                                                </div>`
         $('#newTagsContainer').append(newTagHtml)
       })
     })
