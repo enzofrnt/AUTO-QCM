@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.forms import inlineformset_factory
 from django.contrib.auth.decorators import login_required
 from app.models import Question, Reponse, Tag
-from app.forms import QuestionForm, ReponseFormSet
+from app.forms import QuestionForm, BaseReponseFormSet
 from app.decorators import teacher_required
 from django.urls import reverse_lazy
 
@@ -12,8 +13,25 @@ def create_or_edit_question(request, pk=None):
     # Si un pk est passé, c'est une modification, sinon c'est une création
     if pk:
         question = get_object_or_404(Question, pk=pk)
+        ReponseFormSet = inlineformset_factory(
+            Question,
+            Reponse,
+            fields=["texte", "is_correct"],
+            extra=0,
+            can_delete=True,
+            formset=BaseReponseFormSet,
+        )
     else:
         question = Question()
+        # Utiliser le formset avec la validation personnalisée
+        ReponseFormSet = inlineformset_factory(
+            Question,
+            Reponse,
+            fields=["texte", "is_correct"],
+            extra=1,  # Nombre de formulaires de réponse vierges à afficher par défaut
+            can_delete=True,  # Permettre de supprimer des réponses
+            formset=BaseReponseFormSet,  # Utiliser le formset avec la validation
+        )
 
     if request.method == "POST":
         form = QuestionForm(request.POST, instance=question)
