@@ -24,6 +24,7 @@ from app.views import (
     corriger_qcm,
     create_or_edit_qcm,
     create_or_edit_question,
+    delete_multiple_qcms,
     delete_qcm,
     delete_question,
     enseignant_dashboard,
@@ -79,6 +80,7 @@ urlpatterns = [
     # Reponse QCM
     path("qcm/anwser/<int:qcm_id>/", repondre_qcm, name="qcm-answer"),
     path("qcm/correct/<int:repqcm_id>/", corriger_qcm, name="qcm-correct"),
+    path('delete-multiple/', delete_multiple_qcms, name='qcm-delete-multiple'),
     # Export
     path(
         "question/export-xml/<int:question_id>/",
