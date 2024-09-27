@@ -8,13 +8,15 @@
 
   <!-- Liste des qcm -->
   <div id="qcm-list">
-    <div class="d-flex align-items-center"
-    > <a href="{% url 'qcm-create' %}" class="btn btn-primary ">Créer un nouveau qcm</a>
-    <button type="submit" class="btn btn-danger">Supprimer les QCM sélectionnés</button></div> 
+    
       
     
     <form id="qcm-form" method="POST" action="{% url 'qcm-delete-multiple' %}">
       {% csrf_token %}
+      <div class="d-flex align-items-center">
+      <a href="{% url 'qcm-create' %}" class="btn btn-primary ">Créer un nouveau qcm</a>
+      <button type="submit" class="btn btn-danger">Supprimer les QCM sélectionnés</button>
+    </div> 
       <table class="table  bg-light qcm-table">
         <thead class="rounded">
           <tr>
@@ -129,6 +131,8 @@
           }
         });
       });
+
+      
     
       // Previsualiser le qcm
       $(document).on('click', '.answer-qcm-btn', function (e) {
