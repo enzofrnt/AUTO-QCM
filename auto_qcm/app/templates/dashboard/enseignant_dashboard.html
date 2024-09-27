@@ -80,7 +80,7 @@
             {% for qcm in upcoming_qcms %}
             {
                 title: '{{ qcm.titre|escapejs }}',
-                start: '{{ qcm.date|date:"Y-m-d\\TH:i:s" }}',
+                start: '{{ qcm.date_modif|date:"Y-m-d\\TH:i:s" }}',
                 backgroundColor: getRandomColor(),
                 borderColor: getRandomColor(),
                 textColor: 'black',
