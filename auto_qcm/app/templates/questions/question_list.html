@@ -1,133 +1,30 @@
 {% extends 'base.html' %}
 
 {% load color_filters %} 
-{% comment %} {% load latexify %} {% endcomment %}
+{% load static %}
 
 {% block content %}
-  {% comment %} {% include 'latexify/stylesheets.html' %} {% endcomment %}
-
   <div class="container mt-4">
-    <h2>Liste des Questions</h2>
+    {% if not selectable %}
+      <h2>Liste des Questions</h2>
+    {% endif %}
 
-    <!-- Formulaire de filtre -->
-    <form method="get" class="mb-4" id="filterForm" action="{% url 'question-list' %}">
-      <div class="form-row align-items-center">
-        <div class="col-auto">
-          <input type="text" name="nom" class="form-control" placeholder="Filtrer par nom" value="{{ nom_filtre }}" />
-        </div>
-        <div class="col-auto">
-          <div class="form-group">
-            <label for="tags">Filtrer par tags :</label>
-            <div id="tags" class="d-flex flex-wrap">
-              {% for tag in tags %}
-                <span class="badge tag-badge form-check-label" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">{{ tag.name }}</span>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary">Filtrer</button>
-          <a href="{% url 'question-list' %}" class="btn btn-secondary">Réinitialiser</a>
-        </div>
-      </div>
-      <!-- Champs cachés pour les tags sélectionnés -->
-      <div id="selected-tags-container"></div>
-    </form>
+    <!-- Inclure le formulaire de filtre -->
+    {% include 'questions/question_filter_form.html' %}
 
     <!-- Liste des questions -->
     <div id="questions-list">
-      <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Texte de la Question et Tags</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for question in questions %}
-            <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
-              <td>
-                {% include 'questions/question_display.html' with question=question show_buttons=True %}
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td>Aucune question disponible.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% if not selectable %}
+        <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
+      {% endif %}
+      {% include 'questions/question_list_content.html' %}
     </div>
   </div>
-  <script>
-    $(document).ready(function () {
-      const filterForm = $('#filterForm');
-      const selectedTagsContainer = $('#selected-tags-container');
-      
-      function attachEvents() {
-        // Réattacher les événements pour chaque question après la mise à jour du contenu
-        $('.question-row').each(function() {
-          const questionRow = $(this);
-          const questionId = questionRow.data('question-id');
-          
-          // Gestion du clic pour ouvrir/fermer les réponses
-          questionRow.on('click', function(e) {
-            if (!$(e.target).closest('button').length) {
-              const answersDiv = $('#answers-' + questionId);
-              answersDiv.slideToggle(300);
-            }
-          });
-          
-          // Gestion du survol pour afficher/masquer les boutons d'actions
-          questionRow.on('mouseover', function() {
-            const buttonList = $('.button-list-' + questionId);
-            if (buttonList.length) {
-              buttonList.css('visibility', 'visible');
-            }
-          });
-          
-          questionRow.on('mouseout', function() {
-            const buttonList = $('.button-list-' + questionId);
-            if (buttonList.length) {
-              buttonList.css('visibility', 'hidden');
-            }
-          });
-        });
-      }
-    
-      // Fonction pour soumettre le formulaire via AJAX
-      function submitFormAJAX() {
-        $.ajax({
-          url: filterForm.attr('action'),
-          type: 'GET',
-          data: filterForm.serialize(),
-          success: function (response) {
-            $('#questions-list').html($(response).find('#questions-list').html());
-            attachEvents(); // Réattacher les événements après la mise à jour du contenu
-          }
-        });
-      }
-    
-      // Appliquer le debouncing à la saisie dans la barre de recherche
-      const debouncedSubmit = debounce(submitFormAJAX, 300);
-      filterForm.find('input[name="nom"]').on('input', debouncedSubmit);
-      
-      // Initialiser les tags sélectionnés
-      $('#tags .tag-badge').click(function () {
-        const tagName = $(this).data('tag-name');
-        if ($(this).hasClass('selected')) {
-          $(this).removeClass('selected').css('opacity', '0.6');
-          removeTagFromFilter(tagName);
-        } else {
-          $(this).addClass('selected').css('opacity', '1');
-          addTagToFilter(tagName);
-        }
-        updateURLAndSubmit();
-      });
-    
-      attachEvents(); // Attacher les événements à la première génération des questions
-    });
-  </script>
+ 
 
+  <!-- Inclure jQuery et le script de filtrage -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'js/questions/question_filter.js' %}"></script>
+  <script src="{% static 'js/questions/question_events.js' %}"></script>
   {% include 'latexify/scripts.html' %}
 {% endblock %}
