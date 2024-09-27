@@ -4,7 +4,27 @@
 
 {% block content %}
   {% include 'latexify/stylesheets.html' %}
-
+  <style>
+    label[for^='id_reponses'][for$='-DELETE'],
+    input[type='checkbox'][name$='-DELETE'] {
+      display: none;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .formset_row {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+    
+    .removeReponse {
+      top: 5px;
+      right: 5px;
+    }
+  </style>
   <div class="container mt-4">
     <h2>
       {% if question.pk %}
@@ -40,15 +60,20 @@
               {% endfor %}
             {% endif %}
           {% endfor %}
+          {% if formset.non_form_errors %}
+            {% for error in formset.non_form_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endif %}
         </ul>
       </div>
     {% endif %}
 
     <form method="post" id="questionForm">
       {% csrf_token %}
-      
+
       <!-- Champ caché pour l'URL de redirection -->
-      <input type="hidden" name="next" value="{{ next }}">
+      <input type="hidden" name="next" value="{{ next }}" />
 
       <!-- Champ pour le nom de la question -->
       <div class="form-group">{{ form.nom.label_tag }}
@@ -63,8 +88,7 @@
         {{ form.note }}</div>
 
       <!-- Champ pour si la question a des reponses mélangées -->
-      <div class="form-group">{{ form.melange_rep.label_tag }}
-        {{ form.melange_rep }}</div>
+      <div class="form-group">{{ form.melange_rep.label_tag }}{{ form.melange_rep }}</div>
 
       <!-- Champ pour la preview LaTeX -->
       <div>
@@ -93,21 +117,17 @@
       <div id="reponseFormset">
         {{ formset.management_form }}
         {% for formset_form in formset %}
-          <div class="formset_row border rounded p-3 mb-3 position-relative">
-            <!-- Champ caché pour l'ID de la réponse -->
-            {{ formset_form.id }}
-
-            <!-- Champ caché pour la suppression -->
-            {{ formset_form.DELETE }}
-
-            <div class="form-group">{{ formset_form.texte.label_tag }}
-              {{ formset_form.texte }}</div>
-            <div class="form-check">{{ formset_form.is_correct }}
-              {{ formset_form.is_correct.label_tag }}</div>
+          <div class="formset_row border rounded position-relative">
+            {{ formset_form.as_p }}
             <!-- Bouton pour supprimer une réponse -->
-            <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute" style="top: 5px; right: 5px;">&times;</button>
+            <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute"><i class="bi bi-trash"></i></button>
           </div>
         {% endfor %}
+      </div>
+
+      <div id="reponseVide" class="hidden">
+        {{ formset.empty_form.as_p }}
+        <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute"><i class="bi bi-trash"></i></button>
       </div>
 
       <!-- Bouton pour soumettre le formulaire -->
@@ -118,17 +138,19 @@
           Créer la question
         {% endif %}
       </button>
-      <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-danger">Annuler</a>  
+      <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-danger">Annuler</a>
     </form>
   </div>
 
-  {% include 'latexify/scripts.html' %}
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  {% include 'latexify/scripts.html' %} 
+{% endblock %}
+{% block extra_scripts %}
   <script>
     $(document).ready(function () {
       var formsetPrefix = '{{ formset.prefix }}'
       var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
       var formsetContainer = $('#reponseFormset')
+      const emptyRep = $('#reponseVide')
     
       // Fonction pour parser le texte LaTeX et le convertir en HTML
       function parseLatexText(text) {
@@ -158,40 +180,17 @@
     
       // Gestion de l'ajout dynamique de réponses
       $('#addReponse').click(function () {
-        var formCount = parseInt(totalForms.val())
-        var newFormHtml = formsetContainer.find('.formset_row:first').clone()
+        let formCount = parseInt(totalForms.val())
+        let newForm = emptyRep.clone()
     
-        // Mise à jour des attributs 'id' et 'name' pour chaque élément cloné
-        newFormHtml.find('input, select, textarea').each(function () {
-          var newId = $(this)
-            .attr('id')
-            .replace('-0-', '-' + formCount + '-')
-          var newName = $(this)
-            .attr('name')
-            .replace('-0-', '-' + formCount + '-')
-          $(this).attr({ name: newName, id: newId })
+        newForm.removeClass('hidden')
+        newForm.addClass('formset_row border rounded position-relative')
     
-          // Si c'est un nouveau formulaire, effacer les valeurs des champs
-          if ($(this).attr('type') !== 'hidden') {
-            $(this).val('') // Efface les valeurs des champs (sauf les hidden comme id)
-          }
-        })
+        //On remplate le __prefix__ par la bonne valeur
+        const regex = new RegExp('__prefix__', 'g')
+        newForm.html(newForm.html().replace(regex, formCount))
     
-        // Pour les nouveaux formulaires, le champ 'id' doit être vide
-        newFormHtml.find('input[type="hidden"]').each(function () {
-          var newId = $(this)
-            .attr('id')
-            .replace('-0-', '-' + formCount + '-')
-          var newName = $(this)
-            .attr('name')
-            .replace('-0-', '-' + formCount + '-')
-          $(this).attr({ name: newName, id: newId })
-          $(this).val('') // Effacer le champ id pour les nouveaux éléments
-        })
-    
-        newFormHtml.find('.removeReponse').show()
-    
-        formsetContainer.append(newFormHtml)
+        formsetContainer.append(newForm)
         totalForms.val(formCount + 1)
       })
     
@@ -215,10 +214,10 @@
       // Gestion de l'ajout dynamique de nouveaux tags
       $('#addNewTag').click(function () {
         var newTagHtml = `
-                    <div class="input-group mb-2">
-                        <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
-                        <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
-                    </div>`
+                                                                                                                                <div class="input-group mb-2">
+                                                                                                                                    <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+                                                                                                                                    <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+                                                                                                                                </div>`
         $('#newTagsContainer').append(newTagHtml)
       })
     })
