@@ -49,11 +49,10 @@
     <link rel="stylesheet" href="{% static 'css/question_list.css' %}" />
     <link rel="stylesheet" href="{% static 'css/qcm_list_style.css' %}" />
     
-    <!-- Script pour ajuster l'état du switch dès le chargement -->
-    
   </head>
 
   <body>
+    
     <div class="" style="display: flex; width: 100%;">
       <div style="width: 300px;">
         <div style="height: 100%; position: fixed;">
@@ -85,6 +84,7 @@
         </div>
       </div>
       <main class="content">
+        {% include "pp.html" %}
         {% block content %}
         {% endblock %}
       </main>
