@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="row">
+    <div class="col-md-12 mt-4 mb-5" style="margin-left: 20px;">
+        <a href="{% url 'enseignant-dashboard' enseignant.pk %}" class="btn btn-info">Retour au tableau de bord</a>
+    </div>
+</div>
 <div class="container mt-5">
     <h1 class="mb-4">Statistiques des QCM</h1>
 
