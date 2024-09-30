@@ -1,5 +1,4 @@
-@import url("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css");
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
+
 
 body {
     font-family: "Montserrat", sans-serif;
@@ -31,7 +30,6 @@ body.dark-mode {
 
 .sidebar {
   background-color: #adadad;
-  color: rgb(35, 35, 35);
   width: 250px;
   
   height: 100vh;
@@ -130,8 +128,8 @@ body.dark-mode {
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px; /* Réduit de 50px à 40px */
-  height: 20px; /* Réduit de 26px à 20px */
+  width: 40px;
+  height: 20px;
 }
 
 .switch input {
@@ -149,14 +147,14 @@ body.dark-mode {
   bottom: 0;
   background-color: #ccc;
   transition: 0.4s;
-  border-radius: 30px; /* Ajusté pour correspondre à la nouvelle taille */
+  border-radius: 30px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 16px; /* Réduit de 22px à 16px */
-  width: 16px; /* Réduit de 22px à 16px */
+  height: 16px;
+  width: 16px;
   left: 2px;
   bottom: 2px;
   background-color: white;
@@ -169,12 +167,52 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(20px); /* Ajusté pour correspondre à la nouvelle taille */
+  transform: translateX(20px);
 }
 
-/* Optionnel pour le texte du mode sombre */
 .darkmode-text {
   font-family: Arial, sans-serif;
   font-size: 16px;
   vertical-align: middle;
+}
+
+
+
+.dark-mode {
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.dark-mode .sidebar {
+  background-color: #333;
+}
+
+.dark-mode .nav-item {
+  color: white;
+}
+
+.dark-mode .nav-item a {
+  color: white;
+}
+
+
+/* Styles par défaut pour le body */
+body {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Mode sombre */
+.dark-mode body {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Autres éléments en mode sombre */
+.dark-mode .sidebar {
+  background-color: #333;
+}
+
+.dark-mode .nav-item a {
+  color: #ffffff;
 }
