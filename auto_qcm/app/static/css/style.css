@@ -31,7 +31,6 @@ body.dark-mode {
 .sidebar {
   background-color: #adadad;
   width: 250px;
-  
   height: 100vh;
   padding: 20px;
   transition: all 0.3s; 
