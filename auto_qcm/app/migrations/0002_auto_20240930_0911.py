@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db import migrations
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,10 @@ def create_default_admin(apps, schema_editor):
 
         # Mark the admin creation to avoid future executions
         Setting.objects.create(flag="admin_created")
+
+        enseignant_goup = Group.objects.create(name="Enseignant")
+        user.groups.add(enseignant_goup)
+        user.save()
 
 
 class Migration(migrations.Migration):
