@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card" style="width: 50%; padding: 20px;">
+      <div class="card-body text-center">
+        <h2 class="card-title">{{ qcm.titre }}</h2>
+        <p class="card-text">{{ qcm.description }}</p>
+
+        <p class="text-muted">Nombre de questions : {{ qcm.number_of_questions }}</p>
+
+        <!-- Formulaire pour passer le QCM -->
+        <form method="POST">
+          {% csrf_token %}
+          <!-- Bouton pour répondre au QCM, grisé si inaccessible -->
+          <button type="submit" class="btn btn-primary mt-4" 
+                  {% if not qcm.est_accessible %}disabled{% endif %}>
+            Répondre au QCM
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
