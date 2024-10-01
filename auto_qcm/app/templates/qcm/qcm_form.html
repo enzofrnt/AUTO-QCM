@@ -33,7 +33,8 @@
         Créer un nouveau QCM
       {% endif %}
     </h2>
-
+    <h3>Sélectionnez les questions :</h3>
+      {% include 'questions/question_filter_form.html' %}
     <!-- Affichage des erreurs -->
     {% if form.errors or formset.errors %}
       <div class="alert alert-danger">
@@ -92,10 +93,7 @@
           <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
         </div>
       </div>
-
-      <!-- Sélection des questions -->
-      <h3>Sélectionnez les questions :</h3>
-      {% include 'questions/question_filter_form.html' %}
+      
       <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 m-4">Créer une nouvelle Question</a>
       <button type="button" class="btn btn-success ml-2 w-10 m-4" id="openModal">Générer automatiquement des questions</button>
 
