@@ -9,10 +9,8 @@
 
         <p class="text-muted">Nombre de questions : {{ qcm.number_of_questions }}</p>
 
-        <!-- Formulaire pour passer le QCM -->
         <form method="POST">
           {% csrf_token %}
-          <!-- Bouton pour répondre au QCM, grisé si inaccessible -->
           <button type="submit" class="btn btn-primary mt-4" 
                   {% if not qcm.est_accessible %}disabled{% endif %}>
             Répondre au QCM
