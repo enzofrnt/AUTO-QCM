@@ -12,6 +12,8 @@ class QCM(models.Model):
     creator = models.ForeignKey(
         "Utilisateur", on_delete=models.CASCADE
     )  # 1 est l'ID d'un utilisateur par défaut
+    est_accessible = models.BooleanField(default=False)
+    nb_reponses = models.IntegerField(default=1)
 
     def __str__(self):
         return self.titre
