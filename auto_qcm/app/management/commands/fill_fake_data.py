@@ -94,10 +94,6 @@ class Command(BaseCommand):
                 )
                 user.save()
 
-        Utilisateur.objects.create_superuser(
-            username="admin", email="admin@example.com", password="adminpassword"
-        )
-
         self.stdout.write(self.style.SUCCESS("Utilisateurs créés avec succès."))
 
         fake = Faker()
