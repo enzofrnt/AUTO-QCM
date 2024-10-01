@@ -14,6 +14,7 @@ from .qcm.qcm_correction_view import corriger_qcm
 from .qcm.qcm_create_or_edit_view import create_or_edit_qcm
 from .qcm.qcm_delete_view import delete_qcm
 from .qcm.qcm_list_view import QcmListView
+from .qcm.qcm_acces_view import acces_qcm
 from .dashboard.qcm_statistique_view import qcm_statistics
 from .question.question_create_or_edit_view import create_or_edit_question
 from .question.question_delete_view import delete_question

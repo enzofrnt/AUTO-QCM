@@ -140,7 +140,7 @@
         e.stopPropagation()
         const qcmRow = $(this).closest('.qcm-row')
         const qcmId = qcmRow.data('qcm-id')
-        window.location.href = "{% url 'qcm-answer' qcm_id=0 %}".replace('0', qcmId)
+        window.location.href = "{% url 'qcm-acces' qcm_id=0 %}".replace('0', qcmId)
       })
     
       // Rediriger vers la page de modification de la question

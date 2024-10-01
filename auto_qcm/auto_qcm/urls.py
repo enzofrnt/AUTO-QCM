@@ -41,6 +41,7 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
+    acces_qcm,
 )
 from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin
@@ -78,9 +79,10 @@ urlpatterns = [
     path("qcm/list/", QcmListView.as_view(), name="qcm-list"),
     path("qcm/delete/<int:qcm_id>/", delete_qcm, name="qcm-delete"),
     # Reponse QCM
-    path("qcm/anwser/<int:qcm_id>/", repondre_qcm, name="qcm-answer"),
+    path("qcm/acces/<int:qcm_id>/", acces_qcm, name="qcm-acces"),
+    path("qcm/anwser/<int:qcm_id>/<int:rep_id>", repondre_qcm, name="qcm-answer"),
     path("qcm/correct/<int:repqcm_id>/", corriger_qcm, name="qcm-correct"),
-    path('delete-multiple/', delete_multiple_qcms, name='qcm-delete-multiple'),
+    path("delete-multiple/", delete_multiple_qcms, name="qcm-delete-multiple"),
     # Export
     path(
         "question/export-xml/<int:question_id>/",
