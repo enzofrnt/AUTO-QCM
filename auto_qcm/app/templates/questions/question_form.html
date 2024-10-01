@@ -165,7 +165,6 @@
       function updatePreview() {
         var latexText = $('#id_texte').val()
         var parsedText = parseLatexText(latexText)
-        console.log(parsedText)
         $('#copy_text').html('<span class="django-latexify text">' + parsedText + '</span>')
         latex_render_math(math_latex_inline_elements, false)
       }
