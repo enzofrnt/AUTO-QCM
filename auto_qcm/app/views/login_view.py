@@ -1,9 +1,10 @@
 from logging import getLogger
 
 from django.contrib import messages
-from django.contrib.auth import logout
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 
 logger = getLogger(__name__)
@@ -23,6 +24,15 @@ class CustomLoginView(LoginView):
         # Connexion du nouvel utilisateur
         user = form.get_user()
         logger.info(f"Utilisateur connecté: {user.username}")
+        login(self.request, user)
+
+        # Vérifier si l'utilisateur doit changer son mot de passe
+        if user.must_change_password:
+            logger.info(f"Utilisateur {user.username} doit changer son mot de passe.")
+            return redirect(
+                "password_change"
+            )  # Redirection vers la page de changement de mot de passe
+
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -30,10 +40,3 @@ class CustomLoginView(LoginView):
         messages.error(self.request, "Nom d'utilisateur ou mot de passe incorrect.")
         logger.warning("Échec de la tentative de connexion.")
         return super().form_invalid(form)
-
-    def get_success_url(self):
-        """Redirection vers l'URL de succès ou page précédente."""
-        if self.request.GET.get("next"):
-            return self.request.GET.get("next")
-        else:
-            return self.success_url
