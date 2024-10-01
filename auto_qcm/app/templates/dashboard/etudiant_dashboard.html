@@ -78,7 +78,7 @@
                 backgroundColor: getRandomColor(),
                 borderColor: getRandomColor(),
                 textColor: 'black',
-                url: '{% url "qcm-answer" qcm.id %}'  // Assurez-vous que chaque QCM a une URL définie dans le modèle
+                url: '{% url "qcm-acces" qcm.id %}'  // Assurez-vous que chaque QCM a une URL définie dans le modèle
                  
             },
             {% endfor %}

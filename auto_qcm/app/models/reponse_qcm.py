@@ -13,7 +13,7 @@ class ReponseQCM(models.Model):
     )
     reponses = models.ManyToManyField("ReponseQuestion")
     date_debut = models.DateTimeField()
-    date_fin_reponse = models.DateTimeField()
+    date_fin_reponse = models.DateTimeField(null=True, blank=True)
     est_evalue = models.BooleanField(default=False)
 
     class Meta:
