@@ -36,6 +36,15 @@ jobs:
         cd ./deploiement-${{ matrix.environment }}
         docker compose exec auto_qcm_python python manage.py wait_for_db
 
+    - name: Wait for Migrations to be Applied
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        while docker compose exec auto_qcm_python python manage.py showmigrations | grep '\[ \]'; do
+          echo "En attente que les migrations soient appliquées..."
+          sleep 5
+        done
+        echo "Toutes les migrations ont été appliquées."
+
     - name: Run Tests
       run: |
         cd ./deploiement-${{ matrix.environment }}
