@@ -11,7 +11,7 @@ class UtilisateurModelTest(TestCase):
         )
 
         # Création de groupes
-        self.tutor_group = Group.objects.get_or_create(name="Enseignant")
+        self.tutor_group, created = Group.objects.get_or_create(name="Enseignant")
         self.promo_group = Group.objects.create(name="BUT1")
         self.first_group = Group.objects.create(name="1A")
         self.second_group = Group.objects.create(name="2A")
