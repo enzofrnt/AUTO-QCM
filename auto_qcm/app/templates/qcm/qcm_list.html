@@ -9,16 +9,15 @@
   <h2>Liste des QCM</h2>
 
   <!-- Liste des qcm -->
-  <div id="qcm-list">
-    
       
     
     <form id="qcm-form" method="POST" action="{% url 'qcm-delete-multiple' %}">
       {% csrf_token %}
+      <div id="qcm-list">
       <div class="d-flex align-items-center">
-      <a href="{% url 'qcm-create' %}" class="btn btn-primary ">Créer un nouveau qcm</a>
-      <button type="submit" class="btn btn-danger">Supprimer les QCM sélectionnés</button>
-    </div> 
+        <a href="{% url 'qcm-create' %}" class="btn btn-primary ">Créer un nouveau qcm</a>
+        <button type="submit" class="btn btn-danger">Supprimer les QCM sélectionnés</button>
+      </div> 
       <table class="table  bg-light qcm-table">
         <thead class="rounded">
           <tr>
@@ -59,7 +58,7 @@
               </div>
 
                 <!-- Section des questions du qcm à afficher/cacher -->
-                  <div class="qcm-list" id="questions-{{ qcm.id }}" style="display: none; margin-top: 10px;">
+                  <div class="qcm-list" id="questions-{{ qcm.id }}" style="display: none; margin-top: 10px; ">
                     <p>{{ qcm.description }}</p>
                     <ul class="list-group">
                       <p>
