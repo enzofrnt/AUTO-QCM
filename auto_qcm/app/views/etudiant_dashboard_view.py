@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from app.decorators import teacher_or_self_student_required
-from app.models import QCM, ReponseQCM, Utilisateur
+from app.models import QCM, ReponseQCM, Utilisateur, Plage
 from django.db.models import Q
 from django.urls import reverse_lazy
 
@@ -28,16 +28,11 @@ def etudiant_dashboard(request, pk):
     today = timezone.now().date()
     three_months_later = today + timedelta(days=90)
     upcoming_qcms = QCM.objects.filter(
-
         Q(date_modif__gte=today) & Q(date_modif__lte=three_months_later)
     ).order_by('date_modif')
-
-    logger.error(utilisateur)
-
 
     return render(request, 'dashboard/etudiant_dashboard.html', {
         'upcoming_qcms': upcoming_qcms,
         'reponse_qcm': reponse_qcm,
         'utilisateur': utilisateur,
     })
-
