@@ -21,8 +21,7 @@ jobs:
 
     - name: Clean up Docker containers and volumes
       run: |
-        cd ./deploiement-${{ matrix.environment }}
-        docker compose down -v
+        rm -rf ./deploiement-${{ matrix.environment }}/database
 
     - name: Set DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS for Production
       if: matrix.environment == 'prod'
