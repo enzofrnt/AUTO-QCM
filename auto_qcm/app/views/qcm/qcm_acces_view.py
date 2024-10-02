@@ -7,6 +7,8 @@ from django.utils import timezone
 @login_required
 def acces_qcm(request, qcm_id):
     qcm = get_object_or_404(QCM, id=qcm_id)
+    reponsesqcm = ReponseQCM.objects.filter(qcm=qcm, utilisateur=request.user)
+    est_accessible = qcm.est_accessible
     if request.method == "POST":
         if qcm.est_accessible:
             rep_qcm = ReponseQCM.objects.create(
@@ -15,4 +17,8 @@ def acces_qcm(request, qcm_id):
                 date_debut=timezone.now(),
             )
             return redirect("qcm-answer", qcm_id=qcm_id, rep_id=rep_qcm.id)
-    return render(request, "qcm/qcm_acces.html", {"qcm": qcm})
+    return render(
+        request,
+        "qcm/qcm_acces.html",
+        {"qcm": qcm, "est_accessible": est_accessible, "repqcm": reponsesqcm},
+    )
