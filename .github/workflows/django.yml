@@ -1,0 +1,41 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 2
+      matrix:
+        environment: [dev, prod]  # Teste à la fois les environnements de dev et prod
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Compose
+      run: |
+        docker-compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml up -d
+
+    - name: Wait for Database
+      run: |
+        docker-compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml exec auto_qcm_python python manage.py wait_for_db
+
+    - name: Apply Migrations
+      run: |
+        docker-compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml exec auto_qcm_python python manage.py migrate --noinput
+
+    - name: Run Tests
+      run: |
+        docker-compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml exec auto_qcm_python python manage.py test
+
+    - name: Tear Down
+      if: always()
+      run: |
+        docker-compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml down
