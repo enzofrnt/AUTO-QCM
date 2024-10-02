@@ -17,7 +17,7 @@
       document.addEventListener('DOMContentLoaded', function() {
         var theme = localStorage.getItem('theme') || 'light'; // Par défaut 'light'
         var themeSwitch = document.getElementById('theme-switch');
-        
+
         // Ajuster l'état du switch immédiatement en fonction du thème
         if (theme === 'dark') {
           themeSwitch.checked = true;
@@ -46,11 +46,11 @@
     <link rel="stylesheet" href="{% static 'css/home_page.css' %}" />
     <link rel="stylesheet" href="{% static 'css/question_list.css' %}" />
     <link rel="stylesheet" href="{% static 'css/qcm_list_style.css' %}" />
-    
+
   </head>
 
   <body>
-    
+
     <div class="" style="display: flex; width: 100%;">
       <div style="width: 300px;">
         {% block sidebar %}
@@ -66,7 +66,7 @@
                     </label>
                     <span class="darkmode-text">Dark Mode</span>
                   </li>
-                  
+
                   <!-- Navigation Links -->
 
                   <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-house-door"></i> Accueil</a></li>
