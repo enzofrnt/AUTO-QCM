@@ -19,10 +19,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Clean up Docker containers and volumes
-      run: |
-        rm -rf ./deploiement-${{ matrix.environment }}/database
-
     - name: Set DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS for Production
       if: matrix.environment == 'prod'
       run: |
@@ -40,10 +36,10 @@ jobs:
         cd ./deploiement-${{ matrix.environment }}
         docker compose exec auto_qcm_python python manage.py wait_for_db
 
-    - name: Apply Migrations
-      run: |
-        cd ./deploiement-${{ matrix.environment }}
-        docker compose exec auto_qcm_python python manage.py migrate --noinput
+    # - name: Apply Migrations
+    #   run: |
+    #     cd ./deploiement-${{ matrix.environment }}
+    #     docker compose exec auto_qcm_python python manage.py migrate --noinput
 
     - name: Run Tests
       run: |
