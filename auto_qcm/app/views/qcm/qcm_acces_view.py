@@ -7,7 +7,9 @@ from django.utils import timezone
 @login_required
 def acces_qcm(request, qcm_id):
     qcm = get_object_or_404(QCM, id=qcm_id)
-    reponsesqcm = ReponseQCM.objects.filter(qcm=qcm, utilisateur=request.user)
+    reponsesqcm = ReponseQCM.objects.filter(qcm=qcm, utilisateur=request.user).order_by(
+        "-date_debut"
+    )[:5]
     est_accessible = qcm.est_accessible
     if request.method == "POST":
         if qcm.est_accessible:
