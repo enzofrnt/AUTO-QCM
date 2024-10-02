@@ -39,12 +39,12 @@ Si ce projet s'avère fructueux, il pourrait bien être adopté par d'autres ét
 
 ## Notre équipe
 
-- [Nathan Pagnucco](https://github.com/November304)
-- [loispacqueteau](https://github.com/loispacqueteau)
-- [Enzo Fournet](https://github.com/enzofrnt)
-- [Anthony DECLIPPEL](https://github.com/KeynoIX)
-- [Alexi Fontanilles](https://github.com/AlexiFon)
-- [Kilian Boivert](https://github.com/Kilianspore)
+- [Nathan Pagnucco](https://github.com/November304) développeur 
+- [loispacqueteau](https://github.com/loispacqueteau) développeur
+- [Enzo Fournet](https://github.com/enzofrnt) scrum master 
+- [Anthony DECLIPPEL](https://github.com/KeynoIX) développeur 
+- [Alexi Fontanilles](https://github.com/AlexiFon) product owner 
+- [Kilian Boivert](https://github.com/Kilianspore) développeur
 
 ## Technologies utilisées
 
