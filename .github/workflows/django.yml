@@ -34,16 +34,16 @@ jobs:
         cd ./deploiement-${{ matrix.environment }}
         docker compose exec auto_qcm_python python manage.py migrate --noinput
 
+    - name: Set DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS for Production
+      if: matrix.environment == 'prod'
+      run: |
+          echo "DJANGO_ALLOWED_HOSTS=*" >> ./deploiement-prod/.env
+          echo "DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost" >> ./deploiement-prod/.env
+
     - name: Run Tests
-      continue-on-error: true  # Continue même en cas d'échec des tests
       run: |
         cd ./deploiement-${{ matrix.environment }}
         docker compose exec auto_qcm_python python manage.py test
-
-    - name: Check Logs on Failure
-      if: failure()
-      run: |
-        docker compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml logs
 
     - name: Tear Down
       if: always()
