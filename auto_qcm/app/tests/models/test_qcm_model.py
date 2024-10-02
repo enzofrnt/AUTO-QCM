@@ -10,7 +10,7 @@ from app.models import (
 class QCMModelTest(TestCase):
     def setUp(self):
         """Création des objets pour les tests."""
-        self.user = Utilisateur.objects.create_user("test", "test@gamil.com", "test")
+        self.user = Utilisateur.objects.create_user("testqcm", "test@gamil.com", "test")
         self.user.save()
 
         self.qcm = QCM.objects.create(
@@ -26,7 +26,13 @@ class QCMModelTest(TestCase):
         self.question2 = Question.objects.create(
             nom="Question 2", texte="Texte 2", creator=self.user
         )
-        
+        self.reponse1 = self.question1.reponses.create(
+            texte="Réponse 1", is_correct=True, creator=self.user
+        )
+        self.reponse2 = self.question1.reponses.create(
+            texte="Réponse 2", is_correct=False, creator=self.user
+        )
+        self.qcm.questions.add(self.question1, self.question2)
 
     def test_qcm_creation(self):
         """Test de la création d'un QCM."""
@@ -44,23 +50,19 @@ class QCMModelTest(TestCase):
 
     def test_number_of_questions(self):
         """Test que la méthode number_of_questions retourne le bon nombre."""
-        self.qcm.questions.add(self.question1, self.question2)
         self.assertEqual(self.qcm.number_of_questions, 2)
 
     def test_convert_to_xml(self):
         """Test de la conversion en XML."""
-        self.qcm.questions.add(self.question1)
         expected_xml = '<?xml version="1.0"?><quiz>'
         expected_xml += self.question1.convertToXml()
+        expected_xml += self.question2.convertToXml()
         expected_xml += "</quiz>"
         self.assertEqual(self.qcm.convertToXml(), expected_xml)
 
     def test_convert_to_latex(self):
         """Test de la conversion en LaTeX."""
         # Ajouter des réponses à la question
-        reponse1 = self.question1.reponses.create(texte="Réponse 1", is_correct=True)
-        reponse2 = self.question1.reponses.create(texte="Réponse 2", is_correct=False)
-        self.qcm.questions.add(self.question1)
 
         # Tester la génération LaTeX
         latex_content = self.qcm.convert_to_latex()
@@ -68,7 +70,7 @@ class QCMModelTest(TestCase):
         # Vérifier que le LaTeX contient les informations attendues
         self.assertIn(r"\documentclass{article}", latex_content)
         self.assertIn(self.question1.nom, latex_content)
-        self.assertIn(reponse1.texte, latex_content)
+        self.assertIn(self.reponse1.texte, latex_content)
         self.assertIn(r"\bonne{Réponse 1}", latex_content)
-        self.assertIn(reponse2.texte, latex_content)  # Utilisation de reponse2
+        self.assertIn(self.reponse2.texte, latex_content)  # Utilisation de reponse2
         self.assertIn(r"\mauvaise{Réponse 2}", latex_content)  # Assertion pour reponse2
