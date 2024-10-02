@@ -13,7 +13,9 @@
         </div>
       </div>
       <main class="content">
-        {% include 'pp.html' %}
+        {% if user.is_authenticated %}
+          {% include 'pp.html' %}
+        {% endif %}
         {% block content %}
 
         {% endblock %}
@@ -26,8 +28,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <!-- Scripts personnalisés -->
     <script src="{% static 'js/dark_mode.js' %}"></script>
+    <script src="{% static 'js/base.js' %}"></script>
     {% block extra_scripts %}
-
     {% endblock %}
   </body>
 </html>

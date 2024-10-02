@@ -1,3 +1,5 @@
+from .admin_dasboard_view import custom_admin_view
+from .change_password_view import change_password_view
 from .custom_error_view import (
     custom_page_not_found_view,
     custom_permission_denied_view,
