@@ -39,6 +39,11 @@ jobs:
         cd ./deploiement-${{ matrix.environment }}
         docker compose exec auto_qcm_python python manage.py test
 
+    - name: Check Logs on Failure
+      if: failure()
+      run: |
+          docker-compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml logs
+
     - name: Tear Down
       if: always()
       run: |
