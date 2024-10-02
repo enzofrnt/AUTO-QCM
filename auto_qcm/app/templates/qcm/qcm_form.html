@@ -14,7 +14,7 @@
     }
 
     .formset-row {
-      display: flex; 
+      display: flex;
       justify-content: space-between;
     }
     .tag-badge.selected {
@@ -111,7 +111,7 @@
       </button>
     </form>
 
-  </div> 
+  </div>
 
   <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
   <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
@@ -176,15 +176,15 @@
       // Fonction pour ajouter un nouveau formulaire
       $('#add-plage').click(function() {
         let formCount = $('.formset-row').length;
-        let newForm = $('#plageVide').clone(); 
+        let newForm = $('#plageVide').clone();
 
         newForm.removeClass('hidden');
         newForm.addClass('formset-row item');
-        
+
         //On remplate le __prefix__ par la bonne valeur
         const regex = new RegExp('__prefix__', 'g');
         newForm.html(newForm.html().replace(regex, formCount));
-        
+
         formsetContainer.append(newForm);
         totalForms.val(formCount + 1);
       });
@@ -324,6 +324,5 @@
     });
   </script>
     <!-- Inclusion des scripts personnalisés -->
-   
-  {% endblock %}
 
+  {% endblock %}

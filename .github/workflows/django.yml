@@ -1,0 +1,52 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 2
+      matrix:
+        environment: [dev, prod]  # Teste à la fois les environnements de dev et prod
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Compose
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose up -d
+
+    - name: Wait for Database
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose exec auto_qcm_python python manage.py wait_for_db
+
+    - name: Apply Migrations
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose exec auto_qcm_python python manage.py migrate --noinput
+
+    - name: Set DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS for Production
+      if: matrix.environment == 'prod'
+      run: |
+          echo "DJANGO_ALLOWED_HOSTS=*" >> ./deploiement-prod/.env
+          echo "DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost" >> ./deploiement-prod/.env
+
+    - name: Run Tests
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose exec auto_qcm_python python manage.py test
+
+    - name: Tear Down
+      if: always()
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose down

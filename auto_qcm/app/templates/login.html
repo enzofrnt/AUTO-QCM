@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 
+
 {% load static %}
 
 {% block title %}
     {% if must_change_password %}Changer le mot de passe{% else %}Connexion{% endif %}
 {% endblock %}
+
+{% comment %} pour ne pas afficher la sidebar sur le login {% endcomment %}
+{% block sidebar %}{% endblock %}
 
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
@@ -22,7 +26,7 @@
 
             <form method="post">
                 {% csrf_token %}
-                
+
                 <!-- Formulaire de connexion -->
                 {% if not must_change_password %}
                     <div class="input-group">
@@ -47,7 +51,7 @@
                             <div class="error-message" style="color: red;">{{ form.old_password.errors }}</div>
                         {% endif %}
                     </div>
-                    
+
                     <div class="input-group">
                         <input type="password" name="new_password1" id="new_password1" placeholder="Nouveau mot de passe" required>
                         <span class="password-toggle">

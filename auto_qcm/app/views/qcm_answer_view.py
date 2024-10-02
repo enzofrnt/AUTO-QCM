@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from app.models import QCM, Reponse, ReponseQCM, ReponseQuestion
 from django.contrib.auth.decorators import login_required
-from app.models import QCM, ReponseQCM, ReponseQuestion, Reponse
-from django.utils import timezone
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -38,7 +38,6 @@ def repondre_qcm(request, qcm_id, rep_id):
             else:
                 reponse_ids = [request.POST.get(f"question_{question.id}")]
 
-            logger.error(f"Reponse pour la question {question.id}: {reponse_ids}")
             if reponse_ids:
                 reponse_question = ReponseQuestion.objects.create(
                     utilisateur=request.user,

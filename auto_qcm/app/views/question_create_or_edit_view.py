@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.forms import inlineformset_factory
-from django.contrib.auth.decorators import login_required
-from app.models import Question, Reponse, Tag
-from app.forms import QuestionForm, BaseReponseFormSet
 from app.decorators import teacher_required
+from app.forms import BaseReponseFormSet, QuestionForm
+from app.models import Question, Reponse, Tag
+from django.contrib.auth.decorators import login_required
+from django.forms import inlineformset_factory
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 
 

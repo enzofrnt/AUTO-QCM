@@ -9,9 +9,16 @@
     </div>
 
     <div class="buttons">
-      <a href="{% url 'question-create' %}" class="button-home"><i class="bi bi-card-checklist"></i> Créer ou consulter une question</a>
-      <a href="{% url 'qcm-create' %}" class="button-home"><i class="bi bi-question-square"></i> Générer un QCM</a>
-      <a href="{% url 'enseignant-dashboard' pk=user.id %}" class="button-home"><i class="bi bi-clipboard-data"></i> Consulter son tableau de bord</a>
+
+      {% if user.is_tutor %}
+        <a href="{% url 'question-create' %}" class="button-home"><i class="bi bi-card-checklist"></i> Créer ou consulter une question</a>
+        <a href="{% url 'qcm-create' %}" class="button-home"><i class="bi bi-question-square"></i> Générer un QCM</a>
+        <a href="{% url 'enseignant-dashboard' pk=user.id %}" class="button-home"><i class="bi bi-speedometer2"></i> Consulter son tableau de bord</a>
+      {% endif %}
+      {% if user.is_student %}
+        <a href="{% url 'etudiant-dashboard' pk=user.id %}" class="button-home"><i class="bi bi-speedometer2"></i> Consulter son tableau de bord</a>
+      {% endif %}
+
     </div>
     <div id="rotating-image" class="hidden-image"></div>
   </div>

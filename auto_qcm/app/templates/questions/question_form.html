@@ -9,17 +9,17 @@
     input[type='checkbox'][name$='-DELETE'] {
       display: none;
     }
-    
+
     .hidden {
       display: none;
     }
-    
+
     .formset_row {
       display: flex;
       flex-direction: row;
       gap: 10px;
     }
-    
+
     .removeReponse {
       top: 5px;
       right: 5px;
@@ -142,7 +142,7 @@
     </form>
   </div>
 
-  {% include 'latexify/scripts.html' %} 
+  {% include 'latexify/scripts.html' %}
 {% endblock %}
 {% block extra_scripts %}
   <script>
@@ -151,7 +151,7 @@
       var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
       var formsetContainer = $('#reponseFormset')
       const emptyRep = $('#reponseVide')
-    
+
       // Fonction pour parser le texte LaTeX et le convertir en HTML
       function parseLatexText(text) {
         // Utilise une expression régulière pour identifier les formules LaTeX délimitées par '$...$'
@@ -160,7 +160,7 @@
           return '<span class="django-latexify math inline">' + p1 + '</span>'
         })
       }
-    
+
       // Fonction pour mettre à jour la preview à partir du champ de texte
       function updatePreview() {
         var latexText = $('#id_texte').val()
@@ -168,48 +168,48 @@
         $('#copy_text').html('<span class="django-latexify text">' + parsedText + '</span>')
         latex_render_math(math_latex_inline_elements, false)
       }
-    
+
       // Appelle la fonction de mise à jour à l'ouverture de la page pour afficher le texte existant
       updatePreview()
-    
+
       // Ajoute un écouteur d'événement sur le champ de texte pour mettre à jour la preview à chaque changement
       $('#id_texte').on('input', function () {
         updatePreview()
       })
-    
+
       // Gestion de l'ajout dynamique de réponses
       $('#addReponse').click(function () {
         let formCount = parseInt(totalForms.val())
         let newForm = emptyRep.clone()
-    
+
         newForm.removeClass('hidden')
         newForm.addClass('formset_row border rounded position-relative')
-    
+
         //On remplate le __prefix__ par la bonne valeur
         const regex = new RegExp('__prefix__', 'g')
         newForm.html(newForm.html().replace(regex, formCount))
-    
+
         formsetContainer.append(newForm)
         totalForms.val(formCount + 1)
       })
-    
+
       // Gestion de la suppression de réponses
       $(document).on('click', '.removeReponse', function () {
         // Marquer le formulaire pour suppression en cochant le champ 'DELETE'
         var formRow = $(this).closest('.formset_row')
         formRow.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true)
-    
+
         // Masquer le formulaire, mais le garder dans le DOM pour l'envoyer à Django
         formRow.hide()
       })
-    
+
       // Initialiser le bouton supprimer
       $('.removeReponse').each(function () {
         if ($(this).closest('.formset_row').index() === 0) {
           $(this).hide()
         }
       })
-    
+
       // Gestion de l'ajout dynamique de nouveaux tags
       $('#addNewTag').click(function () {
         var newTagHtml = `

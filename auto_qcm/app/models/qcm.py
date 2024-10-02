@@ -21,7 +21,7 @@ class QCM(models.Model):
     def save(self, *args, **kwargs):
         """Quand on sauvegarde on met a jour la date de modification"""
         self.date_modif = timezone.now()
-        return super(QCM, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "QCM"
