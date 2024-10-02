@@ -53,40 +53,42 @@
     
     <div class="" style="display: flex; width: 100%;">
       <div style="width: 300px;">
-        <div style="height: 100%; position: fixed;">
-          <div style="display: flex; align-items: center;">
-            <nav class="sidebar">
-              <ul class="nav-list">
-                <!-- Dark Mode Switch Button -->
-                <li>
-                  <label class="switch">
-                    <input type="checkbox" id="theme-switch">
-                    <span class="slider round"></span>
-                  </label>
-                  <span class="darkmode-text">Dark Mode</span>
-                </li>
-                
-                <!-- Navigation Links -->
+        {% block sidebar %}
+          <div style="height: 100%; position: fixed;">
+            <div style="display: flex; align-items: center;">
+              <nav class="sidebar">
+                <ul class="nav-list">
+                  <!-- Dark Mode Switch Button -->
+                  <li>
+                    <label class="switch">
+                      <input type="checkbox" id="theme-switch">
+                      <span class="slider round"></span>
+                    </label>
+                    <span class="darkmode-text">Dark Mode</span>
+                  </li>
+                  
+                  <!-- Navigation Links -->
 
-                <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-house-door"></i> Accueil</a></li>
-                {% if user.is_authenticated %}
-                  {% if user.is_superuser %}
-                      <li><a class="nav-item" href="{% url 'admin-dashboard' %}"> <i class="bi bi-lightning-charge"></i>Tableau de bord administrateur</a></li>
+                  <li><a class="nav-item" href="{% url 'home' %}"> <i class="bi bi-house-door"></i> Accueil</a></li>
+                  {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                        <li><a class="nav-item" href="{% url 'admin-dashboard' %}"> <i class="bi bi-lightning-charge"></i>Tableau de bord administrateur</a></li>
+                    {% endif %}
+                    {% if user.is_tutor %}
+                        <li><a class="nav-item" href="{% url 'question-list' %}"> <i class="bi bi-card-checklist"></i> Liste des questions</a></li>
+                        <li><a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a></li>
+                        <li><a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a></li>
+                    {% endif %}
+                    {% if user.is_student %}
+                        <li><a class="nav-item" href="{% url 'etudiant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord étudiant</a></li>
+                    {% endif %}
                   {% endif %}
-                  {% if user.is_tutor %}
-                      <li><a class="nav-item" href="{% url 'question-list' %}"> <i class="bi bi-card-checklist"></i> Liste des questions</a></li>
-                      <li><a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a></li>
-                      <li><a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a></li>
-                  {% endif %}
-                  {% if user.is_student %}
-                      <li><a class="nav-item" href="{% url 'etudiant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord étudiant</a></li>
-                  {% endif %}
-                {% endif %}
-                <li><a class="nav-item" href="{% url 'support-doc' %}"> <i class="bi bi-info-circle"></i> Support & documentation</a></li>
-              </ul>
-            </nav>
+                  <li><a class="nav-item" href="{% url 'support-doc' %}"> <i class="bi bi-info-circle"></i> Support & documentation</a></li>
+                </ul>
+              </nav>
+            </div>
           </div>
-        </div>
+        {% endblock %}
       </div>
       <main class="content">
         {% if user.is_authenticated %}
