@@ -17,6 +17,7 @@
                 <div class="form-check">
                   <input class="form-check-input"
                     type="{% if question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}"
+                    name="question_{{ question.id }}"
                     id="reponse_{{ reponse.id }}"
                     value="{{ reponse.id }}" />
 
@@ -31,23 +32,4 @@
       <button type="submit" class="btn btn-primary">Envoyer les réponses</button>
     </form>
   </div>
-
-  <script type="text/javascript">
-    var formSubmitted = false
-    
-    document.getElementById('qcm-form').addEventListener('submit', function () {
-      formSubmitted = true
-    })
-    
-    window.addEventListener('beforeunload', function (e) {
-      if (!formSubmitted) {
-        var confirmationMessage = 'Attention ! Si vous quittez cette page, vos réponses seront soumises comme vides.'
-    
-        e.preventDefault()
-        e.returnValue = confirmationMessage
-    
-        return confirmationMessage
-      }
-    })
-  </script>
 {% endblock %}

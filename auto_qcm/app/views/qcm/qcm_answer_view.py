@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 from app.models import QCM, ReponseQCM, ReponseQuestion, Reponse
 from django.utils import timezone
 from django.urls import reverse_lazy
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 @login_required
@@ -29,6 +32,7 @@ def repondre_qcm(request, qcm_id, rep_id):
             else:
                 reponse_ids = [request.POST.get(f"question_{question.id}")]
 
+            logger.error(f"Reponse pour la question {question.id}: {reponse_ids}")
             if reponse_ids:
                 reponse_question = ReponseQuestion.objects.create(
                     utilisateur=request.user,
@@ -42,6 +46,7 @@ def repondre_qcm(request, qcm_id, rep_id):
                         reponse_question.reponse.add(reponse)
 
                 rep_qcm.reponses.add(reponse_question)
+                rep_qcm.save()
 
         return redirect("qcm-correct", repqcm_id=rep_qcm.id)
 
