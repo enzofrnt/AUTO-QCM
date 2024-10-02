@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 
+
 {% load static %}
 
 {% block title %}
     {% if must_change_password %}Changer le mot de passe{% else %}Connexion{% endif %}
 {% endblock %}
+
+{% comment %} pour ne pas afficher la sidebar sur le login {% endcomment %}
+{% block sidebar %}{% endblock %} 
 
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
