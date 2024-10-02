@@ -7,12 +7,34 @@
         <h2 class="card-title">{{ qcm.titre }}</h2>
         <p class="card-text">{{ qcm.description }}</p>
 
-        <p class="text-muted">Nombre de questions : {{ qcm.number_of_questions }}</p>
+        <p class="text-muted">Nombre de tentatives : {{ qcm.nb_reponses }}</p>
+
+        {% if repqcm %}
+          <h4 class="mt-4">Historique des réponses</h4>
+          <table class="table table-bordered mt-3">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rep in repqcm %}
+                <tr>
+                  <td>{{ rep.date_fin_reponse|date:"d/m/Y H:i" }}</td> <!-- Affiche la date en format jour/mois/année heure:minute -->
+                  <td>{{ rep.score }}/{{ rep.score_max }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="text-muted">Vous n'avez pas encore répondu à ce qcm.</p>
+        {% endif %}
 
         <form method="POST">
           {% csrf_token %}
           <button type="submit" class="btn btn-primary mt-4" 
-                  {% if not qcm.est_accessible %}disabled{% endif %}>
+                  {% if not est_accessible %}disabled{% endif %}>
             Répondre au QCM
           </button>
         </form>
