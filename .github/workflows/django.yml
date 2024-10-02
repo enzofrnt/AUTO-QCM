@@ -19,6 +19,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Clean up Docker containers and volumes
+        run: |
+          cd ./deploiement-prod
+          docker compose down -v
+
     - name: Set DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS for Production
       if: matrix.environment == 'prod'
       run: |
