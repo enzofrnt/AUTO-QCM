@@ -1,9 +1,8 @@
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
-from app.models import Question, QCM
-from app.models import Question, QCM
-from django.http import HttpResponse
 from app.decorators import teacher_required
+from app.models import QCM, Question
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
 
@@ -16,9 +15,9 @@ def export_question_xml(request, question_id):
 
     response = HttpResponse(xml_content, content_type="application/xml")
 
-    response["Content-Disposition"] = (
-        f'attachment; filename="question_{question_id}.xml"'
-    )
+    response[
+        "Content-Disposition"
+    ] = f'attachment; filename="question_{question_id}.xml"'
 
     return response
 

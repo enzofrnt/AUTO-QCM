@@ -29,9 +29,9 @@ class QuestionListView(TeacherRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["tags"] = (
-            Tag.objects.all()
-        )  # Passer les tags au template pour le filtre
+        context[
+            "tags"
+        ] = Tag.objects.all()  # Passer les tags au template pour le filtre
         context["nom_filtre"] = self.request.GET.get("nom", "")
         context["tag_filtre"] = self.request.GET.getlist(
             "tags"

@@ -1,11 +1,11 @@
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from app.models import ReponseQCM
 from app.decorators import teacher_or_self_student_required
+from app.models import ReponseQCM
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 
 
-@login_required(login_url=reverse_lazy('login'))
+@login_required(login_url=reverse_lazy("login"))
 # @teacher_or_self_student_required
 def corriger_qcm(request, repqcm_id):
     reponse_qcm = get_object_or_404(ReponseQCM, id=repqcm_id)
@@ -21,10 +21,10 @@ def corriger_qcm(request, repqcm_id):
             reponses_utilisateur[repquestion].append(reponse.id)
 
     context = {
-        'reponse_qcm': reponse_qcm,
-        'qcm': qcm,
-        'reponses_utilisateur': reponses_utilisateur,
-        'user': user
+        "reponse_qcm": reponse_qcm,
+        "qcm": qcm,
+        "reponses_utilisateur": reponses_utilisateur,
+        "user": user,
     }
-    
-    return render(request, 'qcm/qcm_correction.html', context)
+
+    return render(request, "qcm/qcm_correction.html", context)

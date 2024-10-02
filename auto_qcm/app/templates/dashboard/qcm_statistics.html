@@ -44,7 +44,7 @@
                 if (selectedQcm) {
                     data = selectedQcm.questions_stats.map(q => q.avg_score_percentage);
                     labels = selectedQcm.questions_stats.map(q => q.nom);
-                    questionsHTML = selectedQcm.questions_stats.map(q => 
+                    questionsHTML = selectedQcm.questions_stats.map(q =>
                         `<li>${q.nom}: ${q.avg_score_percentage.toFixed(2)}% (${q.total_responses} réponses)</li>`
                     ).join('');
                 }

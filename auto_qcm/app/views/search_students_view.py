@@ -1,7 +1,7 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from app.decorators import teacher_required
 from app.models import Utilisateur
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from django.urls import reverse_lazy
 
 
@@ -12,7 +12,7 @@ def search_student(request):
     if query:
         # Filtrer les utilisateurs qui contiennent la query dans leur nom d'utilisateur et qui sont de type 'etudiant'
         students = Utilisateur.objects.filter(
-           username__icontains=query, groups__name="Etudiant"
+            username__icontains=query, groups__name="Etudiant"
         )
     else:
         # Si aucune query, retourner une liste vide

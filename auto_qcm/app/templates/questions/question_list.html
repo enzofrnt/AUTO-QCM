@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load color_filters %} 
+{% load color_filters %}
 {% load static %}
 
 {% block content %}
@@ -20,10 +20,10 @@
       {% include 'questions/question_list_content.html' %}
     </div>
   </div>
- 
+
 
   <!-- Inclure jQuery et le script de filtrage -->
-  
+
   {% include 'latexify/scripts.html' %}
 {% endblock %}
 {% block extra_scripts %}
