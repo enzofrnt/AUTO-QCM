@@ -37,8 +37,9 @@ jobs:
     - name: Set DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS for Production
       if: matrix.environment == 'prod'
       run: |
-          echo "DJANGO_ALLOWED_HOSTS=*" >> ./deploiement-prod/.env
-          echo "DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost" >> ./deploiement-prod/.env
+          sed -i 's/^DJANGO_ALLOWED_HOSTS=.*/DJANGO_ALLOWED_HOSTS=*/' ./deploiement-prod/.env
+          sed -i 's|^DJANGO_CSRF_TRUSTED_ORIGINS=.*|DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost|' ./deploiement-prod/.env
+          cat ./deploiement-prod/.env
 
     - name: Run Tests
       run: |
