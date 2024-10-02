@@ -22,25 +22,25 @@ jobs:
     - name: Set up Docker Compose
       run: |
         cd ./deploiement-${{ matrix.environment }}
-        docker-compose up -d
+        docker compose up -d
 
     - name: Wait for Database
       run: |
         cd ./deploiement-${{ matrix.environment }}
-        docker-compose exec auto_qcm_python python manage.py wait_for_db
+        docker compose exec auto_qcm_python python manage.py wait_for_db
 
     - name: Apply Migrations
       run: |
         cd ./deploiement-${{ matrix.environment }}
-        docker-compose exec auto_qcm_python python manage.py migrate --noinput
+        docker compose exec auto_qcm_python python manage.py migrate --noinput
 
     - name: Run Tests
       run: |
         cd ./deploiement-${{ matrix.environment }}
-        docker-compose exec auto_qcm_python python manage.py test
+        docker compose exec auto_qcm_python python manage.py test
 
     - name: Tear Down
       if: always()
       run: |
         cd ./deploiement-${{ matrix.environment }}
-        docker-compose down
+        docker compose down
