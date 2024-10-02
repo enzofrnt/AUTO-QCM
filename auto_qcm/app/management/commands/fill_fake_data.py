@@ -21,9 +21,8 @@ class Command(BaseCommand):
     help = "Remplit la base de données avec des données factices."
 
     def handle(self, *args, **kwargs):
-
         # Creation des groupes
-        prof = Group.objects.create(name="Enseignant")
+        prof, _ = Group.objects.get_or_create(name="Enseignant")
         eleve = Group.objects.create(name="Etudiant")
 
         promo1 = Group.objects.create(name="BUT1")

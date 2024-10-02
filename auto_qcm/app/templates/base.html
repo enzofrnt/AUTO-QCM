@@ -6,11 +6,13 @@
   <body>
     <div class="" style="display: flex; width: 100%;">
       <div style="width: 300px;">
-        <div style="height: 100%; position: fixed;">
-          <div style="display: flex; align-items: center;">
-            {% include 'navbar.html' %}
+        {% block sidebar %}
+          <div style="height: 100%; position: fixed;">
+            <div style="display: flex; align-items: center;">
+              {{include 'navbar.html'}}
+            </div>
           </div>
-        </div>
+        {% endblock %}
       </div>
       <main class="content">
         {% if user.is_authenticated %}
@@ -30,6 +32,7 @@
     <script src="{% static 'js/dark_mode.js' %}"></script>
     <script src="{% static 'js/base.js' %}"></script>
     {% block extra_scripts %}
+
     {% endblock %}
   </body>
 </html>

@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from app.models import ReponseQCM
 from app.decorators import teacher_or_self_student_required
+from app.models import ReponseQCM
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 
 

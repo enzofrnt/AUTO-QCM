@@ -1,9 +1,9 @@
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
-from app.models import Question, QCM
-from app.models import Question, QCM
-from django.http import HttpResponse
 from app.decorators import teacher_required
+from app.models import QCM, Question
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 
 
 @login_required(login_url="login")
