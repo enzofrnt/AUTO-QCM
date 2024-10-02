@@ -14,6 +14,12 @@ def repondre_qcm(request, qcm_id, rep_id):
     if qcm.est_accessible == False:
         return redirect("qcm-acces", qcm_id=qcm_id)
     rep_qcm = get_object_or_404(ReponseQCM, id=rep_id)
+    if (
+        rep_qcm.utilisateur != request.user
+        or rep_qcm.qcm != qcm
+        or rep_qcm.date_fin_reponse
+    ):
+        return redirect("qcm-acces", qcm_id=qcm_id)
     questions = qcm.questions.all()
 
     for question in questions:
