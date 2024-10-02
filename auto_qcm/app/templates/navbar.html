@@ -10,23 +10,32 @@
     </li>
 
     <!-- Navigation Links -->
+
     <li>
       <a class="nav-item" href="{% url 'home' %}"><i class="bi bi-house-door"></i> Accueil</a>
     </li>
-    {% if user.is_tutor %}
-      <li>
-        <a class="nav-item" href="{% url 'question-list' %}"><i class="bi bi-card-checklist"></i> Liste des questions</a>
-      </li>
-      <li>
-        <a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a>
-      </li>
-      <li>
-        <a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a>
-      </li>
-    {% else %}
-      <li>
-        <a class="nav-item" href="{% url 'etudiant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord étudiant</a>
-      </li>
+    {% if user.is_authenticated %}
+      {% if user.is_superuser %}
+        <li>
+          <a class="nav-item" href="{% url 'admin-dashboard' %}"><i class="bi bi-lightning-charge"></i>Tableau de bord administrateur</a>
+        </li>
+      {% endif %}
+      {% if user.is_tutor %}
+        <li>
+          <a class="nav-item" href="{% url 'question-list' %}"><i class="bi bi-card-checklist"></i> Liste des questions</a>
+        </li>
+        <li>
+          <a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a>
+        </li>
+        <li>
+          <a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a>
+        </li>
+      {% endif %}
+      {% if user.is_student %}
+        <li>
+          <a class="nav-item" href="{% url 'etudiant-dashboard' pk=user.id %}"><i class="bi bi-backpack"></i> Tableau de bord étudiant</a>
+        </li>
+      {% endif %}
     {% endif %}
     <li>
       <a class="nav-item" href="{% url 'support-doc' %}"><i class="bi bi-info-circle"></i> Support & documentation</a>
