@@ -79,7 +79,7 @@
                       <li><a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a></li>
                   {% endif %}
                   {% if user.is_student %}
-                      <li><a class="nav-item" href="{% url 'etudiant-dashboard' pk=user.id %}"><i class="bi bi-backpack"></i> Tableau de bord étudiant</a></li>
+                      <li><a class="nav-item" href="{% url 'etudiant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord étudiant</a></li>
                   {% endif %}
                 {% endif %}
                 <li><a class="nav-item" href="{% url 'support-doc' %}"> <i class="bi bi-info-circle"></i> Support & documentation</a></li>
