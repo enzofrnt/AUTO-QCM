@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+    {% if must_change_password %}Changer le mot de passe{% else %}Connexion{% endif %}
+{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+    <div class="login-container">
+        <div class="login-box">
+            <h2>{% if must_change_password %}Changer le mot de passe{% else %}Connexion{% endif %}</h2>
+
+            {% if messages %}
+                <div class="alert-box">
+                    {% for message in messages %}
+                        <div class="alert alert-danger" style="color: red; background:none ;">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Formulaire de connexion -->
+                {% if not must_change_password %}
+                    <div class="input-group">
+                        <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" placeholder="Mot de passe" required>
+                        <span class="password-toggle">
+                            <i class="bi bi-eye-slash" id="toggleIcon" onclick="togglePassword('password', 'toggleIcon')"></i>
+                        </span>
+                    </div>
+                    <button type="submit" class="login-button">Se connecter</button>
+
+                <!-- Formulaire de changement de mot de passe -->
+                {% else %}
+                    <div class="input-group">
+                        <input type="password" name="old_password" id="old_password" placeholder="Ancien mot de passe" required>
+                        <span class="password-toggle">
+                            <i class="bi bi-eye-slash" id="toggleIconOld" onclick="togglePassword('old_password', 'toggleIconOld')"></i>
+                        </span>
+                        {% if form.old_password.errors %}
+                            <div class="error-message" style="color: red;">{{ form.old_password.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" name="new_password1" id="new_password1" placeholder="Nouveau mot de passe" required>
+                        <span class="password-toggle">
+                            <i class="bi bi-eye-slash" id="toggleIcon1" onclick="togglePassword('new_password1', 'toggleIcon1')"></i>
+                        </span>
+                        {% if form.new_password1.errors %}
+                            <div class="error-message" style="color: red;">{{ form.new_password1.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" name="new_password2" id="new_password2" placeholder="Confirmer le mot de passe" required>
+                        <span class="password-toggle">
+                            <i class="bi bi-eye-slash" id="toggleIcon2" onclick="togglePassword('new_password2', 'toggleIcon2')"></i>
+                        </span>
+                        {% if form.new_password2.errors %}
+                            <div class="error-message" style="color: red;">{{ form.new_password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="login-button">Changer le mot de passe</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        function togglePassword(passwordFieldId, toggleIconId) {
+            const passwordField = document.getElementById(passwordFieldId);
+            const toggleIcon = document.getElementById(toggleIconId);
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            }
+        }
+    </script>
+{% endblock %}

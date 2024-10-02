@@ -19,20 +19,17 @@ body.dark-mode {
   transition: all 0.3s; 
 }
 
-
-
 .content {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-
 .sidebar {
   background-color: #adadad;
   width: 250px;
   height: 100vh;
-  padding: 20px;
+  padding: 10px;
   transition: all 0.3s; 
 }
 
@@ -194,6 +191,21 @@ input:checked + .slider:before {
   color: white;
 }
 
+.sidebar ul li a {
+  color: rgb(21, 21, 21);
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important; /* Légère ombre noire */
+  color: rgb(0, 0, 0) !important; /* Change le texte en noir */
+}
+
+.sidebar.dark-mode ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important; /* Légère ombre blanche pour le mode sombre */
+  color: rgb(255, 255, 255) !important; /* Change le texte en blanc */
+}
 
 /* Styles par défaut pour le body */
 body {

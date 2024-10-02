@@ -21,9 +21,11 @@ from app.views import (
     CustomLoginView,
     QcmListView,
     QuestionListView,
+    change_password_view,
     corriger_qcm,
     create_or_edit_qcm,
     create_or_edit_question,
+    custom_admin_view,
     delete_multiple_qcms,
     delete_qcm,
     delete_question,
@@ -50,9 +52,15 @@ from django.urls import path
 from django.urls.conf import include
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("", home, name="home"),
     path("login/", CustomLoginView.as_view(), name="login"),
+    path("password_change/", change_password_view, name="password_change"),
+    path("admin-dashboard/", custom_admin_view, name="admin-dashboard"),
+    path(
+        "password_change_done/",
+        auth_views.PasswordChangeDoneView.as_view(template_name="login.html"),
+        name="password_change_done",
+    ),
     path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
     path("support-doc/", support_doc, name="support-doc"),
     path("remove-tag/<int:question_id>/<int:tag_id>/", remove_tag, name="remove-tag"),
@@ -94,7 +102,10 @@ urlpatterns = [
 ]
 
 if os.environ.get("env", "dev") == "dev":
-    urlpatterns.append(path("__reload__/", include("django_browser_reload.urls")))
+    urlpatterns.append(path("admin/", admin.site.urls))
+    urlpatterns.append(
+        path("__reload__/", include("django_browser_reload.urls"), name="reload")
+    )
 
 handler403 = "app.views.custom_error_view.custom_permission_denied_view"
 handler404 = "app.views.custom_error_view.custom_page_not_found_view"
