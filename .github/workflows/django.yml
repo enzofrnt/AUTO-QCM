@@ -42,7 +42,7 @@ jobs:
     - name: Check Logs on Failure
       if: failure()
       run: |
-          docker-compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml logs
+          docker compose -f ./deploiement-${{ matrix.environment }}/docker-compose.yml logs
 
     - name: Tear Down
       if: always()
