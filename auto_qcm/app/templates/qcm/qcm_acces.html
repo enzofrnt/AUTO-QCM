@@ -33,7 +33,7 @@
 
         <form method="POST">
           {% csrf_token %}
-          <button type="submit" class="btn btn-primary mt-4" 
+          <button type="submit" class="btn btn-primary mt-4"
                   {% if not est_accessible %}disabled{% endif %}>
             Répondre au QCM
           </button>
