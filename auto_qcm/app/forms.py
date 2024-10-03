@@ -46,7 +46,7 @@ class BaseReponseFormSet(forms.BaseInlineFormSet):
 class QcmForm(forms.ModelForm):
     class Meta:
         model = QCM
-        fields = ["titre", "description"]
+        fields = ["titre", "description", "est_accessible", "nb_reponses"]
 
 
 class PlageForm(forms.ModelForm):

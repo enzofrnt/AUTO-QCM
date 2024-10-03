@@ -159,7 +159,10 @@ class Command(BaseCommand):
 
         # Créer une instance de ReponseQCM pour Moquette
         rep = ReponseQCM.objects.create(
-            utilisateur=moquette, qcm=qcm_random, date_reponse=timezone.now()
+            utilisateur=moquette,
+            qcm=qcm_random,
+            date_debut=timezone.now(),
+            date_fin_reponse=timezone.now() + timedelta(minutes=random.randint(1, 10)),
         )
 
         # Récupérer des réponses aléatoires associées aux questions du QCM
