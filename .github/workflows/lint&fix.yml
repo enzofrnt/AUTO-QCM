@@ -38,19 +38,17 @@ jobs:
         pre-commit run --all-files || EXIT_CODE=$?
         echo "Pre-commit exit code: $EXIT_CODE"
         echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
-        # Do not fail here, as we want to commit the changes if any
-
 
     # Pour les pushs sur 'main' ou 'dev', corriger automatiquement les problèmes
     - name: Commit changes if any
-      if: ${{ github.event_name == 'push' && env.exit_code == '1' }}
+      if: ${{ env.exit_code == '1' }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git commit -am "pre-commit fixes"
 
     - name: Create Pull Request if changes
-      if: ${{ github.event_name == 'push' && env.exit_code == '1' }}
+      if: ${{ env.exit_code == '1' }}
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -64,7 +62,6 @@ jobs:
     - name: Set exit code to finish
       run: |
         echo "exit_code_to_finish=$EXIT_CODE" >> $GITHUB_ENV
-
 
     # Pour les pull requests, échouer si des problèmes sont détectés
     - name: Fail if pre-commit issues found
