@@ -1,14 +1,16 @@
 name: pre-commit
 
 on:
- push:
-   branches: [ "main", "dev" ]
- pull_request:
-   branches: [ "main", "dev" ]
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
 
 permissions:
   contents: write
   pull-requests: write
+  # Nécessaire pour ajouter des commentaires sur les pull requests
+  pull-request-comments: write
 
 jobs:
   pre-commit:
@@ -18,10 +20,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        # Important: Ne pas vérifier le code du pull request
-        ref: ${{ github.event.pull_request.base.ref }}
-
-    # Les étapes suivantes utilisent le code de la branche cible
+        # Pour les pull requests, on vérifie le code du PR
+        # Pour les push, on vérifie le code de la branche
+        ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
@@ -40,25 +41,34 @@ jobs:
         echo "Pre-commit exit code: $EXIT_CODE"
         echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
 
+    # Pour les pull requests, on échoue si des problèmes sont détectés
+    - name: Fail if pre-commit issues found
+      if: ${{ github.event_name == 'pull_request' && env.exit_code != '0' }}
+      run: |
+        echo "Pre-commit issues found. Please fix them."
+        exit 1
+
+    # Pour les push sur 'main' ou 'dev', on corrige automatiquement les problèmes
     - name: Commit changes if any
-      if: ${{ env.exit_code == '1' }}
+      if: ${{ github.event_name == 'push' && env.exit_code == '1' }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git commit -am "pre-commit fixes"
 
     - name: Create Pull Request if changes
-      if: ${{ env.exit_code == '1' }}
+      if: ${{ github.event_name == 'push' && env.exit_code == '1' }}
       uses: peter-evans/create-pull-request@v5
       with:
-        token: ${{ secrets.PAT_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: pre-commit fixes
-        branch: fix/pre-commit-fixes-${{ github.event.pull_request.head.ref }}
+        branch: fix/pre-commit-fixes-${{ github.ref_name }}
         title: "Fix pre-commit linting issues"
         body: "Automatic pre-commit fixes"
         labels: pre-commit, auto-fix
-        base: ${{ github.event.pull_request.head.ref }}
+        base: ${{ github.ref_name }}
 
+    # Échec si des problèmes non corrigés sont détectés lors d'un push
     - name: Fail on unfixable pre-commit issues
       if: ${{ env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1' }}
       run: |
