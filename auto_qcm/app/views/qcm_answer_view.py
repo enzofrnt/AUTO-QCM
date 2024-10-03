@@ -1,9 +1,10 @@
+from logging import getLogger
+
 from app.models import QCM, Reponse, ReponseQCM, ReponseQuestion
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
-from logging import getLogger
 
 logger = getLogger(__name__)
 
