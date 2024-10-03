@@ -2,7 +2,7 @@
 
 {% load color_filters %}
 {% load static %}
-
+<link rel="stylesheet" href="{% static 'css/qcm_list_style.css' %}" />
 
 {% block content %}
 <div class="container mt-4">
@@ -10,9 +10,6 @@
 
   <!-- Liste des qcm -->
   <div id="qcm-list">
-
-
-
     <form id="qcm-form" method="POST" action="{% url 'qcm-delete-multiple' %}">
       {% csrf_token %}
       <div class="d-flex align-items-center">
@@ -140,7 +137,7 @@
         e.stopPropagation()
         const qcmRow = $(this).closest('.qcm-row')
         const qcmId = qcmRow.data('qcm-id')
-        window.location.href = "{% url 'qcm-answer' qcm_id=0 %}".replace('0', qcmId)
+        window.location.href = "{% url 'qcm-acces' qcm_id=0 %}".replace('0', qcmId)
       })
 
       // Rediriger vers la page de modification de la question

@@ -1,5 +1,3 @@
-from logging import getLogger
-
 from app.decorators import teacher_required
 from app.forms import PlageForm, QcmForm
 from app.models import QCM, Plage, Question, Tag
@@ -9,6 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from logging import getLogger
 
 logger = getLogger(__name__)
 

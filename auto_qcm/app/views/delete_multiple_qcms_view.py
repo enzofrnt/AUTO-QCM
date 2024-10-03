@@ -1,4 +1,4 @@
-from app.models.qcm import QCM
+from app.models import QCM
 from django.contrib import messages
 from django.shortcuts import redirect
 

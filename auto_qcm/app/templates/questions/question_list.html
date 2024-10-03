@@ -2,7 +2,7 @@
 
 {% load color_filters %}
 {% load static %}
-
+<link rel="stylesheet" href="{% static 'css/question_list.css' %}" />
 {% block content %}
   <div class="container mt-4">
     {% if not selectable %}
@@ -20,7 +20,6 @@
       {% include 'questions/question_list_content.html' %}
     </div>
   </div>
-
 
   <!-- Inclure jQuery et le script de filtrage -->
 
