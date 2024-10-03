@@ -78,6 +78,8 @@ jobs:
 
           </details>
 
+          Une Pull Request a été créée pour corriger ces problèmes.
+
     # Créer une Pull Request si des changements sont détectés sur un push
     - name: Create Pull Request if changes on push
       if: ${{ env.exit_code != '0' && github.event_name == 'push' }}
