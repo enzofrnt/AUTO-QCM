@@ -45,6 +45,12 @@ jobs:
         echo "EOF" >> $GITHUB_OUTPUT
         set -e
 
+    - name: Delete existing branches
+      if: ${{ env.exit_code != '0' || env.exit_code == '0' }}
+      run: |
+        git branch -D fix/pre-commit-fixes-pr-${{ github.event.pull_request.number }} || true
+        git branch -D fix/pre-commit-fixes-${{ github.ref_name }} || true
+
     # Créer une Pull Request si des changements sont détectés sur une pull request existante
     - name: Create Pull Request if changes on pull request
       if: ${{ env.exit_code != '0' && github.event_name == 'pull_request' }}
