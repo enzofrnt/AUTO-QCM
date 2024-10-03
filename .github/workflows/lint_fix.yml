@@ -57,20 +57,32 @@ jobs:
 
     # Créer une Pull Request si des changements sont détectés sur une pull request existante
     - name: Create Pull Request if changes on pull request
-      if: ${{ env.exit_code != '0' && github.event_name == 'pull_request' }}
+      if: ${{ env.exit_code == '1' && github.event_name == 'pull_request' }}
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: pre-commit fixes
         branch: fix/pre-commit-fixes-pr-${{ github.event.pull_request.number }}
-        title: "Fix pre-commit linting issues in PR #${{ github.event.pull_request.number }}"
-        body: "Automatic pre-commit fixes for PR #${{ github.event.pull_request.number }}"
-        labels: pre-commit, auto-fix
-        base: ${{ github.event.pull_request.head.ref }} #probablement head et non base ici
+        title: "Fix linting issues in PR #${{ github.event.pull_request.number }}"
+        body: |
+          Lint fixes for PR #${{ github.event.pull_request.number }}
+
+          <details>
+          <summary>Cliquez pour voir les détails</summary>
+
+          ```
+          ${{ steps.pre-commit.outputs.output }}
+          ```
+
+          </details>
+
+        labels: auto-fix-lint, bot
+        base: ${{ github.event.pull_request.head.ref }} 
+        assignees: ${{ github.event.pull_request.user.login }}
 
     # Ajouter un commentaire à la pull request avec les problèmes de pre-commit
     - name: Comment on PR with pre-commit issues
-      if: ${{ env.exit_code != '0' && github.event_name == 'pull_request' }}
+      if: ${{ env.exit_code == '1' && github.event_name == 'pull_request' }}
       uses: peter-evans/create-or-update-comment@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -92,7 +104,7 @@ jobs:
 
     # Créer une Pull Request si des changements sont détectés sur un push
     - name: Create Pull Request if changes on push
-      if: ${{ env.exit_code != '0' && github.event_name == 'push' }}
+      if: ${{ env.exit_code == '1' && github.event_name == 'push' }}
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -105,12 +117,19 @@ jobs:
 
     # Échouer le workflow si des problèmes sont détectés
     - name: Fail if pre-commit issues found
-      if: ${{ env.exit_code != '0' }}
+      if: ${{ env.exit_code == '1' }}
       run: |
         echo "Des problèmes de lint ont été détectés. Veuillez les corriger."
         exit 1
 
-    - name: Finish
+    - name: Finish no issue
       if: ${{ env.exit_code == '0' }}
       run: |
-        echo "Aucun problème pre-commit détecté."
+        echo "Aucun problème détecté. Tout va bien."
+      
+
+    - name: Finish other issue
+      if: ${{ env.exit_code != '0' && env.exit_code != '1' }}
+      run: |
+        echo "Un problème est survenu. Veuillez vérifier les logs."
+        exit 1
