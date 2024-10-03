@@ -82,7 +82,7 @@
                         backgroundColor: getRandomColor(),
                         borderColor: getRandomColor(),
                         textColor: 'black',
-                        url: '{% url "qcm-acces" qcm.id %}' 
+                        url: '{% url "qcm-acces" qcm.id %}'
                     },
                     {
                         title: '{{ qcm.titre|escapejs }} se termine pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',
