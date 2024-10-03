@@ -103,4 +103,4 @@ jobs:
     - name: Finish
       if: ${{ env.exit_code == '0' }}
       run: |
-        echo "Aucun problème pre-commit détecté."
+        echo "Aucun problème pre-commit détecté."    
