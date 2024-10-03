@@ -78,6 +78,7 @@ class ReponseQCMModelTest(TestCase):
         self.reponse_qcm = ReponseQCM.objects.create(
             utilisateur=self.user,
             qcm=self.qcm,
+            date_debut=self.qcm.date_modif,
         )
         self.reponse_qcm.reponses.set([self.reponse_question1, self.reponse_question2])
 
