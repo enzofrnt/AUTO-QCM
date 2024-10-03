@@ -28,6 +28,9 @@
           <a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a>
         </li>
         <li>
+          <a class="nav-item" href="{% url 'qcm-list' %}"><i class="bi-list-check"></i>Liste des qcm</a>
+        </li>
+        <li>
           <a class="nav-item" href="{% url 'enseignant-dashboard' pk=user.id %}"><i class="bi bi-speedometer2"></i> Tableau de bord enseignant</a>
         </li>
       {% endif %}
