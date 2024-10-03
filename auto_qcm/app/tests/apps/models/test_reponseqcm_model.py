@@ -107,4 +107,4 @@ class ReponseQCMModelTest(TestCase):
 
     def test_duree_test(self):
         """Test la durée de réponse."""
-        self.assertEqual(self.reponse_qcm.duree, 5)
+        self.assertEqual(self.reponse_qcm.duree, timedelta(minutes=5))
