@@ -61,9 +61,19 @@ jobs:
         labels: pre-commit, auto-fix
         base: ${{ github.ref_name }}
 
+    - name: Set exit code to finish
+      run: |
+        echo "exit_code_to_finish=$EXIT_CODE" >> $GITHUB_ENV
+
+
     # Pour les pull requests, échouer si des problèmes sont détectés
     - name: Fail if pre-commit issues found
-      if: ${{ github.event_name == 'pull_request' && env.exit_code != '0' }}
+      if: ${{ env.exit_code_to_finish != '0' }}
       run: |
         echo "Pre-commit issues found. Please fix them."
         exit 1
+
+    - name: Finish
+      run: |
+        echo "No pre-commit issues found."
+        exit 0
