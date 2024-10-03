@@ -17,10 +17,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      with:
-        # Pour les pull requests, vérifier le code du PR
-        # Pour les pushs, vérifier le code de la branche
-        ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
@@ -61,14 +57,7 @@ jobs:
 
     # Pour les pull requests, échouer si des problèmes sont détectés
     - name: Fail if pre-commit issues found
-      if: ${{ github.event_name == 'pull_request' && env.exit_code != '0' }}
+      if: ${{ env.exit_code != '0' }}
       run: |
         echo "Pre-commit issues found. Please fix them."
         exit 1
-
-    # Échec si des problèmes non corrigés sont détectés lors d'un push
-    - name: Fail on unfixable pre-commit issues
-      if: ${{ env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1' }}
-      run: |
-        echo "Pre-commit failed with exit code ${{ env.exit_code }}"
-        exit ${{ env.exit_code }}
