@@ -21,6 +21,7 @@ from app.views import (
     CustomLoginView,
     QcmListView,
     QuestionListView,
+    acces_qcm,
     change_password_view,
     corriger_qcm,
     create_or_edit_qcm,
@@ -43,7 +44,6 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
-    acces_qcm,
 )
 from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin
