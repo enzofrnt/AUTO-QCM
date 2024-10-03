@@ -77,7 +77,7 @@ jobs:
           </details>
 
         labels: auto-fix-lint, bot
-        base: ${{ github.event.pull_request.head.ref }} 
+        base: ${{ github.event.pull_request.head.ref }}
         assignees: ${{ github.event.pull_request.user.login }}
 
     # Ajouter un commentaire à la pull request avec les problèmes de pre-commit
@@ -126,7 +126,7 @@ jobs:
       if: ${{ env.exit_code == '0' }}
       run: |
         echo "Aucun problème détecté. Tout va bien."
-      
+
 
     - name: Finish other issue
       if: ${{ env.exit_code != '0' && env.exit_code != '1' }}
