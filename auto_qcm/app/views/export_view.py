@@ -15,9 +15,9 @@ def export_question_xml(request, question_id):
 
     response = HttpResponse(xml_content, content_type="application/xml")
 
-    response["Content-Disposition"] = (
-        f'attachment; filename="question_{question_id}.xml"'
-    )
+    response[
+        "Content-Disposition"
+    ] = f'attachment; filename="question_{question_id}.xml"'
 
     return response
 
