@@ -1,77 +1,58 @@
-name: Pre-Commit Hook Check
+name: pre-commit
 
 on:
   pull_request:
   push:
+    branches:
+      - main
+      - test-lint-fix
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
 
     steps:
-      # Étape 1: Checkout du code
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Étape 2: Setup Python
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
 
-      # Étape 3: Installer pre-commit
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pre-commit
+    - name: Install pre-commit
+      run: |
+        python -m pip install --upgrade pip
+        pip install pre-commit
 
-      # Étape 4: Exécuter pre-commit en mode check
-      - name: Run pre-commit hooks (check mode)
-        run: |
-          pre-commit run --all-files --show-diff-on-failure
-        continue-on-error: true  # Permet de ne pas bloquer immédiatement la PR
+    - name: Run pre-commit hooks
+      id: pre-commit
+      run: |
+        pre-commit run --all-files --show-diff-on-failure || EXIT_CODE=$?
+        echo "Pre-commit exit code: $EXIT_CODE"
+        echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
 
-      # Étape 5: Vérifier s'il y a eu des erreurs
-      - name: Check for linting issues
-        if: failure()  # Ne continue que si des erreurs sont détectées
-        run: echo "Linting issues found!"
+    - name: Commit changes if any
+      if: env.exit_code == '1'
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git commit -am "pre-commit fixes"
 
-      # Étape 6: Créer une branche avec les corrections et pousser les changements
-      - name: Apply linting fixes and create a new branch
-        if: failure()  # Si des erreurs sont trouvées
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          pre-commit run --all-files  # Applique les correctifs
-          git checkout -b lint-fixes-${{ github.run_id }}  # Crée une nouvelle branche unique basée sur l'ID du run
-          git add .
-          git commit -m "Apply linting fixes"
-          git push origin lint-fixes-${{ github.run_id }}
+    - name: Create Pull Request if changes
+      if: env.exit_code == '1'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: pre-commit fixes
+        branch: fix/pre-commit-fixes
+        title: "Fix pre-commit linting issues"
+        body: "Automatic pre-commit fixes"
+        labels: pre-commit, auto-fix
+        base: main
 
-      # Étape 7: Créer une nouvelle PR avec les corrections
-      - name: Create pull request with fixes
-        if: failure()  # Si des erreurs ont été corrigées
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          title: "Fix linting issues"
-          body: "This pull request fixes linting issues detected in the original PR."
-
-      # Étape 8: Bloquer la PR d'origine avec un commentaire
-      - name: Comment on original PR
-        if: failure()  # Si des erreurs sont trouvées
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.issues.createComment({
-              issue_number: ${{ github.event.pull_request.number }},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "Linting issues were detected. A new PR with fixes has been created: [Fix linting issues](https://github.com/${{ github.repository }}/pulls?q=lint-fixes-${{ github.run_id }}). Please review and merge it before proceeding."
-            })
-
-      # Étape 9: Marquer la PR originale comme échouée
-      - name: Fail the workflow if there are linting issues
-        if: failure()  # Si des erreurs sont trouvées
-        run: exit 1  # Force le workflow à échouer, bloquant ainsi la PR d'origine
+    - name: Fail on unfixable pre-commit issues
+      if: env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1'
+      run: |
+        echo "Pre-commit failed with exit code ${{ env.exit_code }}"
+        exit ${{ env.exit_code }}
