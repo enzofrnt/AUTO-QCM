@@ -33,26 +33,27 @@ jobs:
         echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
 
     - name: Commit changes if any
-      if: env.exit_code == '1'
+      if: ${{ env.exit_code == '1' }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git commit -am "pre-commit fixes"
 
     - name: Create Pull Request if changes
-      if: env.exit_code == '1'
+      if: ${{ env.exit_code == '1' }}
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: pre-commit fixes
-        branch: fix/pre-commit-fixes
+        branch: fix/pre-commit-fixes-${{ github.ref_name }}
         title: "Fix pre-commit linting issues"
         body: "Automatic pre-commit fixes"
         labels: pre-commit, auto-fix
-        base: main
+        base: ${{ github.ref_name }}  # Modification ici
+        branch-suffix: false  # Pour éviter d'ajouter un suffixe de date/heure
 
     - name: Fail on unfixable pre-commit issues
-      if: env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1'
+      if: ${{ env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1' }}
       run: |
         echo "Pre-commit failed with exit code ${{ env.exit_code }}"
         exit ${{ env.exit_code }}
