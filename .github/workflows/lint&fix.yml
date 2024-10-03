@@ -18,8 +18,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        # For pull requests, check out the PR code
-        # For pushes, check out the current branch
+        # Pour les pull requests, vérifier le code du PR
+        # Pour les pushs, vérifier le code de la branche
         ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
     - name: Set up Python 3.9
@@ -39,7 +39,7 @@ jobs:
         echo "Pre-commit exit code: $EXIT_CODE"
         echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
 
-    # For pushes to 'main' or 'dev', fix issues and create a PR
+    # Pour les pushs sur 'main' ou 'dev', corriger automatiquement les problèmes
     - name: Commit changes if any
       if: ${{ github.event_name == 'push' && env.exit_code == '1' }}
       run: |
@@ -59,14 +59,14 @@ jobs:
         labels: pre-commit, auto-fix
         base: ${{ github.ref_name }}
 
-    # For pull requests, fail if issues are found
+    # Pour les pull requests, échouer si des problèmes sont détectés
     - name: Fail if pre-commit issues found
       if: ${{ github.event_name == 'pull_request' && env.exit_code != '0' }}
       run: |
         echo "Pre-commit issues found. Please fix them."
         exit 1
 
-    # Fail if there are unfixable pre-commit issues during push
+    # Échec si des problèmes non corrigés sont détectés lors d'un push
     - name: Fail on unfixable pre-commit issues
       if: ${{ env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1' }}
       run: |
