@@ -17,6 +17,10 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        # Pour les pull requests, vérifier le code du PR
+        # Pour les pushs, vérifier le code de la branche
+        ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
@@ -31,20 +35,22 @@ jobs:
     - name: Run pre-commit hooks
       id: pre-commit
       run: |
-        exit_code=0
-        pre-commit run --all-files || exit_code=$?
-        echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
-        exit $exit_code
+        pre-commit run --all-files || EXIT_CODE=$?
+        echo "Pre-commit exit code: $EXIT_CODE"
+        echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
+        # Do not fail here, as we want to commit the changes if any
 
+
+    # Pour les pushs sur 'main' ou 'dev', corriger automatiquement les problèmes
     - name: Commit changes if any
-      if: ${{ github.event_name == 'push' && steps.pre-commit.outputs.exit_code == '1' }}
+      if: ${{ github.event_name == 'push' && env.exit_code == '1' }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git commit -am "pre-commit fixes"
 
     - name: Create Pull Request if changes
-      if: ${{ github.event_name == 'push' && steps.pre-commit.outputs.exit_code == '1' }}
+      if: ${{ github.event_name == 'push' && env.exit_code == '1' }}
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -57,7 +63,7 @@ jobs:
 
     # Pour les pull requests, échouer si des problèmes sont détectés
     - name: Fail if pre-commit issues found
-      if: ${{ steps.pre-commit.outputs.exit_code != '0' && github.event_name == 'pull_request' }}
+      if: ${{ github.event_name == 'pull_request' && env.exit_code != '0' }}
       run: |
         echo "Pre-commit issues found. Please fix them."
         exit 1
