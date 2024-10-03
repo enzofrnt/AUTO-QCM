@@ -39,13 +39,6 @@ jobs:
         echo "Pre-commit exit code: $EXIT_CODE"
         echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
 
-    # For pull requests, fail if issues are found
-    - name: Fail if pre-commit issues found
-      if: ${{ github.event_name == 'pull_request' && env.exit_code != '0' }}
-      run: |
-        echo "Pre-commit issues found. Please fix them."
-        exit 1
-
     # For pushes to 'main' or 'dev', fix issues and create a PR
     - name: Commit changes if any
       if: ${{ github.event_name == 'push' && env.exit_code == '1' }}
@@ -65,6 +58,13 @@ jobs:
         body: "Automatic pre-commit fixes"
         labels: pre-commit, auto-fix
         base: ${{ github.ref_name }}
+
+    # For pull requests, fail if issues are found
+    - name: Fail if pre-commit issues found
+      if: ${{ github.event_name == 'pull_request' && env.exit_code != '0' }}
+      run: |
+        echo "Pre-commit issues found. Please fix them."
+        exit 1
 
     # Fail if there are unfixable pre-commit issues during push
     - name: Fail on unfixable pre-commit issues
