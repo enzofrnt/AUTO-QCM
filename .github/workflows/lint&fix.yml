@@ -1,7 +1,7 @@
 name: pre-commit
 
 on:
-  pull_request:
+  pull_request_target:
   push:
 
 permissions:
@@ -15,6 +15,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        # Important: Ne pas vérifier le code du pull request
+        ref: ${{ github.event.pull_request.base.ref }}
+
+    # Les étapes suivantes utilisent le code de la branche cible
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
@@ -44,13 +49,13 @@ jobs:
       if: ${{ env.exit_code == '1' }}
       uses: peter-evans/create-pull-request@v5
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT_TOKEN }}
         commit-message: pre-commit fixes
-        branch: fix/pre-commit-fixes-${{ github.ref_name }}
+        branch: fix/pre-commit-fixes-${{ github.event.pull_request.head.ref }}
         title: "Fix pre-commit linting issues"
         body: "Automatic pre-commit fixes"
         labels: pre-commit, auto-fix
-        base: ${{ github.ref_name }}
+        base: ${{ github.event.pull_request.head.ref }}
 
     - name: Fail on unfixable pre-commit issues
       if: ${{ env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1' }}
