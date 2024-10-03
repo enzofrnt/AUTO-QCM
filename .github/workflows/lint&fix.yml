@@ -5,7 +5,8 @@ on:
   push:
 
 permissions:
-  contents: write  # Accorder les permissions d'écriture
+  contents: write
+  pull-requests: write
 
 jobs:
   pre-commit:
