@@ -3,9 +3,9 @@ name: pre-commit
 on:
   pull_request:
   push:
-    branches:
-      - main
-      - test-lint-fix
+
+permissions:
+  contents: write  # Ajoute cette ligne pour accorder les permissions d'écriture
 
 jobs:
   pre-commit:
@@ -28,7 +28,7 @@ jobs:
     - name: Run pre-commit hooks
       id: pre-commit
       run: |
-        pre-commit run --all-files --show-diff-on-failure || EXIT_CODE=$?
+        pre-commit run --all-files || EXIT_CODE=$?
         echo "Pre-commit exit code: $EXIT_CODE"
         echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
 
@@ -49,7 +49,8 @@ jobs:
         title: "Fix pre-commit linting issues"
         body: "Automatic pre-commit fixes"
         labels: pre-commit, auto-fix
-        base: ${{ github.ref_name }}  # Modification ici
+        base: ${{ github.ref_name }}
+        branch-suffix: false
 
     - name: Fail on unfixable pre-commit issues
       if: ${{ env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1' }}
