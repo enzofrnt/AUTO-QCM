@@ -50,7 +50,6 @@ jobs:
         body: "Automatic pre-commit fixes"
         labels: pre-commit, auto-fix
         base: ${{ github.ref_name }}
-        branch-suffix: none  # Utiliser 'none' pour désactiver le suffixe
 
     - name: Fail on unfixable pre-commit issues
       if: ${{ env.exit_code != '' && env.exit_code != '0' && env.exit_code != '1' }}
