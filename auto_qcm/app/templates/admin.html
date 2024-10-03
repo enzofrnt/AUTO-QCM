@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Barre de navigation latérale -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block  sidebar collapse">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#dashboard" id="dashboard-link">
+                            <i class="bi bi-speedometer2"></i> Tableau de bord
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#user-management" id="user-management-link">
+                            <i class="bi bi-people"></i> Gestion des utilisateurs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#ai-management" id="ai-management-link">
+                            <i class="bi bi-robot"></i> Gestion de l'IA
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#support-doc" id="support-doc-link">
+                            <i class="bi bi-info-circle"></i> Support & Documentation
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Contenu principal -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div id="dashboard" class="admin-section">
+                <h2>Tableau de bord</h2>
+                <p>Statistiques générales de l'application...</p>
+                <!-- Ajoute ici tes widgets ou graphiques pour montrer l'état de l'application -->
+            </div>
+
+            <div id="user-management" class="admin-section" style="display: none;">
+                <h2>Gestion des utilisateurs</h2>
+                <p>Liste des utilisateurs et outils pour les gérer...</p>
+                <!-- Ajoute ici un tableau des utilisateurs et des options pour ajouter/modifier/supprimer -->
+            </div>
+
+            <div id="ai-management" class="admin-section" style="display: none;">
+                <h2>Gestion de l'IA</h2>
+                <p>Paramètres et gestion de la partie IA de l'application...</p>
+                <!-- Ajoute ici les options pour gérer les modèles d'IA, les données d'entraînement, etc. -->
+            </div>
+
+            <div id="support-doc" class="admin-section" style="display: none;">
+                <h2>Support & Documentation</h2>
+                <p>Accède à la documentation et à l'aide...</p>
+                <!-- Ajoute ici les liens vers des pages d'aide ou des documents -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Script pour basculer entre les sections -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Récupère tous les liens de navigation et les sections
+        const sections = document.querySelectorAll('.admin-section');
+        const links = document.querySelectorAll('.nav-link');
+
+        // Fonction pour afficher la section correspondante et masquer les autres
+        function showSection(sectionId) {
+            sections.forEach(section => {
+                if (section.id === sectionId) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        // Ajoute un écouteur d'événements à chaque lien de navigation
+        links.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const sectionId = link.getAttribute('href').substring(1); // Récupère l'ID de la section
+                showSection(sectionId); // Affiche la section correspondante
+            });
+        });
+
+        // Affiche la première section par défaut
+        showSection('dashboard');
+    });
+</script>
+
+{% endblock %}

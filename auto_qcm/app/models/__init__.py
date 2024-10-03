@@ -1,8 +1,8 @@
-from .utilisateur import Utilisateur
+from .plage import Plage
 from .qcm import QCM
 from .question import Question
 from .reponse import Reponse
 from .reponse_qcm import ReponseQCM
-from .tag import Tag
 from .reponse_question import ReponseQuestion
-from .plage import Plage
+from .tag import Tag
+from .utilisateur import AdminCreationFlag, Utilisateur
