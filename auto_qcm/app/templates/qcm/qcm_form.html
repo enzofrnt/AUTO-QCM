@@ -14,7 +14,7 @@
     }
 
     .formset-row {
-      display: flex; 
+      display: flex;
       justify-content: space-between;
     }
     .tag-badge.selected {
@@ -96,11 +96,14 @@
               </div>
             </div>
             
-            <!-- Plages associées au QCM -->
-            <div style="display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}">
+            <div id="plageVide" class="hidden">
+              {{formset.empty_form.as_p }}
+              <div class="form-group">
+                <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+            
+            <div style="display: flex;flex-direction: column;align-items: flex-end;">
               
               <button type="button" class="btn btn-success ml-2 w-10 " id="openModal">Générer automatiquement des questions</button>
 
@@ -186,15 +189,15 @@
       // Fonction pour ajouter un nouveau formulaire
       $('#add-plage').click(function() {
         let formCount = $('.formset-row').length;
-        let newForm = $('#plageVide').clone(); 
+        let newForm = $('#plageVide').clone();
 
         newForm.removeClass('hidden');
         newForm.addClass('formset-row item');
-        
+
         //On remplate le __prefix__ par la bonne valeur
         const regex = new RegExp('__prefix__', 'g');
         newForm.html(newForm.html().replace(regex, formCount));
-        
+
         formsetContainer.append(newForm);
         totalForms.val(formCount + 1);
       });
@@ -334,6 +337,5 @@
     });
   </script>
     <!-- Inclusion des scripts personnalisés -->
-   
-  {% endblock %}
 
+  {% endblock %}

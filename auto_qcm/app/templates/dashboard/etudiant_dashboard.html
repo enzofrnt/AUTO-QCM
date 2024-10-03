@@ -59,8 +59,8 @@
             </div>
         </div>
     </div>
-        
-        
+
+
 </div>
 <!-- Script pour le calendrier FullCalendar -->
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
@@ -70,17 +70,32 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
+        // Création des événements à partir des plages de chaque QCM
         var events = [
             {% for qcm in upcoming_qcms %}
-            {
-                title: '{{ qcm.titre|escapejs }}',
-                start: '{{ qcm.date_modif|date:"Y-m-d\\TH:i:s" }}',
-                backgroundColor: getRandomColor(),
-                borderColor: getRandomColor(),
-                textColor: 'black',
-                url: '{% url "qcm-answer" qcm.id %}'  // Assurez-vous que chaque QCM a une URL définie dans le modèle
-                 
-            },
+                {% for plage in qcm.plages.all %}
+                {% if plage.promo == utilisateur.promotion and plage.groupe == utilisateur.groupe %}
+                    {
+                        title: '{{ qcm.titre|escapejs }} s\'ouvre pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',
+                        start: '{{ plage.debut|date:"Y-m-d\\TH:i:s" }}',
+                        end: '{{ plage.debut|date:"Y-m-d\\TH:i:s" }}',
+                        backgroundColor: getRandomColor(),
+                        borderColor: getRandomColor(),
+                        textColor: 'black',
+                        url: '{% url "qcm-acces" qcm.id %}' 
+                    },
+                    {
+                        title: '{{ qcm.titre|escapejs }} se termine pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',
+                        start: '{{ plage.fin|date:"Y-m-d\\TH:i:s" }}',
+                        end: '{{ plage.fin|date:"Y-m-d\\TH:i:s" }}',
+                        endblock: true,
+                        backgroundColor: getRandomColor(),
+                        borderColor: getRandomColor(),
+                        textColor: 'black',
+                        url: '{% url "qcm-acces" qcm.id %}'
+                    },
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
         ];
 
@@ -120,7 +135,7 @@
         });
 
         calendar.render();
-        
+
     /// Data for the chart
     var ctx = document.getElementById('qcmChart').getContext('2d');
     var qcmTitles = [
@@ -142,13 +157,13 @@
 
     var qcmDates = [
     {% for reponse in reponse_qcm %}
-        '{{ reponse.qcm.date_modif|date:"d/m/Y"|escapejs }}',
+        '{{ reponse.date_reponse|date:"d/m/Y"|escapejs }}',
     {% endfor %}
     ];
 
     var qcmIds = [
     {% for reponse in reponse_qcm %}
-        {{ reponse.qcm.id }},
+        {{ reponse.id }},
     {% endfor %}
     ];
 
@@ -187,6 +202,9 @@
                     var clickedIndex = activePoints[0].index; // Obtenir l'index du point cliqué
                     var qcmId = qcmIds[clickedIndex]; // Récupérer l'ID du QCM correspondant
                     window.location.href = "{% url 'qcm-correct' 0 %}".replace("0", qcmId); // Rediriger vers l'URL de correction
+                    //pb vient de l'index de la réponse qui n'est pas la même que l'index du qcm
+                    //il faut donc récupérer l'id du qcm correspondant à l'index de la réponse
+
                 }
             },
             scales: {
@@ -231,11 +249,11 @@
             }
         }
     });
-    
-    
-    
-    
-    
+
+
+
+
+
 });
 
     function getRandomColor() {
@@ -265,6 +283,6 @@
         cursor: pointer; /* Ajoutez cette ligne pour changer le curseur en pointer */
     }
 
-    
+
 </style>
 {% endblock %}

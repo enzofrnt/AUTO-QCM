@@ -35,7 +35,7 @@
                                 <ul>
                                     {% if qcm.reponses_qcm.count > 0 %}
                                     <li>
-                                        {{ qcm.reponses_qcm.count }} réponses - 
+                                        {{ qcm.reponses_qcm.count }} réponses -
                                         <a href="{% url 'qcm-responses' qcm.id %}">Voir toutes les réponses</a>
                                     </li>
                                     {% else %}
@@ -94,7 +94,7 @@
                     backgroundColor: getRandomColor(),
                     borderColor: getRandomColor(),
                     textColor: 'black',
-                    url: '{% url "qcm-edit" qcm.id %}' 
+                    url: '{% url "qcm-edit" qcm.id %}'
                 },
                 {
                     title: '{{ qcm.titre|escapejs }} se termine pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',

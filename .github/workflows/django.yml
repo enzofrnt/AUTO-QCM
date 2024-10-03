@@ -1,0 +1,63 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 2
+      matrix:
+        environment: [dev, prod]  # Teste à la fois les environnements de dev et prod
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS for Production
+      if: matrix.environment == 'prod'
+      run: |
+          sed -i 's/^DJANGO_ALLOWED_HOSTS=.*/DJANGO_ALLOWED_HOSTS=*/' ./deploiement-prod/.env
+          sed -i 's|^DJANGO_CSRF_TRUSTED_ORIGINS=.*|DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost|' ./deploiement-prod/.env
+          cat ./deploiement-prod/.env
+
+    - name: Set up Docker Compose
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose up -d
+
+    - name: Wait for Database
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose exec auto_qcm_python python manage.py wait_for_db
+
+    - name: Wait for Migrations to be Applied
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        while docker compose exec auto_qcm_python python manage.py showmigrations | grep '\[ \]'; do
+          echo "En attente que les migrations soient appliquées..."
+          sleep 5
+        done
+        echo "Toutes les migrations ont été appliquées."
+
+    - name: Run Tests
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose exec auto_qcm_python python manage.py test
+
+    - name: Display Docker Compose Logs on Failure
+      if: failure()
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose logs
+
+    - name: Tear Down
+      if: always()
+      run: |
+        cd ./deploiement-${{ matrix.environment }}
+        docker compose down

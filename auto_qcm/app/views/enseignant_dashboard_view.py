@@ -1,12 +1,13 @@
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from django.db.models import Q
-from app.models import ReponseQCM, Question, QCM, Utilisateur
-from app.decorators import self_required, teacher_required
-from django.contrib.auth.decorators import login_required
-from datetime import timedelta
-from django.urls import reverse_lazy
 import logging
+from datetime import timedelta
+
+from app.decorators import self_required, teacher_required
+from app.models import QCM, Question, ReponseQCM, Utilisateur
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 

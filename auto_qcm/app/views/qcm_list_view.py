@@ -15,9 +15,7 @@ class QcmListView(TeacherRequiredMixin, ListView):
         queryset = super().get_queryset()
 
         return queryset.distinct()
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
-
-    

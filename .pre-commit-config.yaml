@@ -1,0 +1,47 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-toml
+      - id: check-yaml
+        files: \.yaml$
+      - id: trailing-whitespace
+        exclude: (migrations/|tests/).*
+      - id: end-of-file-fixer
+        exclude: (migrations/|tests/).*
+      - id: check-added-large-files
+        exclude: (migrations/|tests/).*
+      - id: check-case-conflict
+        exclude: (migrations/|tests/).*
+      - id: check-merge-conflict
+        exclude: (migrations/|tests/).*
+      - id: check-docstring-first
+        exclude: (migrations/|tests/).*
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+      - id: pyupgrade
+
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.10.1
+    hooks:
+      - id: isort
+        args: [ "--profile", "black", "--line-length", "88" ]
+        exclude: (migrations/|tests/).*
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        args: [ "--line-length=88", "--exclude=migrations/|__pycache__/|venv/" ]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.4
+    hooks:
+      - id: bandit
+        args: [ "--severity", "medium", "--confidence", "medium" ]
+        additional_dependencies: [ "bandit[toml]" ]
+        exclude: (migrations/|tests/).*
+        files: ./
+        exclude_dirs: [ "tests", "migrations" ]

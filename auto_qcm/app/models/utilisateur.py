@@ -2,11 +2,27 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class AdminCreationFlag(models.Model):
+    flag = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.flag
+
+
 class Utilisateur(AbstractUser):
+    must_change_password = models.BooleanField(default=False)
 
     @property
     def is_tutor(self):
         return self.groups.filter(name="Enseignant").exists()
+
+    @property
+    def is_student(self):
+        return self.groups.filter(name="Etudiant").exists()
+
+    @property
+    def is_admin(self):
+        return self.groups.filter(name="Admin").exists()
 
     @property
     def promotion(self):

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load index %}
 {% block content %}
 <div class="container">
     <h1>Correction du QCM : {{ qcm.titre }} de {{ user.username }}</h1>
@@ -9,22 +9,22 @@
     <p>Note du qcm: {{reponse_qcm.score}}/{{reponse_qcm.score_max}}</p>
 
     <div class="questions">
-        {% for repquestion, reponses_ids in reponses_utilisateur.items %}
+        {% for question in qcm.questions.all %}
             <div class="question">
-                <h4>{{ forloop.counter }}. {{ repquestion.question.texte }}</h4>
-                <p>{{repquestion.score}} / {{repquestion.score_max}}</p>
+                <h4>{{ forloop.counter }}. {{ question.texte }}</h4>
+                <p>{{scores|index:forloop.counter0}} </p>
                 <div class="reponses">
-                    {% for reponse in repquestion.question.reponses.all %}
+                    {% for reponse in question.reponses.all %}
                         <div class="form-check">
                             <input 
                                 class="form-check-input" 
-                                name="question_{{ repquestion.question.id }}"
+                                name="question_{{ question.id }}"
                                 id="reponse_{{ reponse.id }}"
-                                type="{% if repquestion.question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}" 
-                                {% if reponse.id in reponses_ids  %}checked{% endif %}
+                                type="{% if question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}" 
+                                {% if reponse.id in reponsesids  %}checked{% endif %}
                                 disabled
                             />
-                            <label 
+                            <label
                                 class="form-check-label">
                                 {{ reponse.texte }}
                                 {% if reponse.is_correct %}
