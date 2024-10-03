@@ -53,7 +53,7 @@ jobs:
         body: "Automatic pre-commit fixes for PR #${{ github.event.pull_request.number }}"
         labels: pre-commit, auto-fix
         base: ${{ github.event.pull_request.base.ref }}
-        update_existing_pr: true
+        # update_existing: true
 
     # Créer une Pull Request si des changements sont détectés sur un push
     - name: Create Pull Request if changes on push
@@ -67,7 +67,7 @@ jobs:
         body: "Automatic pre-commit fixes"
         labels: pre-commit, auto-fix
         base: ${{ github.ref_name }}
-        update_existing_pr: true
+        # update_existing: true
 
     # Échouer le workflow si des problèmes sont détectés
     - name: Fail if pre-commit issues found
