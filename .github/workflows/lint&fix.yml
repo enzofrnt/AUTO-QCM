@@ -18,9 +18,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        # Pour les pull requests, vérifier le code du PR
-        # Pour les pushs, vérifier le code de la branche
-        ref: ${{ github.event.pull_request.head.sha || github.ref }}
         fetch-depth: 0  # Récupère toutes les branches et l'historique
 
     - name: Set up Python 3.9
@@ -40,39 +37,43 @@ jobs:
         echo "Pre-commit exit code: $EXIT_CODE"
         echo "exit_code=$EXIT_CODE" >> $GITHUB_ENV
 
-    # Pour les pushs sur 'main' ou 'dev', corriger automatiquement les problèmes
-    - name: Commit changes if any on pull request and push
-      if: ${{ env.exit_code == '1'}}
+    # Créer une nouvelle branche et committer les changements
+    - name: Commit changes if any
+      if: ${{ env.exit_code == '1' }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        # Obtenir le nom de la branche de base
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+        else
+          BASE_BRANCH="${{ github.ref_name }}"
+        fi
+        # Créer et basculer vers une nouvelle branche
+        git checkout -b fix/pre-commit-fixes-${{ github.run_id }} $BASE_BRANCH
+        # Commiter les changements
         git commit -am "pre-commit fixes"
 
-    - name: Create Pull Request if changes on pull request
-      if: ${{ env.exit_code == '1' && github.event_name == 'pull_request' }}
+    # Pousser la nouvelle branche vers le dépôt distant
+    - name: Push changes
+      if: ${{ env.exit_code == '1' }}
+      run: |
+        git push origin HEAD
+
+    # Créer la PR si des changements ont été poussés
+    - name: Create Pull Request if changes
+      if: ${{ env.exit_code == '1' }}
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: pre-commit fixes
-        branch: fix/pre-commit-fixes-${{ github.ref_name }}
+        branch: fix/pre-commit-fixes-${{ github.run_id }}
         title: "Fix pre-commit linting issues"
         body: "Automatic pre-commit fixes"
         labels: pre-commit, auto-fix
-        base: ${{ github.base_ref }}
+        base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref_name }}
 
-    - name: Create Pull Request if changes on push
-      if: ${{ env.exit_code == '1' && github.event_name == 'push' }}
-      uses: peter-evans/create-pull-request@v5
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: pre-commit fixes
-        branch: fix/pre-commit-fixes-${{ github.ref_name }}
-        title: "Fix pre-commit linting issues"
-        body: "Automatic pre-commit fixes"
-        labels: pre-commit, auto-fix
-        base: ${{ github.ref }}
-
-    # Pour les pull requests, échouer si des problèmes sont détectés
+    # Échouer le workflow sur les PR si des problèmes sont détectés
     - name: Fail if pre-commit issues found
       if: ${{ env.exit_code != '0' && github.event_name == 'pull_request' }}
       run: |
