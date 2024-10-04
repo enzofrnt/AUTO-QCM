@@ -1,0 +1,19 @@
+label[for^='id_reponses'][for$='-DELETE'],
+input[type='checkbox'][name$='-DELETE'] {
+    display: none;
+}
+
+.hidden {
+    display: none;
+}
+
+.formset_row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.removeReponse {
+    top: 5px;
+    right: 5px;
+}
