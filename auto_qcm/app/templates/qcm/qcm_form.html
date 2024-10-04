@@ -172,11 +172,12 @@
       // Conteneur des formulaires de plages
       let formsetContainer = $('#plagesFormset');
       let totalForms = $('#id_form-TOTAL_FORMS');
+      const emptyPlage = $('#plageVide');
 
       // Fonction pour ajouter un nouveau formulaire
       $('#add-plage').click(function() {
         let formCount = $('.formset-row').length;
-        let newForm = $('#plageVide').clone();
+        let newForm = emptyPlage.clone();
 
         newForm.removeClass('hidden');
         newForm.addClass('formset-row item');
