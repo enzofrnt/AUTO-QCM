@@ -1,2 +1,0 @@
-from .test_export_view import ExportViewTests
-from .test_search_students_view import SearchStudentViewTests
