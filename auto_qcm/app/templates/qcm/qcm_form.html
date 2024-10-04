@@ -34,7 +34,7 @@
 
   <div class="w-100" >
     <div class=" m-1">
-    
+
       <div>
         <!-- Affichage des erreurs -->
         {% if form.errors or formset.errors %}
@@ -70,7 +70,7 @@
             <div class="d-flex flex-column m-1">
               <!-- Champ pour le titre du QCM -->
               <div class="form-group d-flex flex-column">
-                {{ form.titre.label_tag }} 
+                {{ form.titre.label_tag }}
                 {{ form.titre }}
               </div>
               <!-- Champ pour la description du QCM -->
@@ -103,19 +103,19 @@
                 {% endfor %}
               </div>
             </div>
-            
+
             <div id="plageVide" class="hidden">
               {{formset.empty_form.as_p }}
               <div class="form-group">
                 <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
               </div>
             </div>
-            
+
             <div style="display: flex;flex-direction: column;align-items: flex-end;">
-              
+
               <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 m-4">Créer une nouvelle Question</a>
               <button type="button" class="btn btn-success ml-2 w-10 " id="openModal">Générer automatiquement des questions</button>
-              
+
 
               <!-- Liste des questions -->
               <div id="questions-list" style="overflow-y: auto; height: 500px; width: 800px; border-radius: 20px">
@@ -130,10 +130,10 @@
                 {% endif %}
               </button>
             </div>
-          </div>  
+          </div>
         </form>
-      </div> 
-    </div> 
+      </div>
+    </div>
 
     <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
     <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
