@@ -1,1 +1,0 @@
-console.log("latex_render_math.js loaded");
