@@ -1,0 +1,36 @@
+name: Delete Fix Branch
+
+on:
+  pull_request:
+    branches: [ "main", "dev" ]
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  delete-fix-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vérifier si la PR fermée est une PR originale
+        if: ${{ !startsWith(github.event.pull_request.head.ref, 'fix/pre-commit-fixes-pr-') }}
+        run: echo "La PR fermée est une PR originale. Procéder à la suppression de la branche de correction associée."
+
+      - name: Supprimer la branche de correction associée
+        if: ${{ !startsWith(github.event.pull_request.head.ref, 'fix/pre-commit-fixes-pr-') }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = ${{ github.event.pull_request.number }};
+            const fixBranch = `fix/pre-commit-fixes-pr-${prNumber}`;
+
+            try {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `heads/${fixBranch}`
+              });
+              console.log(`La branche ${fixBranch} a été supprimée.`);
+            } catch (error) {
+              console.log(`La branche ${fixBranch} n'existe pas ou a déjà été supprimée.`);
+            }
