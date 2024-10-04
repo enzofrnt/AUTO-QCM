@@ -6,9 +6,7 @@ from .custom_error_view import (
     custom_permission_denied_view,
     custom_server_error_view,
 )
-from .qcm_delete_view import delete_qcm
 from .delete_multiple_qcms_view import delete_multiple_qcms
-from .question_delete_view import delete_question
 from .enseignant_dashboard_view import enseignant_dashboard
 from .etudiant_dashboard_view import etudiant_dashboard
 from .export_view import export_qcm_latex, export_qcm_xml, export_question_xml
