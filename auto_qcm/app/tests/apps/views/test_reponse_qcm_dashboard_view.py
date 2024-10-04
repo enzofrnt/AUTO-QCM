@@ -6,7 +6,6 @@ from datetime import timedelta
 
 
 class QcmResponsesViewTests(TestCase):
-
     def setUp(self):
         """Création des objets pour les tests."""
         self.client = Client()

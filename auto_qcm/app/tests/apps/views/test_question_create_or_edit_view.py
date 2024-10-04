@@ -6,7 +6,6 @@ from app.models import Question, Utilisateur
 
 
 class CreateOrEditQuestionViewTest(TestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
