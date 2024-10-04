@@ -95,18 +95,14 @@
       </div>
 
       <!-- Formset pour les réponses -->
-      <div id="reponseFormset">
-        {{ formset.management_form }}
-        {% for formset_form in formset %}
         <div id="reponseFormset">
           {{ formset.management_form }}
           {% for formset_form in formset %}
               <div class="formset_row border rounded position-relative">
                   {{ formset_form.as_p }}
-      
                   <!-- Ajouter un nouveau champ associé à la réponse -->
-                      <label for="id_reponses-{{ forloop.counter0 }}-new_field"> Preveiw LaTeX</label>
-                      <p id="id_reponses-{{ forloop.counter0 }}-new_field">coucou</p>
+                  <label for="id_reponses-{{ forloop.counter0 }}-new_field"> Preveiw LaTeX</label>
+                  <p id="id_reponses-{{ forloop.counter0 }}-new_field">coucou</p>
       
                   <!-- Bouton pour supprimer une réponse -->
                   <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute">
@@ -114,8 +110,6 @@
                   </button>
               </div>
           {% endfor %}
-      </div>
-        {% endfor %}
       </div>
 
       <div id="reponseVide" class="hidden">
