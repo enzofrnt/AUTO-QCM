@@ -1,0 +1,46 @@
+name: Close Fix PR
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  close-fix-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vérifier si la PR fermée est une PR originale
+        if: ${{ startsWith(github.event.pull_request.head.ref, 'fix/pre-commit-fixes-pr-') == false }}
+        run: echo "La PR fermée est une PR originale. Procéder à la fermeture de la PR de correction associée."
+
+      - name: Fermer la PR de correction associée
+        if: ${{ startsWith(github.event.pull_request.head.ref, 'fix/pre-commit-fixes-pr-') == false }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = ${{ github.event.pull_request.number }};
+            const fixPrBranch = `fix/pre-commit-fixes-pr-${prNumber}`;
+            
+            // Rechercher la PR de correction associée
+            const { data: pullRequests } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${fixPrBranch}`,
+              state: 'open'
+            });
+
+            if (pullRequests.length > 0) {
+              const fixPr = pullRequests[0];
+              // Fermer la PR de correction
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: fixPr.number,
+                state: 'closed'
+              });
+              console.log(`La PR de correction #${fixPr.number} a été fermée.`);
+            } else {
+              console.log("Aucune PR de correction associée trouvée.");
+            }
