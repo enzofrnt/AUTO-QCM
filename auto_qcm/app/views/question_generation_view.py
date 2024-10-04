@@ -21,7 +21,7 @@ def question_generation_view(request):
         file_path = default_storage.save(f"temp/{pdf_file.name}", pdf_file)
 
         # Charger les informations d'environnement
-        if hasattr(settings, "OPEN_AI_TOKEN"):
+        if hasattr(settings, "OPEN_AI_TOKEN") and settings.OPEN_AI_TOKEN != "":
             token = settings.OPEN_AI_TOKEN
         else:
             logger.error("Le token OpenAI n'est pas défini dans les settings.")
@@ -98,7 +98,29 @@ def question_generation_view(request):
                             ]
                         }
 
-                        TU n'imrbique pas les questions dans un objet, tu les retournes directement dans un tableau.
+                        Tu n'imrbique pas les questions dans un objet, tu les retournes directement dans un tableau.
+                        
+                        En ce qui concerne les question de mathématiques qui contienne des formules, il faudra que tu les retournes en format LaTeX.
+                        Exemple de retour pour une question de mathématiques :
+                        {
+                            "nom" : "Le théorème de Pythagore",
+                            "texte" : "Rappeler la formule du théorème de Pythagore.",
+                            "creator" "Chat j'ai pété",
+                            "reponses" : [
+                                {
+                                    "texte" : "La réponse 1",
+                                    "is_correct" : true,
+                                    "creator" "Chat j'ai pété"
+                                },
+                                {
+                                    "texte" : "La réponse 2",
+                                    "is_correct" : false,
+                                    "creator" "Chat j'ai pété"
+
+                                },
+                                (...)
+                            ]
+                        }
                         """,
                     },
                     {
