@@ -1,6 +1,6 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
 from app.models import QCM, ReponseQCM
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 
@@ -16,7 +16,7 @@ def acces_qcm(request, qcm_id):
             rep_qcm = ReponseQCM.objects.create(
                 utilisateur=request.user,
                 qcm=qcm,
-                date_debut=timezone.now(),
+                date_debut=self.qcm.date_modif,
             )
             return redirect("qcm-answer", qcm_id=qcm_id, rep_id=rep_qcm.id)
     return render(

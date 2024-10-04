@@ -16,11 +16,11 @@
                 <div class="reponses">
                     {% for reponse in question.reponses.all %}
                         <div class="form-check">
-                            <input 
-                                class="form-check-input" 
+                            <input
+                                class="form-check-input"
                                 name="question_{{ question.id }}"
                                 id="reponse_{{ reponse.id }}"
-                                type="{% if question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}" 
+                                type="{% if question.number_of_correct_answers > 1 %}checkbox{% else %}radio{% endif %}"
                                 {% if reponse.id in reponsesids  %}checked{% endif %}
                                 disabled
                             />
