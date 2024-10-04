@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
 
@@ -20,3 +21,7 @@ def custom_page_not_found_view(request, exception=None):
 
 def custom_server_error_view(request):
     return custom_error_view(request, template_name="errors/500.html", status=500)
+
+
+def cause_server_error(request):
+    raise Exception("This is a test exception!")
