@@ -1,4 +1,4 @@
-<table class="table" style="background-color: white; border-radius: 20px">
+<table class="table questions-list" >
   <thead>
     <tr>
       {% if selectable %}
@@ -7,7 +7,7 @@
       <th>Texte de la Question et Tags</th>
     </tr>
   </thead>
-  <tbody style="overflow-y: auto;  ">
+  <tbody style="overflow-y: auto;">
     {% for question in questions %}
       <tr  class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer; ">
         {% if selectable %}

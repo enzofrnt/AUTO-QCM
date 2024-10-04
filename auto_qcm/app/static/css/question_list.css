@@ -80,3 +80,17 @@
 /* #questions-list {
     color: #007bff;
 } */
+
+.questions-list{
+    background-color: rgb(224, 241, 255);
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.dark-mode .questions-list{
+    background-color:#272727;
+    border-radius: 20px;
+    color: white;
+    transition: all 0.3s;
+    
+}
