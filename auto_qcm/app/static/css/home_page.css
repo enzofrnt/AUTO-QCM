@@ -3,7 +3,7 @@
     display: inline-block;
     padding: 30px 30px;
     margin: 5px;
-    background-color: #d2d2d2;
+    background-color: rgb(224, 241, 255);
     /* mettre la bordure en grise */
     border: 1px solid #555;
     color: rgb(0, 0, 0);
@@ -12,7 +12,7 @@
     transition: all 0.3s;
 }
 
-.button-home.dark-mode {
+.dark-mode .button-home {
     background-color: #333;
     border: 1px solid #555;
     color: white;
