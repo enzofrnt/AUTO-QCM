@@ -113,7 +113,9 @@
             
             <div style="display: flex;flex-direction: column;align-items: flex-end;">
               
+              <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 m-4">Créer une nouvelle Question</a>
               <button type="button" class="btn btn-success ml-2 w-10 " id="openModal">Générer automatiquement des questions</button>
+              
 
               <!-- Liste des questions -->
               <div id="questions-list" style="overflow-y: auto; height: 500px; width: 800px; border-radius: 20px">
@@ -193,11 +195,12 @@
       // Conteneur des formulaires de plages
       let formsetContainer = $('#plagesFormset');
       let totalForms = $('#id_form-TOTAL_FORMS');
+      const emptyPlage = $('#plageVide');
 
       // Fonction pour ajouter un nouveau formulaire
       $('#add-plage').click(function() {
         let formCount = $('.formset-row').length;
-        let newForm = $('#plageVide').clone();
+        let newForm = emptyPlage.clone();
 
         newForm.removeClass('hidden');
         newForm.addClass('formset-row item');
