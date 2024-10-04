@@ -101,8 +101,8 @@
               <div class="formset_row border rounded position-relative">
                   {{ formset_form.as_p }}
                   <!-- Ajouter un nouveau champ associé à la réponse -->
-                  <label for="id_reponses-{{ forloop.counter0 }}-new_field"> Preveiw LaTeX</label>
-                  <p id="id_reponses-{{ forloop.counter0 }}-new_field">coucou</p>
+                  <label for="id_reponses-{{ forloop.counter0 }}-new_field">Preview LaTeX</label>
+                  <div id="id_reponses-{{ forloop.counter0 }}-new_field">coucou</div>
       
                   <!-- Bouton pour supprimer une réponse -->
                   <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute">
@@ -114,6 +114,8 @@
 
       <div id="reponseVide" class="hidden">
         {{ formset.empty_form.as_p }}
+        <label for="id_reponses-__prefix__-new_field">Preview LaTeX</label>
+        <div id="id_reponses-__prefix__-new_field">coucou</div>
         <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute"><i class="bi bi-trash"></i></button>
       </div>
 
@@ -134,59 +136,101 @@
 {% block extra_scripts %}
   <script>
     $(document).ready(function () {
-      var formsetPrefix = '{{ formset.prefix }}'
-      var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
-      var formsetContainer = $('#reponseFormset')
-      const emptyRep = $('#reponseVide')
-
       // Fonction pour parser le texte LaTeX et le convertir en HTML
       function parseLatexText(text) {
-        // Utilise une expression régulière pour identifier les formules LaTeX délimitées par '$...$'
-        return text.replace(/\\\$(.*?)\\\$/g, function (match, p1) {
-          // Remplace le LaTeX inline par une balise span avec la classe 'django-latexify math inline'
-          return '<span class="django-latexify math inline">' + p1 + '</span>'
-        })
+        // Échapper les caractères spéciaux
+        const escapedText = text.replace(/\\\$/g, '\\$').replace(/[\u200B-\u200D\uFEFF]/g, '');
+        
+        return escapedText;
       }
-
-      // Fonction pour mettre à jour la preview à partir du champ de texte
-      function updatePreview(id_to_copy, id_to_paste) {
-        var latexText = $(id_to_copy).val()
-        var parsedText = parseLatexText(latexText)
-        $(id_to_paste).html('<span class="django-latexify text">' + parsedText + '</span>')
-        latex_render_math(math_latex_inline_elements, false)
+    
+      // Fonction pour mettre à jour la preview LaTeX d'un champ
+      function updateLatexPreview(inputField, outputFieldSelector) {
+        const inputText = $(inputField).val();
+        const outputField = $(outputFieldSelector).get(0);  // Utilise l'élément DOM
+        if (!outputField) {
+          console.error(`Impossible de trouver l'élément pour le sélecteur : ${outputFieldSelector}`);
+          return;
+        }
+      
+        // Vider l'élément avant de réappliquer le rendu
+        $(outputFieldSelector).empty();
+      
+        // Expression régulière pour capturer tout ce qui est entre \$...\$
+        const latexRegex = /\\\$(.*?)\\\$/g;
+        
+        // Remplacer le contenu entre \$...\$ par des span
+        let formattedText = inputText.replace(latexRegex, function(match, p1) {
+          try {
+            // Rendre la partie LaTeX
+            const span = document.createElement("span");
+            katex.render(p1, span, { throwOnError: false });
+            return span.outerHTML;  // Remplacer par le rendu KaTeX
+          } catch (e) {
+            console.error("Erreur lors du rendu KaTeX : ", e);
+            return match;  // Si une erreur se produit, retourner le texte original
+          }
+        });
+      
+        // Injecter le texte formaté dans le champ de sortie
+        $(outputFieldSelector).html(formattedText);
       }
+    
+      // Fonction pour initialiser le rendu LaTeX pour tous les champs de texte et réponses
+      function initializeLatexRendering() {
+        // Champ de texte principal
+        updateLatexPreview('#id_texte', '#copy_text');
+    
+        // Champs de texte pour les réponses
+        $("[id^='id_reponses-'][id$='-texte']").each(function () {
+          const index = $(this).attr('id').split('-')[1];
+          const outputField = `#id_reponses-${index}-new_field`;
+          updateLatexPreview(this, outputField);
+        });
+      }
+    
+      // Initialiser le rendu lors du chargement de la page
+      initializeLatexRendering();
+    
+      // Appliquer LaTeX chaque fois que le texte change
+      $('#id_texte').on('input', function () {
+        updateLatexPreview(this, '#copy_text');
+      });
+    
+      $(document).on('input', "[id^='id_reponses-'][id$='-texte']", function () {
+        const index = $(this).attr('id').split('-')[1];
+        const outputField = `#id_reponses-${index}-new_field`;
+        updateLatexPreview(this, outputField);
+      });
 
-
-      const elements = Array.from(document.querySelectorAll("[id^='id_reponses-'][id$='-texte']")).filter(element => {
-        const regex = /^id_reponses-\d+-texte$/; // Expression régulière stricte pour "id_reponses-[nombre]-texte"
-        return regex.test(element.id);
+      // Gestion de l'ajout dynamique de nouveaux tags
+      $('#addNewTag').click(function () {
+        var newTagHtml = `
+        <div class="input-group mb-2">
+            <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+            <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+        </div>`
+        $('#newTagsContainer').append(newTagHtml)
       })
     
-      // Appelle la fonction de mise à jour à l'ouverture de la page pour afficher le texte existant
-      updatePreview('#id_texte', '#copy_text')
-
-      // Ajoute un écouteur d'événement sur le champ de texte pour mettre à jour la preview à chaque changement
-      $('#id_texte').on('input', function () {
-        updatePreview('#id_texte', '#copy_text')
-      })
-
-      // Gestion de l'ajout dynamique de réponses
+    
+      // Ajouter une réponse dynamique et initialiser son rendu LaTeX
       $('#addReponse').click(function () {
-        let formCount = parseInt(totalForms.val())
-        let newForm = emptyRep.clone()
+        const totalForms = parseInt($('#id_reponses-TOTAL_FORMS').val());
+        const newForm = $('#reponseVide').clone().removeClass('hidden').addClass('formset_row');
+        const regex = new RegExp('__prefix__', 'g');
+        
+        newForm.html(newForm.html().replace(regex, totalForms));
+        $('#reponseFormset').append(newForm);
+        $('#id_reponses-TOTAL_FORMS').val(totalForms + 1);
+    
+        // Appliquer KaTeX sur le nouveau champ
+        const newFieldId = `#id_reponses-${totalForms}-texte`;
+        $(document).on('input', newFieldId, function () {
+          updateLatexPreview(this, `#id_reponses-${totalForms}-new_field`);
+        });
+      });
 
-        newForm.removeClass('hidden')
-        newForm.addClass('formset_row border rounded position-relative')
-
-        //On remplate le __prefix__ par la bonne valeur
-        const regex = new RegExp('__prefix__', 'g')
-        newForm.html(newForm.html().replace(regex, formCount))
-
-        formsetContainer.append(newForm)
-        totalForms.val(formCount + 1)
-      })
-
-      // Gestion de la suppression de réponses
       $(document).on('click', '.removeReponse', function () {
         // Marquer le formulaire pour suppression en cochant le champ 'DELETE'
         var formRow = $(this).closest('.formset_row')
@@ -202,16 +246,6 @@
           $(this).hide()
         }
       })
-
-      // Gestion de l'ajout dynamique de nouveaux tags
-      $('#addNewTag').click(function () {
-        var newTagHtml = `
-        <div class="input-group mb-2">
-            <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
-            <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
-        </div>`
-        $('#newTagsContainer').append(newTagHtml)
-      })
-    })
+    });
   </script>
 {% endblock %}
