@@ -44,6 +44,7 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
+    cause_server_error,
 )
 from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin
@@ -99,6 +100,8 @@ urlpatterns = [
     ),
     path("qcm/export-xml/<int:qcm_id>/", export_qcm_xml, name="qcm-export-xml"),
     path("qcm/export-latex/<int:qcm_id>/", export_qcm_latex, name="qcm-export-latex"),
+    # TEST
+    path("cause-server-error/", cause_server_error, name="cause-server-error"),
 ]
 
 if os.environ.get("env", "dev") == "dev":

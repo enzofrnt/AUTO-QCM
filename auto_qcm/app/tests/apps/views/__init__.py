@@ -1,3 +1,0 @@
-from .test_export_view import ExportViewTests
-from .test_search_students_view import SearchStudentViewTests
-from .test_qcm_delete_view import DeleteQCMViewTest
