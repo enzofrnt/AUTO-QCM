@@ -1,3 +1,4 @@
+from sys import argv
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
@@ -21,6 +22,7 @@ class RepondreQCMViewTest(TestCase):
             description="Ceci est un QCM de test.",
             creator=self.user,
             date_modif=timezone.now(),
+            est_accessible=True,
         )
 
         # Créer une question
@@ -51,21 +53,29 @@ class RepondreQCMViewTest(TestCase):
 
         # Créer une instance de ReponseQCM pour l'utiliser dans les tests
         # Vérifier que la réponse a bien été enregistrée
-        self.reponse_qcm = ReponseQCM.objects.get_or_create(
+        self.reponse_qcm, created = ReponseQCM.objects.get_or_create(
             utilisateur=self.user,
             qcm=self.qcmanswer,
             date_debut=self.qcmanswer.date_modif,
-            date_fin_reponse=self.qcmanswer.date_modif + timedelta(minutes=5),
         )
-        self.reponse_question = ReponseQuestion.objects.get_or_create(
+        self.reponse_question, created = ReponseQuestion.objects.get_or_create(
             utilisateur=self.user,
             question=self.question,
             date=timezone.now(),
         )
 
+        # Associer les réponses à la réponse question
+        self.reponse_question.reponse.set([self.rep1, self.rep2])
+        self.reponse_question.save()
+
+        # Associer les réponses question à la réponse QCM
+        self.reponse_qcm.reponses.set([self.reponse_question])
+        self.reponse_qcm.save()
+
         # Définir l'URL pour répondre au QCM avec les deux IDs
         self.url_repondre = reverse(
-            "qcm-answer", args=[self.qcmanswer.id, self.reponse_qcm.id]
+            "qcm-answer",
+            kwargs={"qcm_id": self.qcmanswer.id, "rep_id": self.reponse_qcm.id},
         )
 
     def test_repondre_qcm_view_access(self):
