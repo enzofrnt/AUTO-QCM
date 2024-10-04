@@ -1,2 +1,1 @@
-from .apps.models import *
-from .apps.views import *
+from .apps import *
