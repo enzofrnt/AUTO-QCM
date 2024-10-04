@@ -98,11 +98,23 @@
       <div id="reponseFormset">
         {{ formset.management_form }}
         {% for formset_form in formset %}
-          <div class="formset_row border rounded position-relative">
-            {{ formset_form.as_p }}
-            <!-- Bouton pour supprimer une réponse -->
-            <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute"><i class="bi bi-trash"></i></button>
-          </div>
+        <div id="reponseFormset">
+          {{ formset.management_form }}
+          {% for formset_form in formset %}
+              <div class="formset_row border rounded position-relative">
+                  {{ formset_form.as_p }}
+      
+                  <!-- Ajouter un nouveau champ associé à la réponse -->
+                      <label for="id_reponses-{{ forloop.counter0 }}-new_field"> Preveiw LaTeX</label>
+                      <p id="id_reponses-{{ forloop.counter0 }}-new_field">coucou</p>
+      
+                  <!-- Bouton pour supprimer une réponse -->
+                  <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute">
+                      <i class="bi bi-trash"></i>
+                  </button>
+              </div>
+          {% endfor %}
+      </div>
         {% endfor %}
       </div>
 
@@ -143,19 +155,25 @@
       }
 
       // Fonction pour mettre à jour la preview à partir du champ de texte
-      function updatePreview() {
-        var latexText = $('#id_texte').val()
+      function updatePreview(id_to_copy, id_to_paste) {
+        var latexText = $(id_to_copy).val()
         var parsedText = parseLatexText(latexText)
-        $('#copy_text').html('<span class="django-latexify text">' + parsedText + '</span>')
+        $(id_to_paste).html('<span class="django-latexify text">' + parsedText + '</span>')
         latex_render_math(math_latex_inline_elements, false)
       }
 
+
+      const elements = Array.from(document.querySelectorAll("[id^='id_reponses-'][id$='-texte']")).filter(element => {
+        const regex = /^id_reponses-\d+-texte$/; // Expression régulière stricte pour "id_reponses-[nombre]-texte"
+        return regex.test(element.id);
+      })
+    
       // Appelle la fonction de mise à jour à l'ouverture de la page pour afficher le texte existant
-      updatePreview()
+      updatePreview('#id_texte', '#copy_text')
 
       // Ajoute un écouteur d'événement sur le champ de texte pour mettre à jour la preview à chaque changement
       $('#id_texte').on('input', function () {
-        updatePreview()
+        updatePreview('#id_texte', '#copy_text')
       })
 
       // Gestion de l'ajout dynamique de réponses
@@ -194,10 +212,10 @@
       // Gestion de l'ajout dynamique de nouveaux tags
       $('#addNewTag').click(function () {
         var newTagHtml = `
-                                                                                                                                <div class="input-group mb-2">
-                                                                                                                                    <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
-                                                                                                                                    <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
-                                                                                                                                </div>`
+        <div class="input-group mb-2">
+            <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+            <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+        </div>`
         $('#newTagsContainer').append(newTagHtml)
       })
     })
