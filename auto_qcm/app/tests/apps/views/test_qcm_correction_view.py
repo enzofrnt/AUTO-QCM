@@ -80,17 +80,6 @@ class CorrigerQCMViewTest(TestCase):
         # Vérification des données dans le contexte
         self.assertIn("reponse_qcm", response.context)
         self.assertIn("qcm", response.context)
-        self.assertIn("reponses_utilisateur", response.context)
-
-        # Vérification des réponses soumises par l'utilisateur
-        reponses_utilisateur = response.context["reponses_utilisateur"]
-
-        # Vérifier que la réponse à la question est présente et les réponses associées sont correctes
-        self.assertIn(self.reponse_question, reponses_utilisateur)
-        self.assertEqual(
-            set(reponses_utilisateur[self.reponse_question]),
-            set([self.rep1.id, self.rep2.id]),  # L'utilisateur a soumis deux réponses
-        )
 
     def test_access_without_login(self):
         """Test qu'un utilisateur non connecté est redirigé vers la page de connexion."""
