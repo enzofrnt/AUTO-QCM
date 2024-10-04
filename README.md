@@ -67,19 +67,19 @@ Django est un framework Python idéal pour la construction d'APIs, grâce à sa 
 </a>
 
 
-PostgreSQL est un système de gestion de bases de données relationnelles reconnu pour sa robustesse et sa conformité stricte aux standards SQL. Il offre des fonctionnalités avancées comme les transactions ACID, la gestion des versions de ligne, et la réplication, ce qui le rend particulièrement adapté pour des applications nécessitant une haute disponibilité et une intégrité des données. L'un des avantages majeurs de PostgreSQL réside dans son extensibilité, permettant d'ajouter des fonctions personnalisées ou des types de données complexes. 
+PostgreSQL est un système de gestion de bases de données relationnelles reconnu pour sa robustesse et sa conformité stricte aux standards SQL. Il offre des fonctionnalités avancées comme les transactions ACID, la gestion des versions de ligne, et la réplication, ce qui le rend particulièrement adapté pour des applications nécessitant une haute disponibilité et une intégrité des données. L'un des avantages majeurs de PostgreSQL réside dans son extensibilité, permettant d'ajouter des fonctions personnalisées ou des types de données complexes.
 
 De plus, PostgreSQL se distingue par sa compatibilité avec divers langages de programmation, facilitant l'intégration avec des frameworks comme Django grâce à son support natif. Enzo a déjà une solide expérience dans la gestion de bases de données, et la familiarité avec PostgreSQL assure une mise en œuvre efficace et rapide dans notre projet, garantissant ainsi une manipulation sécurisée et optimisée des données.
 
 ---
 
-- **Docker** 
+- **Docker**
 
 <a href="https://www.docker.com/">
   <img src="https://skillicons.dev/icons?i=docker" alt="Logo Docker" width="100" height="100">
 </a>
 
-Docker, utilisé conjointement avec Dockerfile et Docker Compose, est un outil essentiel pour le déploiement de conteneurs. Il facilite le déploiement d'applications dans des conteneurs, qui sont des environnements isolés et indépendants. Cette méthode permet de déployer des applications de manière simple, rapide et efficace, tout en assurant leur accessibilité. L'un des principaux atouts de Docker est sa capacité à déployer des applications sur divers systèmes d'exploitation, incluant Windows, Linux et MacOS. Cette polyvalence est particulièrement bénéfique pour notre projet, qui nécessite une compatibilité multiplateforme. De plus, Docker assure un déploiement sécurisé des applications, un aspect crucial pour la fiabilité de notre projet. 
+Docker, utilisé conjointement avec Dockerfile et Docker Compose, est un outil essentiel pour le déploiement de conteneurs. Il facilite le déploiement d'applications dans des conteneurs, qui sont des environnements isolés et indépendants. Cette méthode permet de déployer des applications de manière simple, rapide et efficace, tout en assurant leur accessibilité. L'un des principaux atouts de Docker est sa capacité à déployer des applications sur divers systèmes d'exploitation, incluant Windows, Linux et MacOS. Cette polyvalence est particulièrement bénéfique pour notre projet, qui nécessite une compatibilité multiplateforme. De plus, Docker assure un déploiement sécurisé des applications, un aspect crucial pour la fiabilité de notre projet.
 L'expérience préalable d'Enzo avec Docker représente un avantage notable, augmentant ainsi notre efficacité dans l'utilisation de cet outil. En somme, Docker apparaît comme une solution idéale pour répondre aux besoins spécifiques de notre projet.
 En outre, l'avantage supplémentaire réside dans le fait qu'Emilien a déjà une certaine expérience avec Vue.js, ce qui facilite grandement l'intégration et le développement rapide de notre projet. Sa familiarité préalable avec le framework assure une courbe d'apprentissage plus douce pour l'équipe et contribue à une mise en œuvre plus efficace de l'application.
 

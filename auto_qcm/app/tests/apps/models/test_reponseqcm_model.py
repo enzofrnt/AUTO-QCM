@@ -1,4 +1,5 @@
 from django.test import TestCase
+from datetime import timedelta
 from app.models import ReponseQCM, Utilisateur, QCM, Question, Reponse, ReponseQuestion
 
 
@@ -78,6 +79,8 @@ class ReponseQCMModelTest(TestCase):
         self.reponse_qcm = ReponseQCM.objects.create(
             utilisateur=self.user,
             qcm=self.qcm,
+            date_debut=self.qcm.date_modif,
+            date_fin_reponse=self.qcm.date_modif + timedelta(minutes=5),
         )
         self.reponse_qcm.reponses.set([self.reponse_question1, self.reponse_question2])
 
@@ -101,3 +104,7 @@ class ReponseQCMModelTest(TestCase):
         """Test la représentation en chaîne de l'instance ReponseQCM."""
         expected_str = f"Reponse de {self.user.username} à {self.qcm.titre}"
         self.assertEqual(str(self.reponse_qcm), expected_str)
+
+    def test_duree_test(self):
+        """Test la durée de réponse."""
+        self.assertEqual(self.reponse_qcm.duree, timedelta(minutes=5))

@@ -11,6 +11,7 @@ from .etudiant_dashboard_view import etudiant_dashboard
 from .export_view import export_qcm_latex, export_qcm_xml, export_question_xml
 from .home_view import home
 from .login_view import CustomLoginView
+from .qcm_acces_view import acces_qcm
 from .qcm_answer_view import repondre_qcm
 from .qcm_correction_view import corriger_qcm
 from .qcm_create_or_edit_view import create_or_edit_qcm

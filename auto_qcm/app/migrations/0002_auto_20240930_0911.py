@@ -31,7 +31,6 @@ def create_default_admin(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0001_initial"),
     ]

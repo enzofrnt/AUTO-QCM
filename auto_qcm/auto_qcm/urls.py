@@ -21,6 +21,7 @@ from app.views import (
     CustomLoginView,
     QcmListView,
     QuestionListView,
+    acces_qcm,
     change_password_view,
     corriger_qcm,
     create_or_edit_qcm,
@@ -86,7 +87,8 @@ urlpatterns = [
     path("qcm/list/", QcmListView.as_view(), name="qcm-list"),
     path("qcm/delete/<int:qcm_id>/", delete_qcm, name="qcm-delete"),
     # Reponse QCM
-    path("qcm/anwser/<int:qcm_id>/", repondre_qcm, name="qcm-answer"),
+    path("qcm/acces/<int:qcm_id>/", acces_qcm, name="qcm-acces"),
+    path("qcm/anwser/<int:qcm_id>/<int:rep_id>", repondre_qcm, name="qcm-answer"),
     path("qcm/correct/<int:repqcm_id>/", corriger_qcm, name="qcm-correct"),
     path("delete-multiple/", delete_multiple_qcms, name="qcm-delete-multiple"),
     # Export
