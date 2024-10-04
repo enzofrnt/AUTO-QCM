@@ -21,7 +21,6 @@ class Command(BaseCommand):
     help = "Remplit la base de données avec des données factices."
 
     def handle(self, *args, **kwargs):
-
         # Creation des groupes
         prof, _ = Group.objects.get_or_create(name="Enseignant")
         eleve = Group.objects.create(name="Etudiant")
@@ -160,7 +159,10 @@ class Command(BaseCommand):
 
         # Créer une instance de ReponseQCM pour Moquette
         rep = ReponseQCM.objects.create(
-            utilisateur=moquette, qcm=qcm_random, date_reponse=timezone.now()
+            utilisateur=moquette,
+            qcm=qcm_random,
+            date_debut=timezone.now(),
+            date_fin_reponse=timezone.now() + timedelta(minutes=random.randint(1, 10)),
         )
 
         # Récupérer des réponses aléatoires associées aux questions du QCM

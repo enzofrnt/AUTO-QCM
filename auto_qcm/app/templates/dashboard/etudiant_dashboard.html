@@ -59,8 +59,8 @@
             </div>
         </div>
     </div>
-        
-        
+
+
 </div>
 <!-- Script pour le calendrier FullCalendar -->
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
@@ -82,7 +82,7 @@
                         backgroundColor: getRandomColor(),
                         borderColor: getRandomColor(),
                         textColor: 'black',
-                        url: '{% url "qcm-answer" qcm.id %}' 
+                        url: '{% url "qcm-acces" qcm.id %}'
                     },
                     {
                         title: '{{ qcm.titre|escapejs }} se termine pour {{ plage.promo.name|escapejs }} {{ plage.groupe.name|escapejs }}',
@@ -92,7 +92,7 @@
                         backgroundColor: getRandomColor(),
                         borderColor: getRandomColor(),
                         textColor: 'black',
-                        url: '{% url "qcm-answer" qcm.id %}'
+                        url: '{% url "qcm-acces" qcm.id %}'
                     },
                     {% endif %}
                 {% endfor %}
@@ -135,7 +135,7 @@
         });
 
         calendar.render();
-        
+
     /// Data for the chart
     var ctx = document.getElementById('qcmChart').getContext('2d');
     var qcmTitles = [
@@ -204,7 +204,7 @@
                     window.location.href = "{% url 'qcm-correct' 0 %}".replace("0", qcmId); // Rediriger vers l'URL de correction
                     //pb vient de l'index de la réponse qui n'est pas la même que l'index du qcm
                     //il faut donc récupérer l'id du qcm correspondant à l'index de la réponse
-                    
+
                 }
             },
             scales: {
@@ -249,11 +249,11 @@
             }
         }
     });
-    
-    
-    
-    
-    
+
+
+
+
+
 });
 
     function getRandomColor() {
@@ -283,6 +283,6 @@
         cursor: pointer; /* Ajoutez cette ligne pour changer le curseur en pointer */
     }
 
-    
+
 </style>
 {% endblock %}

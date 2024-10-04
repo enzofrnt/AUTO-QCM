@@ -14,7 +14,7 @@
     }
 
     .formset-row {
-      display: flex; 
+      display: flex;
       justify-content: space-between;
     }
     .tag-badge.selected {
@@ -33,7 +33,8 @@
         Créer un nouveau QCM
       {% endif %}
     </h2>
-
+    <h3>Sélectionnez les questions :</h3>
+      {% include 'questions/question_filter_form.html' %}
     <!-- Affichage des erreurs -->
     {% if form.errors or formset.errors %}
       <div class="alert alert-danger">
@@ -61,23 +62,12 @@
       </div>
     {% endif %}
 
-    {% include 'questions/question_filter_form.html' %}
-
     <!-- Formulaire principal -->
     <form method="post" id="qcmForm">
       {% csrf_token %}
 
-      <!-- Champ pour le titre du QCM -->
-      <div class="form-group">
-        {{ form.titre.label_tag }}
-        {{ form.titre }}
-      </div>
+      {{form.as_p}}
 
-      <!-- Champ pour la description du QCM -->
-      <div class="form-group">
-        {{ form.description.label_tag }}
-        {{ form.description }}
-      </div>
 
       <!-- Plages associées au QCM -->
       <div class="d-flex align-items-center mb-2">
@@ -104,8 +94,6 @@
         </div>
       </div>
 
-      <!-- Sélection des questions -->
-      <h3>Sélectionnez les questions :</h3>
       <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 m-4">Créer une nouvelle Question</a>
       <button type="button" class="btn btn-success ml-2 w-10 m-4" id="openModal">Générer automatiquement des questions</button>
 
@@ -123,7 +111,7 @@
       </button>
     </form>
 
-  </div> 
+  </div>
 
   <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
   <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
@@ -184,19 +172,20 @@
       // Conteneur des formulaires de plages
       let formsetContainer = $('#plagesFormset');
       let totalForms = $('#id_form-TOTAL_FORMS');
+      const emptyPlage = $('#plageVide');
 
       // Fonction pour ajouter un nouveau formulaire
       $('#add-plage').click(function() {
         let formCount = $('.formset-row').length;
-        let newForm = $('#plageVide').clone(); 
+        let newForm = emptyPlage.clone();
 
         newForm.removeClass('hidden');
         newForm.addClass('formset-row item');
-        
+
         //On remplate le __prefix__ par la bonne valeur
         const regex = new RegExp('__prefix__', 'g');
         newForm.html(newForm.html().replace(regex, formCount));
-        
+
         formsetContainer.append(newForm);
         totalForms.val(formCount + 1);
       });
@@ -336,6 +325,5 @@
     });
   </script>
     <!-- Inclusion des scripts personnalisés -->
-   
-  {% endblock %}
 
+  {% endblock %}
