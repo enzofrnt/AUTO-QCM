@@ -7,7 +7,6 @@ import logging
 
 
 class SaveGeneratedQuestionsViewTests(TestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

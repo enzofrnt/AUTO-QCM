@@ -8,7 +8,6 @@ import logging
 
 
 class CreateOrEditQcmViewTests(TestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
