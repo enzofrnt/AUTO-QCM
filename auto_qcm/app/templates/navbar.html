@@ -21,11 +21,14 @@
         </li>
       {% endif %}
       {% if user.is_tutor %}
+      <li>
+        <a class="nav-item" href="{% url 'question-create' %}"><i class="bi bi-question-circle"></i> Créer une question</a>
+      </li>
         <li>
           <a class="nav-item" href="{% url 'question-list' %}"><i class="bi bi-card-checklist"></i> Liste des questions</a>
         </li>
         <li>
-          <a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Générer un QCM</a>
+          <a class="nav-item" href="{% url 'qcm-create' %}"><i class="bi bi-question-square"></i> Créer un qcm</a>
         </li>
         <li>
           <a class="nav-item" href="{% url 'qcm-list' %}"><i class="bi-list-check"></i>Liste des qcm</a>
