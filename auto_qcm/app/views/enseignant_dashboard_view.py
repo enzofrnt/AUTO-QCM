@@ -30,7 +30,7 @@ def enseignant_dashboard(request, pk=None):
     today = timezone.now().date()
     three_months_later = today + timedelta(days=90)
     upcoming_qcms = QCM.objects.filter(
-        Q(date_modif__gte=today) & Q(date_modif__lte=three_months_later)
+        date_modif__gt=today, date_modif__lte=three_months_later
     ).order_by("date_modif")
 
     # Récupérer les statistiques des QCM

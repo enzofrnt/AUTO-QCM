@@ -4,6 +4,7 @@ from .custom_error_view import (
     custom_page_not_found_view,
     custom_permission_denied_view,
     custom_server_error_view,
+    cause_server_error,
 )
 from .delete_multiple_qcms_view import delete_multiple_qcms
 from .enseignant_dashboard_view import enseignant_dashboard
