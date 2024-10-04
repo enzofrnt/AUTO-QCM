@@ -9,7 +9,6 @@ import logging
 
 
 class CustomLoginViewTests(TestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
