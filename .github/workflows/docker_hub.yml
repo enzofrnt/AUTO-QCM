@@ -5,6 +5,11 @@ on:
     types: [published]
 
 jobs:
+  test:
+    uses: /enzofrnt/AUTO-QCM/.github/workflows/django.yml@main
+    with:
+      branch: ${{ github.ref_name }}
+
   build-and-push:
     runs-on: ubuntu-latest
 
@@ -28,6 +33,7 @@ jobs:
 
     - name: Build and push Docker image (using docker-compose)
       run: |
+        export env=${{ matrix.environment }}
         cd ./deploiement-${{ matrix.environment }}
         docker compose build
         docker compose push
