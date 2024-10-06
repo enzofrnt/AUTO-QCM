@@ -10,5 +10,21 @@
 
 .qcm-table{
     border-radius: 15px;
+    background-color: rgb(224, 241, 255) ;
+    transition: all 0.3s;
 
+}
+
+
+
+.dark-mode .qcm-table{
+   color: aliceblue;
+    background-color: #272727 ;
+    transition: all 0.3s;
+}
+
+
+.table th {
+    /* pas de border  */
+    border-top: 0px !important;
 }
