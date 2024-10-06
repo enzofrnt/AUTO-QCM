@@ -34,7 +34,7 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Build and push Docker image (using docker-compose)
+    - name: Build and push Docker image (using docker compose)
       run: |
         export env=${{ matrix.environment }}
         cd ./deploiement-${{ matrix.environment }}
