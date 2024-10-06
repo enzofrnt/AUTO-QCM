@@ -76,7 +76,7 @@ def question_generation_view(request):
                         "content": """
                         Je veux que tu retournes en RAW json (Sans inclure les balise markedown) une liste donc un tableau de questions d'une longeurs aléartoire avec un nombre de réponses bonne et mauvsie aléatoires dans une liste sous chaque question.
                         Chaque réponse sera donc objet en json qui contiendra la réponse et un booléen pour indiquer si c'est la bonne réponse ou non.
-                        
+
                         Par exemple :
                         {
                             "nom" : "Nom de la qiestion",
@@ -92,12 +92,12 @@ def question_generation_view(request):
                                     "texte" : "La réponse 2",
                                     "is_correct" : false,
                                     "creator" "Chat j'ai pété"
-                                    
+
                                 },
                                 (...)
                             ]
                         }
-                        
+
                         TU n'imrbique pas les questions dans un objet, tu les retournes directement dans un tableau.
                         """,
                     },

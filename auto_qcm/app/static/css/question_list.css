@@ -71,7 +71,7 @@
 /* .list-group-item {
     padding: 10px 15px;
 } */
-/* 
+/*
 .list-group-item-success {
     background-color: #d4edda;
     border-color: #c3e6cb;
@@ -81,5 +81,16 @@
     color: #007bff;
 } */
 
+.questions-list{
+    background-color: rgb(224, 241, 255);
+    border-radius: 20px;
+    transition: all 0.3s;
+}
 
+.dark-mode .questions-list{
+    background-color:#272727;
+    border-radius: 20px;
+    color: white;
+    transition: all 0.3s;
 
+}

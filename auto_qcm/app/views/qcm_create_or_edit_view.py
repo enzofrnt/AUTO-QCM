@@ -1,5 +1,6 @@
 from logging import getLogger
 
+from app.decorators import teacher_required
 from app.forms import PlageForm, QcmForm
 from app.models import QCM, Plage, Question, Tag
 from django.contrib.auth.decorators import login_required
@@ -13,6 +14,7 @@ logger = getLogger(__name__)
 
 
 @login_required(login_url=reverse_lazy("login"))
+@teacher_required
 def create_or_edit_qcm(request, pk=None):
     if pk:
         qcm = get_object_or_404(QCM, pk=pk)

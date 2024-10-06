@@ -43,6 +43,10 @@ RUN rm ./requirements.prod.txt
 RUN mkdir -p /app/log
 RUN touch /app/log/log.txt
 
+# Pour sécuriser la prod on va retirer la command qui permet de remplir la base de données avec des données factices car
+# cela peut être dangereux en prod
+RUN rm -rf ./app/management/commands/fill_fake_data.py
+
 RUN python manage.py collectstatic --noinput
 
 CMD python manage.py wait_for_db \

@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = "app.Utilisateur"
+
 
 # Application definition
 
@@ -51,6 +53,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "app.middleware.ForcePasswordChangeMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -124,9 +127,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_REDIRECT_URL = "home"  # Par exemple, pour rediriger vers la vue 'home'
-LOGOUT_REDIRECT_URL = "login"  # Rediriger vers login après déconnexion
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "login"
 LOGIN_URL = "login"
+PASSWORD_CHANGE_REDIRECT_URL = "password_change_done"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

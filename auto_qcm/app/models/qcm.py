@@ -12,6 +12,8 @@ class QCM(models.Model):
     creator = models.ForeignKey(
         "Utilisateur", on_delete=models.CASCADE
     )  # 1 est l'ID d'un utilisateur par défaut
+    est_accessible = models.BooleanField(default=False)
+    nb_reponses = models.IntegerField(default=1)
 
     def __str__(self):
         return self.titre
@@ -19,7 +21,7 @@ class QCM(models.Model):
     def save(self, *args, **kwargs):
         """Quand on sauvegarde on met a jour la date de modification"""
         self.date_modif = timezone.now()
-        return super(QCM, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "QCM"

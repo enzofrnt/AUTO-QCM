@@ -1,8 +1,8 @@
+from app.models import QCM, Plage, Question, Reponse
 from django import forms
-from django.db.models import Q
-from app.models import Question, Reponse, QCM, Plage
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 
 class QuestionForm(forms.ModelForm):
@@ -46,7 +46,7 @@ class BaseReponseFormSet(forms.BaseInlineFormSet):
 class QcmForm(forms.ModelForm):
     class Meta:
         model = QCM
-        fields = ["titre", "description"]
+        fields = ["titre", "description", "est_accessible", "nb_reponses"]
 
 
 class PlageForm(forms.ModelForm):
@@ -55,7 +55,7 @@ class PlageForm(forms.ModelForm):
         fields = ["debut", "fin", "promo", "groupe"]
 
     def __init__(self, *args, **kwargs):
-        super(PlageForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields["debut"].required = True
         self.fields["fin"].required = True

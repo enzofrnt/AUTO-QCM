@@ -3,31 +3,31 @@
     display: inline-block;
     padding: 30px 30px;
     margin: 5px;
-    background-color: #d2d2d2;
+    background-color: rgb(224, 241, 255);
     /* mettre la bordure en grise */
     border: 1px solid #555;
     color: rgb(0, 0, 0);
     text-decoration: none;
     border-radius: 30px;
-    transition: all 0.3s; 
+    transition: all 0.3s;
 }
 
-.button-home.dark-mode {
+.dark-mode .button-home {
     background-color: #333;
     border: 1px solid #555;
     color: white;
-    transition: all 0.3s; 
+    transition: all 0.3s;
 }
-  
+
 .button-home:hover {
     background-color: #666;
     /* empecher l'hypertexte bleu */
     text-decoration: none;
     color: white;
-    transition: all 0.3s; 
+    transition: all 0.3s;
 }
 
-  
+
 .buttons {
     /* margin-top: 120px; */
     display: flex;
@@ -41,6 +41,5 @@
 .home-text {
 
     padding: 60px;
-    
-  }
 
+  }

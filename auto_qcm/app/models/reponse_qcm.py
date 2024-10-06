@@ -12,12 +12,14 @@ class ReponseQCM(models.Model):
         "QCM", on_delete=models.CASCADE, related_name="reponses_qcm"
     )
     reponses = models.ManyToManyField("ReponseQuestion")
-    date_reponse = models.DateTimeField(auto_now_add=True)
+    date_debut = models.DateTimeField()
+    date_fin_reponse = models.DateTimeField(null=True, blank=True)
+    est_evalue = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Réponse QCM"
         verbose_name_plural = "Réponses QCM"
-        unique_together = ("utilisateur", "qcm", "date_reponse")
+        unique_together = ("utilisateur", "qcm", "date_debut")
 
     def __str__(self):
         return f"Reponse de {self.utilisateur.username} à {self.qcm.titre}"
@@ -37,6 +39,11 @@ class ReponseQCM(models.Model):
         for question in self.qcm.questions.all():
             score += question.note
         return score
+
+    @property
+    def duree(self):
+        """Calculer la durée de réponse."""
+        return self.date_fin_reponse - self.date_debut
 
 
 def is_int(x):

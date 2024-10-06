@@ -14,7 +14,7 @@
     }
 
     .formset-row {
-      display: flex; 
+      display: flex;
       justify-content: space-between;
     }
     .tag-badge.selected {
@@ -24,8 +24,6 @@
       opacity: 0.6;
     }
   </style>
-
-  <div class="container mt-4">
     <h2>
       {% if qcm.pk %}
         Modifier le QCM
@@ -34,128 +32,142 @@
       {% endif %}
     </h2>
 
-    <!-- Affichage des erreurs -->
-    {% if form.errors or formset.errors %}
-      <div class="alert alert-danger">
-        <ul>
-          {% for field in form %}
-            {% for error in field.errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          {% endfor %}
-          {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
-          {% endfor %}
-          <!-- Affichage des erreurs du formset -->
-          {% for formset_form in formset %}
-            {% if formset_form.errors %}
-              {% for field, errors in formset_form.errors.items %}
-                <li>{{ field }}: {{ errors|join:', ' }}</li>
+  <div class="w-100" >
+    <div class=" m-1">
+
+      <div>
+        <!-- Affichage des erreurs -->
+        {% if form.errors or formset.errors %}
+          <div class="alert alert-danger">
+            <ul>
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
               {% endfor %}
-            {% endif %}
-          {% endfor %}
-          {% for error in formset.non_field_errors %}
-            <li>{{ error }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
-
-    {% include 'questions/question_filter_form.html' %}
-
-    <!-- Formulaire principal -->
-    <form method="post" id="qcmForm">
-      {% csrf_token %}
-
-      <!-- Champ pour le titre du QCM -->
-      <div class="form-group">
-        {{ form.titre.label_tag }}
-        {{ form.titre }}
-      </div>
-
-      <!-- Champ pour la description du QCM -->
-      <div class="form-group">
-        {{ form.description.label_tag }}
-        {{ form.description }}
-      </div>
-
-      <!-- Plages associées au QCM -->
-      <div class="d-flex align-items-center mb-2">
-        <h3>Plages</h3>
-        <button type="button" id="add-plage" class="btn btn-sm btn-outline-primary ml-2">+</button>
-      </div>
-
-      <div id="plagesFormset">
-        {{ formset.management_form }}
-        {% for formset_form in formset %}
-          <div class="formset-row item">
-            {{ formset_form.as_p }}
-            <div class="form-group">
-              <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
-            </div>
+              {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+              {% for formset_form in formset %}
+                {% for field in formset_form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+              {% endfor %}
+            </ul>
           </div>
-        {% endfor %}
-      </div>
-
-      <div id="plageVide" class="hidden">
-        {{formset.empty_form.as_p }}
-        <div class="form-group">
-          <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
-        </div>
-      </div>
-
-      <!-- Sélection des questions -->
-      <h3>Sélectionnez les questions :</h3>
-      <button type="button" class="btn btn-success ml-2 w-10 m-4" id="openModal">Générer automatiquement des questions</button>
-
-      <!-- Liste des questions -->
-      <div id="questions-list">
-        {% include 'questions/question_list_content.html' with selectable=True  %}
-      </div>
-
-      <button type="submit" class="btn btn-success">
-        {% if qcm.pk %}
-          Modifier
-        {% else %}
-          Créer
         {% endif %}
-      </button>
-    </form>
 
-  </div> 
+        <!-- Formulaire de filtrage (en dehors du formulaire principal) -->
+        <h3>Sélectionnez les questions :</h3>
+        {% include 'questions/question_filter_form.html' %}
 
-  <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
-  <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="fileModalLabel">Envoyer un fichier PDF de cours pour générer des questions</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="fileUploadForm">
+        <!-- Formulaire principal -->
+        <form method="post" id="qcmForm" class="" >
+          <div style="display: flex;justify-content: space-around;">
             {% csrf_token %}
-            <div class="mb-3">
-              <label for="fileInput" class="form-label">Choisir un fichier PDF</label>
-              <input type="file" class="form-control" id="fileInput" name="file" accept=".pdf" required>
+            <div class="d-flex flex-column m-1">
+              <!-- Champ pour le titre du QCM -->
+              <div class="form-group d-flex flex-column">
+                {{ form.titre.label_tag }}
+                {{ form.titre }}
+              </div>
+              <!-- Champ pour la description du QCM -->
+              <div class="form-group d-flex flex-column">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+              </div>
+              <div class="form-group d-flex flex-column">
+                {{ form.est_accessible.label_tag }}
+                {{ form.est_accessible }}
+              </div>
+              <div class="form-group d-flex flex-column">
+                {{ form.nb_reponses.label_tag }}
+                {{ form.nb_reponses }}
+              </div>
+              <div class="d-flex align-items-center mb-2">
+              <h3>Plages</h3>
+              <button type="button" id="add-plage" class="btn btn-sm btn-outline-primary ml-2">+</button>
             </div>
-          </form>
-          <!-- Indicateur de chargement -->
-          <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display:none;">
-            <span class="sr-only">Chargement...</span>
+
+            <div id="plagesFormset" class="">
+                {{ formset.management_form }}
+                {% for formset_form in formset %}
+                  <div class="formset-row item" style="display: flex; flex-direction: column; ">
+                    {{ formset_form.as_p }}
+                    <div class="form-group">
+                      <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div id="plageVide" class="hidden">
+              {{formset.empty_form.as_p }}
+              <div class="form-group">
+                <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+
+            <div style="display: flex;flex-direction: column;align-items: flex-end;">
+
+              <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 m-4">Créer une nouvelle Question</a>
+              <button type="button" class="btn btn-success ml-2 w-10 " id="openModal">Générer automatiquement des questions</button>
+
+
+              <!-- Liste des questions -->
+              <div id="questions-list" style="overflow-y: auto; height: 500px; width: 800px; border-radius: 20px">
+                {% include 'questions/question_list_content.html' with selectable=True  %}
+              </div>
+
+              <button type="submit" class="btn btn-success mt-5">
+                {% if qcm.pk %}
+                  Modifier
+                {% else %}
+                  Créer
+                {% endif %}
+              </button>
+            </div>
           </div>
-          <!-- Conteneur pour les questions générées -->
-          <div id="generatedQuestionsContainer" style="display: none;">
-            <h4>Questions générées</h4>
-            <div id="generatedQuestionsList"></div>
-            <button type="button" class="btn btn-primary" id="saveSelectedQuestions">Ajouter les questions sélectionnées</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
+    <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="fileModalLabel">Envoyer un fichier PDF de cours pour générer des questions</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="closeModal" data-dismiss="modal">Fermer</button>
-          <button type="button" class="btn btn-primary" id="generateBtn">Générer</button>
+          <div class="modal-body">
+            <form id="fileUploadForm">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="fileInput" class="form-label">Choisir un fichier PDF</label>
+                <input type="file" class="form-control" id="fileInput" name="file" accept=".pdf" required>
+              </div>
+            </form>
+            <!-- Indicateur de chargement -->
+            <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display:none;">
+              <span class="sr-only"></span>
+            </div>
+            <!-- Conteneur pour les questions générées -->
+            <div id="generatedQuestionsContainer" style="display: none;">
+              <h4>Questions générées</h4>
+              <div id="generatedQuestionsList"></div>
+              <button type="button" class="btn btn-primary" id="saveSelectedQuestions">Ajouter les questions sélectionnées</button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="closeModal" data-dismiss="modal">Fermer</button>
+            <button type="button" class="btn btn-primary" id="generateBtn">Générer</button>
+          </div>
         </div>
       </div>
     </div>
@@ -183,19 +195,20 @@
       // Conteneur des formulaires de plages
       let formsetContainer = $('#plagesFormset');
       let totalForms = $('#id_form-TOTAL_FORMS');
+      const emptyPlage = $('#plageVide');
 
       // Fonction pour ajouter un nouveau formulaire
       $('#add-plage').click(function() {
         let formCount = $('.formset-row').length;
-        let newForm = $('#plageVide').clone(); 
+        let newForm = emptyPlage.clone();
 
         newForm.removeClass('hidden');
         newForm.addClass('formset-row item');
-        
+
         //On remplate le __prefix__ par la bonne valeur
         const regex = new RegExp('__prefix__', 'g');
         newForm.html(newForm.html().replace(regex, formCount));
-        
+
         formsetContainer.append(newForm);
         totalForms.val(formCount + 1);
       });
@@ -335,6 +348,5 @@
     });
   </script>
     <!-- Inclusion des scripts personnalisés -->
-   
-  {% endblock %}
 
+  {% endblock %}
