@@ -1,4 +1,4 @@
-<table class="table table-bordered">
+<table class="table questions-list" >
   <thead>
     <tr>
       {% if selectable %}
@@ -7,9 +7,9 @@
       <th>Texte de la Question et Tags</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody style="overflow-y: auto;">
     {% for question in questions %}
-      <tr class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer;">
+      <tr  class="question-row position-relative" data-question-id="{{ question.id }}" style="cursor: pointer; ">
         {% if selectable %}
           <td style="width: 50px;">
             <input type="checkbox" name="selected_questions" value="{{ question.id }}" {% if question.id|stringformat:"s" in selected_question_ids %}checked{% endif %}>
