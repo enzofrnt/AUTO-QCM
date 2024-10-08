@@ -89,14 +89,14 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
           issue_number="${{ steps.get_issue_dispatch.outputs.issue_number }}"
-          issue_title=$(echo "${{ steps.get_issue_dispatch.outputs.issue_title }}" | tr -d '"' | tr -d "'")
-          issue_body=$(echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | tr -d '"' | tr -d "'")
+          issue_title=$(echo "${{ steps.get_issue_dispatch.outputs.issue_title }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
+          issue_body=$(echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
         elif [ "${{ github.event_name }}" == "issues" ]; then
           issue_number="${{ steps.get_issue_event.outputs.issue_number }}"
-          issue_title=$(echo "${{ steps.get_issue_event.outputs.issue_title }}" | tr -d '"' | tr -d "'")
-          issue_body=$(echo "${{ steps.get_issue_event.outputs.issue_body }}" | tr -d '"' | tr -d "'")
+          issue_title=$(echo "${{ steps.get_issue_event.outputs.issue_title }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
+          issue_body=$(echo "${{ steps.get_issue_event.outputs.issue_body }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
         fi
-        us=$(echo "${{ steps.fetch_us.outputs.us }}" | tr -d '"' | tr -d "'")
+        us=$(echo "${{ steps.fetch_us.outputs.us }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
 
         # Afficher les variables nettoyées pour vérification (optionnel)
         echo "ISSUE_NUMBER: $issue_number"
