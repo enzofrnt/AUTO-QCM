@@ -1,6 +1,8 @@
 name: Auto US
 
 on:
+  push:
+    branches: [auto-US-OMG]
   issues:
     types: [opened, edited, reopened]
   workflow_dispatch:
