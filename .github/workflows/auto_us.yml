@@ -118,21 +118,18 @@ jobs:
     # Ajouter la réponse de GPT à la description de l'issue
     - name: Append GPT response to issue body
       if: success()
-      run: |
-        # Lire la réponse de GPT
-        GPT_RESPONSE=$(cat .github/workflows/auto_us/result.txt)
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const gptResponse = fs.readFileSync('.github/workflows/auto_us/result.txt', 'utf8');
 
-        # Lire le body actuel de l'issue
-        EXISTING_BODY="${{ steps.get_issue_dispatch.outputs.issue_body || steps.get_issue_event.outputs.issue_body }}"
+          const existingBody = "${{ steps.get_issue_dispatch.outputs.issue_body || steps.get_issue_event.outputs.issue_body }}";
+          const updatedBody = `${existingBody}\n\n${gptResponse}`;
 
-        # Ajouter la réponse de GPT à la fin
-        UPDATED_BODY="${EXISTING_BODY}\n\n${GPT_RESPONSE}"
-
-        # Créer le payload JSON avec jq pour échapper correctement les caractères
-        PAYLOAD=$(jq -n --arg body "$UPDATED_BODY" '{body: $body}')
-
-        # Mettre à jour l'issue via l'API GitHub
-        curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-             -H "Accept: application/vnd.github.v3+json" \
-             https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.get_issue_dispatch.outputs.issue_number || steps.get_issue_event.outputs.issue_number }} \
-             -d "$PAYLOAD"
+          github.rest.issues.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: ${{ steps.get_issue_dispatch.outputs.issue_number || steps.get_issue_event.outputs.issue_number }},
+            body: updatedBody
+          });
