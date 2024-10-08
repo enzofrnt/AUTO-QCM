@@ -15,6 +15,8 @@ on:
 jobs:
   auto_us:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
 
     steps:
     - name: Checkout repository
@@ -115,7 +117,7 @@ jobs:
 
     # Ajouter la réponse de GPT à la description de l'issue
     - name: Append GPT response to issue body
-      if: success() && steps.run_python.outcome == 'success'
+      if: success()
       run: |
         # Lire la réponse de GPT
         GPT_RESPONSE=$(cat .github/workflows/auto_us/result.txt)
