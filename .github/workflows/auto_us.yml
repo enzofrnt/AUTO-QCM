@@ -2,11 +2,11 @@ name: Auto US
 
 on:
   workflow_dispatch:
-      inputs:
-        issue_number:
-          description: 'ID de l issue à traiter'
-          required: true
-          type: number
+    inputs:
+      issue_number:
+        description: 'ID de l issue à traiter'
+        required: true
+        type: number
   push:
     branches: [auto-US-OMG]
   issues:
@@ -30,8 +30,9 @@ jobs:
         cd .github/workflows/auto_us
         pip install -r requirements.txt
 
-    # Si c'est un workflow_dispatch, on récupère l'issue_number et on récupère l'issue
+    # Récupération de l'issue selon l'événement déclencheur
     - name: Get issue (from workflow_dispatch)
+      id: get_issue_dispatch
       if: github.event_name == 'workflow_dispatch'
       run: |
         ISSUE_NUMBER=${{ github.event.inputs.issue_number }}
@@ -46,8 +47,8 @@ jobs:
         echo "issue_title=$ISSUE_TITLE" >> $GITHUB_OUTPUT
         echo "issue_body=$ISSUE_BODY" >> $GITHUB_OUTPUT
 
-    # Si c'est un issue, on récupère l'issue
     - name: Get issue (from issues event)
+      id: get_issue_event
       if: github.event_name == 'issues'
       run: |
         ISSUE_NUMBER="${{ github.event.issue.number }}"
@@ -73,7 +74,11 @@ jobs:
     # Vérifier si le body contient une chaîne spécifique (ex: STOP)
     - name: Check for specific string in issue body
       run: |
-        if echo "${{ steps.get_issue.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
+        if echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
+          echo "The issue body contains a forbidden string. Stopping workflow."
+          exit 0
+        fi
+        if echo "${{ steps.get_issue_event.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
           exit 0
         fi
@@ -82,9 +87,15 @@ jobs:
     - name: Run Python script with issue details
       id: run_python
       run: |
-        issue_number="${{ steps.get_issue.outputs.issue_number }}"
-        issue_title=$(echo "${{ steps.get_issue.outputs.issue_title }}" | jq -sRr @sh)
-        issue_body=$(echo "${{ steps.get_issue.outputs.issue_body }}" | jq -sRr @sh)
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          issue_number="${{ steps.get_issue_dispatch.outputs.issue_number }}"
+          issue_title=$(echo "${{ steps.get_issue_dispatch.outputs.issue_title }}" | jq -sRr @sh)
+          issue_body=$(echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | jq -sRr @sh)
+        elif [ "${{ github.event_name }}" == "issues" ]; then
+          issue_number="${{ steps.get_issue_event.outputs.issue_number }}"
+          issue_title=$(echo "${{ steps.get_issue_event.outputs.issue_title }}" | jq -sRr @sh)
+          issue_body=$(echo "${{ steps.get_issue_event.outputs.issue_body }}" | jq -sRr @sh)
+        fi
         us=$(echo "${{ steps.fetch_us.outputs.us }}" | jq -sRr @sh)
 
         result=$(python3 .github/workflows/auto_us/define_us.py ${{ secrets.OPENAI }} "$issue_number" "$issue_title" "$issue_body" "$us")
