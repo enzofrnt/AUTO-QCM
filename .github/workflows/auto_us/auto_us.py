@@ -47,7 +47,7 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
                     - #<id_user_story>
                     - #<id_user_story>
 
-                    Même si cela semble étrange il faut trouver à minima une user story ou toute si c'est trop absurde, qui concernent l'issue, après s'il s'agit de tâches très générales, dont toute l'application a besoin, il faut toutes les retourner.
+                    Même si cela semble étrange, il faut trouver à minima une user story ou toutes si c'est trop absurde, qui concernent l'issue. Après, s'il s'agit de tâches très générales dont toute l'application a besoin, il faut toutes les retourner.
                     """,
                 },
                 {
@@ -57,14 +57,16 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
             ],
             model=model_name,
             temperature=1,
-            max_tokens=4096,
+            max_tokens=1500,  # Ajusté pour éviter de dépasser les limites
             top_p=1,
         )
     except Exception as e:
-        print(f"Erreur lors de la génération des User Stories via OpenAI : {str(e)}")
-        return "Erreur lors de la requête OpenAI"
+        return f"Erreur lors de la génération des User Stories via OpenAI : {str(e)}"
 
-    return response.choices[0].message.content
+    # Extraire le contenu de la réponse
+    result = response.choices[0].message.content
+
+    return result
 
 
 if __name__ == "__main__":
@@ -85,22 +87,20 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Nettoyage des caractères problématiques directement en Python
-    # Par exemple, remplacer ou échapper les caractères si nécessaire
-    # Ici, nous n'avons pas besoin de les échapper car Python gère les chaînes correctement
-    # Cependant, si vous souhaitez retirer certains caractères, vous pouvez les filtrer ici
+    issue_title = (
+        "".join(c for c in issue_title if ord(c) < 128)
+        .replace('"', "")
+        .replace("'", "")
+    )
+    issue_body = (
+        "".join(c for c in issue_body if ord(c) < 128).replace('"', "").replace("'", "")
+    )
 
-    # Exemple de nettoyage : supprimer les caractères non ASCII
-    issue_title = "".join(c for c in issue_title if ord(c) < 128)
-    issue_body = "".join(c for c in issue_body if ord(c) < 128)
-
-    # Ou remplacer les caractères problématiques par des espaces ou autre
-    issue_title = issue_title.replace('"', "").replace("'", "")
-    issue_body = issue_body.replace('"', "").replace("'", "")
-
-    # Pour cet exemple, nous n'effectuons aucun nettoyage supplémentaire
-
+    # Appeler la fonction principale
     result = define_us_of_an_issue(
         api_key=openai_api_key, us=us, issue_title=issue_title, issue_body=issue_body
     )
 
-    print(result)
+    # Écrire le résultat dans un fichier pour l'afficher ultérieurement
+    with open(".github/workflows/auto_us/result.txt", "w", encoding="utf-8") as f:
+        f.write(result)
