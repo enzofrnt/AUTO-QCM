@@ -105,7 +105,7 @@ jobs:
         echo "US: $US"
 
         # Appeler le script Python sans passer d'arguments
-        result=$(python3 .github/workflows/auto_us/define_us.py)
+        result=$(python3 .github/workflows/auto_us/auto_us.py)
         echo "$result"
         echo "result=$result" >> $GITHUB_OUTPUT
 
