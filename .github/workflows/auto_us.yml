@@ -42,13 +42,9 @@ jobs:
         ISSUE_TITLE=$(echo "$RESPONSE" | jq -r '.title')
         ISSUE_BODY=$(echo "$RESPONSE" | jq -r '.body')
 
-        echo "Issue Number: $ISSUE_NUMBER"
-        echo "Issue Title: $ISSUE_TITLE"
-        echo "Issue Body: $ISSUE_BODY"
-
-        echo "::set-output name=issue_number::$ISSUE_NUMBER"
-        echo "::set-output name=issue_title::$ISSUE_TITLE"
-        echo "::set-output name=issue_body::$ISSUE_BODY"
+        echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+        echo "issue_title=$ISSUE_TITLE" >> $GITHUB_OUTPUT
+        echo "issue_body=$ISSUE_BODY" >> $GITHUB_OUTPUT
 
     # Si c'est un issue, on récupère l'issue
     - name: Get issue (from issues event)
@@ -58,13 +54,9 @@ jobs:
         ISSUE_TITLE="${{ github.event.issue.title }}"
         ISSUE_BODY="${{ github.event.issue.body }}"
 
-        echo "Issue Number: $ISSUE_NUMBER"
-        echo "Issue Title: $ISSUE_TITLE"
-        echo "Issue Body: $ISSUE_BODY"
-
-        echo "::set-output name=issue_number::$ISSUE_NUMBER"
-        echo "::set-output name=issue_title::$ISSUE_TITLE"
-        echo "::set-output name=issue_body::$ISSUE_BODY"
+        echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+        echo "issue_title=$ISSUE_TITLE" >> $GITHUB_OUTPUT
+        echo "issue_body=$ISSUE_BODY" >> $GITHUB_OUTPUT
 
     # Récupérer les User Stories via GitHub API
     - name: Fetch User Stories from GitHub
@@ -76,8 +68,7 @@ jobs:
 
         US=$(echo "$RESPONSE" | jq -c '[.[] | {id: .number, title: .title}]')
 
-        echo "User Stories: $US"
-        echo "::set-output name=us::$US"
+        echo "us=$US" >> $GITHUB_OUTPUT
 
     # Vérifier si le body contient une chaîne spécifique (ex: STOP)
     - name: Check for specific string in issue body
@@ -93,7 +84,7 @@ jobs:
       run: |
         result=$(python3 .github/workflows/auto_us/define_us.py ${{ secrets.OPENAI }} ${{ steps.get_issue.outputs.issue_number }} "${{ steps.get_issue.outputs.issue_title }}" "${{ steps.get_issue.outputs.issue_body }}" "${{ steps.fetch_us.outputs.us }}")
         echo "$result"
-        echo "::set-output name=result::$result"
+        echo "result=$result" >> $GITHUB_OUTPUT
 
     # Afficher le résultat du script Python
     - name: Display Python script result
