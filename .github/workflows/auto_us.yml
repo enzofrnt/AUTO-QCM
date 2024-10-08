@@ -50,9 +50,9 @@ jobs:
     - name: Get issue
       if: github.event_name == 'issues'
       run: |
-        ISSUE_NUMBER=${{ github.event.issue.number }}
-        ISSUE_TITLE=${{ github.event.issue.title }}
-        ISSUE_BODY=${{ github.event.issue.body }}
+        ISSUE_NUMBER="${{ github.event.issue.number }}"
+        ISSUE_TITLE="${{ github.event.issue.title }}"
+        ISSUE_BODY="${{ github.event.issue.body }}"
 
         echo "Issue Number: $ISSUE_NUMBER"
         echo "Issue Title: $ISSUE_TITLE"
