@@ -12,10 +12,10 @@ on:
   issues:
     types: [opened, edited, reopened]
 
-
 jobs:
   auto_us:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
         pip install -r requirements.txt
 
     # Si c'est un workflow_dispatch, on récupère l'issue_number et on récupère l'issue
-    - name: Get issue
+    - name: Get issue (from workflow_dispatch)
       if: github.event_name == 'workflow_dispatch'
       run: |
         ISSUE_NUMBER=${{ github.event.inputs.issue_number }}
@@ -46,8 +46,12 @@ jobs:
         echo "Issue Title: $ISSUE_TITLE"
         echo "Issue Body: $ISSUE_BODY"
 
+        echo "::set-output name=issue_number::$ISSUE_NUMBER"
+        echo "::set-output name=issue_title::$ISSUE_TITLE"
+        echo "::set-output name=issue_body::$ISSUE_BODY"
+
     # Si c'est un issue, on récupère l'issue
-    - name: Get issue
+    - name: Get issue (from issues event)
       if: github.event_name == 'issues'
       run: |
         ISSUE_NUMBER="${{ github.event.issue.number }}"
@@ -57,3 +61,41 @@ jobs:
         echo "Issue Number: $ISSUE_NUMBER"
         echo "Issue Title: $ISSUE_TITLE"
         echo "Issue Body: $ISSUE_BODY"
+
+        echo "::set-output name=issue_number::$ISSUE_NUMBER"
+        echo "::set-output name=issue_title::$ISSUE_TITLE"
+        echo "::set-output name=issue_body::$ISSUE_BODY"
+
+    # Récupérer les User Stories via GitHub API
+    - name: Fetch User Stories from GitHub
+      id: fetch_us
+      run: |
+        RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                         -H "Accept: application/vnd.github.v3+json" \
+                         "https://api.github.com/repos/${{ github.repository }}/issues?labels=user%20story")
+
+        US=$(echo "$RESPONSE" | jq -c '[.[] | {id: .number, title: .title}]')
+
+        echo "User Stories: $US"
+        echo "::set-output name=us::$US"
+
+    # Vérifier si le body contient une chaîne spécifique (ex: STOP)
+    - name: Check for specific string in issue body
+      run: |
+        if echo "${{ steps.get_issue.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
+          echo "The issue body contains a forbidden string. Stopping workflow."
+          exit 0
+        fi
+
+    # Appeler le programme Python en lui envoyant les variables et la clé API OpenAI
+    - name: Run Python script with issue details
+      id: run_python
+      run: |
+        result=$(python3 .github/workflows/auto_us/define_us.py ${{ secrets.OPENAI }} ${{ steps.get_issue.outputs.issue_number }} "${{ steps.get_issue.outputs.issue_title }}" "${{ steps.get_issue.outputs.issue_body }}" "${{ steps.fetch_us.outputs.us }}")
+        echo "$result"
+        echo "::set-output name=result::$result"
+
+    # Afficher le résultat du script Python
+    - name: Display Python script result
+      run: |
+        echo "Résultat du script Python : ${{ steps.run_python.outputs.result }}"

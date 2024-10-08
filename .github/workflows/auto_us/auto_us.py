@@ -1,40 +1,42 @@
-import os
+import json
+import sys
 
 import openai
 
 
-def define_us_of_an_issue(token, us, issue):
+def define_us_of_an_issue(api_key, us, issue_title, issue_body):
     """
-    L'objectif de cette fonciton est de choisir parmis les user story celle qui correspond le plus à l'issue.
-    A la suite de ce traitement, on retourne en markdown les user story qui correspondent le plus à l'issue sous la forme :
+    L'objectif de cette fonction est de choisir parmi les user stories celle qui correspond le plus à l'issue.
+    À la suite de ce traitement, on retourne en markdown les user stories qui correspondent le plus à l'issue sous la forme :
 
     # UserStory lié
     - #<id_user_story>
     - #<id_user_story>
     - #<id_user_story>
 
-
-    token : str : OpenAI token
-    us : str : Tout les user story sous la forme {1: "En tant que devellopeur je vuex pouvoir me connecter à l'application", 2: "En tant que devellopeur je vuex pouvoir me connecter à l'application"}
-    issue : str : L'issue sous la forme : "CRUD User : CRUD Trouver le moyen de créer un User par defaut en prod #123 Verification"
+    api_key : str : OpenAI API key
+    us : dict : Toutes les user stories sous la forme [{id: 1, title: "En tant que dev..."}, ...]
+    issue_title : str : Le titre de l'issue
+    issue_body : str : Le corps de l'issue
     """
     endpoint = "https://models.inference.ai.azure.com"
     model_name = "gpt-4o"
 
     client = openai.OpenAI(
         base_url=endpoint,
-        api_key=token,
+        api_key=api_key,  # Clé API passée en paramètre
     )
 
-    # Générer des questions à partir du contenu du fichier PDF
+    # Générer des user stories en fonction du contenu de l'issue
     try:
         response = client.chat.completions.create(
             messages=[
                 {
                     "role": "system",
                     "content": """
-                    Tu vas recevoir une liste de User Story, tu dois me retourner en markdown les User Story qui correspondent le plus à l'issue fournie.
-                    Tu retourneras les User Story sous la forme :
+                    Tu vas recevoir une liste de User Stories et une issue (titre + description).
+                    Tu dois retourner en markdown les User Stories qui correspondent le plus à l'issue fournie.
+                    Tu retourneras les User Stories sous la forme :
 
                     # UserStory lié <!-- ALREADY DONE -->
                     - #<id_user_story>
@@ -46,7 +48,7 @@ def define_us_of_an_issue(token, us, issue):
                 },
                 {
                     "role": "user",
-                    "content": f"Issue : {issue}\n User Story : {us}",
+                    "content": f"Issue Title: {issue_title}\nIssue Body: {issue_body}\nUser Stories: {us}",
                 },
             ],
             model=model_name,
@@ -55,40 +57,37 @@ def define_us_of_an_issue(token, us, issue):
             top_p=1,
         )
     except Exception as e:
-        print(f"Erreur lors de la génération des questions via OpenAI : {str(e)}")
+        print(f"Erreur lors de la génération des User Stories via OpenAI : {str(e)}")
         exit(1)
 
-    response = response.choices[0].message.content
+    response_content = response.choices[0].message.content
 
-    print(response)
-    return response
+    print(response_content)
+    return response_content
 
 
-# Only for testing
-# if __name__ == "__main__":
-#     # En tant qu'enseignant je veux avoir accès à toutes les pages qui me sont destinées #63
-#     # En tant qu'enseignant, je souhaite établir un lien efficace entre le système de QCM et Moodle/AMC pour automatiser l'intégration des QCM dans la plateforme d'apprentissage. #18
-#     # En tant qu'enseignant, je veux pouvoir accéder à un espace de gestion des questions, où je peux modifier, supprimer ou ajouter des questions, pour assurer la qualité et la pertinence des QCM. #17
-#     # En tant qu'enseignant, je veux consulter un tableau de bord des résultats des étudiants, avec des statistiques anonymisées ou personnalisées, un historique des résultats, pour mieux évaluer la compréhension des cours. #16
-#     # En tant qu'étudiant, je veux pouvoir réaliser les QCM à tout moment pour réviser de manière flexible et autonome. #14
-#     # En tant qu'enseignant, je souhaite pouvoir envoyer mes support de cours pour générer automatiquement (IA) des questions à partir de mes supports de cours (texte ou PDF) afin de diversifier et enrichir les QCM. #12
-#     # En tant qu'enseignant, je souhaite agréger automatiquement des questions pour générer des QCM de contrôle afin de faciliter l'évaluation des étudiants. #11
-#     # En tant qu'étudiant, je veux pouvoir accéder à un tableau de bord interactif me montrant mes progrès, avec un historique des notes, et mes résultats aux QCM pour suivre mon évolution tout au long du semestre. #7
-#     # En tant qu'enseignant, je souhaite pouvoir saisir ou envoyer mes questions très simplement afin de créer des QCM de révision hebdomadaires. #6
+if __name__ == "__main__":
+    # Vérifier que nous avons bien tous les arguments nécessaires
+    if len(sys.argv) != 6:
+        print(
+            "Usage: python3 define_us.py <openai_api_key> <issue_number> <issue_title> <issue_body> <user_stories>"
+        )
+        sys.exit(1)
 
-#     us = {
-#         65: "En tant qu'étudiant, je veux avoir accès à toutes les pages qui me sont destinées",
-#         18: "En tant qu'enseignant, je souhaite établir un lien efficace entre le système de QCM et Moodle/AMC pour automatiser l'intégration des QCM dans la plateforme d'apprentissage.",
-#         17: "En tant qu'enseignant, je veux pouvoir accéder à un espace de gestion des questions, où je peux modifier, supprimer ou ajouter des questions, pour assurer la qualité et la pertinence des QCM.",
-#         16: "En tant qu'enseignant, je veux consulter un tableau de bord des résultats des étudiants, avec des statistiques anonymisées ou personnalisées, un historique des résultats, pour mieux évaluer la compréhension des cours.",
-#         14: "En tant qu'étudiant, je veux pouvoir réaliser les QCM à tout moment pour réviser de manière flexible et autonome.",
-#         12: "En tant qu'enseignant, je souhaite pouvoir envoyer mes support de cours pour générer automatiquement (IA) des questions à partir de mes supports de cours (texte ou PDF) afin de diversifier et enrichir les QCM.",
-#         11: "En tant qu'enseignant, je souhaite agréger automatiquement des questions pour générer des QCM de contrôle afin de faciliter l'évaluation des étudiants.",
-#         7: "En tant qu'étudiant, je veux pouvoir accéder à un tableau de bord interactif me montrant mes progrès, avec un historique des notes, et mes résultats aux QCM pour suivre mon évolution tout au long du semestre.",
-#         6: "En tant qu'enseignant, je souhaite pouvoir saisir ou envoyer mes questions très simplement afin de créer des QCM de révision hebdomadaires.",
-#     }
-#     define_us_of_an_issue(
-#         token=os.getenv("GITHUB_TOKEN"),
-#         us=us,
-#         issue="CRUD User : CRUD Trouver le moyen de créer un User par defaut en prod #123 Verification",
-#     )
+    # Récupérer les arguments passés depuis GitHub Actions
+    openai_api_key = sys.argv[1]
+    issue_number = sys.argv[2]
+    issue_title = sys.argv[3]
+    issue_body = sys.argv[4]
+    us = sys.argv[5]
+
+    # Convertir `us` de chaîne JSON en dictionnaire Python
+    us = json.loads(us)
+
+    # Appel à OpenAI pour traiter les User Stories liées à l'issue
+    result = define_us_of_an_issue(
+        api_key=openai_api_key, us=us, issue_title=issue_title, issue_body=issue_body
+    )
+
+    # Afficher le résultat pour GitHub Actions
+    print(result)
