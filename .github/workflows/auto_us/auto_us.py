@@ -36,7 +36,7 @@ def define_us_of_an_issue(token, us, issue):
                     Tu vas recevoir une liste de User Story, tu dois me retourner en markdown les User Story qui correspondent le plus à l'issue fournie.
                     Tu retourneras les User Story sous la forme :
 
-                    # UserStory lié
+                    # UserStory lié <!-- ALREADY DONE -->
                     - #<id_user_story>
                     - #<id_user_story>
                     - #<id_user_story>
