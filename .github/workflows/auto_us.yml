@@ -1,0 +1,36 @@
+name: Auto US
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'ID de l issue à traiter'
+        required: true
+        type: number
+
+jobs:
+  auto_us:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        cd .github/workflows/auto_us
+        pip install -r requirements.txt
+
+    # Si c'est un workflow_dispatch, on récupère l'issue_number et on récupère l'issue
+    - name: Get issue
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        issue_number=${{ github.event.inputs.issue_number }}
+        issue=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/issues/${issue_number})
+        echo $issue
