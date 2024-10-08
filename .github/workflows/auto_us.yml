@@ -42,11 +42,9 @@ jobs:
         ISSUE_TITLE=$(echo "$RESPONSE" | jq -r '.title')
         ISSUE_BODY=$(echo "$RESPONSE" | jq -r '.body')
 
+        echo "Issue Number: $ISSUE_NUMBER"
         echo "Issue Title: $ISSUE_TITLE"
         echo "Issue Body: $ISSUE_BODY"
-
-        echo "::set-output name=issue_title::$ISSUE_TITLE"
-        echo "::set-output name=issue_body::$ISSUE_BODY"
 
     # Si c'est un issue, on récupère l'issue
     - name: Get issue
@@ -56,8 +54,6 @@ jobs:
         ISSUE_TITLE=${{ github.event.issue.title }}
         ISSUE_BODY=${{ github.event.issue.body }}
 
+        echo "Issue Number: $ISSUE_NUMBER"
         echo "Issue Title: $ISSUE_TITLE"
         echo "Issue Body: $ISSUE_BODY"
-
-        echo "::set-output name=issue_title::$ISSUE_TITLE"
-        echo "::set-output name=issue_body::$ISSUE_BODY"
