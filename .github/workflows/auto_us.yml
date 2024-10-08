@@ -89,14 +89,20 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
           issue_number="${{ steps.get_issue_dispatch.outputs.issue_number }}"
-          issue_title=$(echo "${{ steps.get_issue_dispatch.outputs.issue_title }}" | jq -Rr @sh)
-          issue_body=$(echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | jq -Rr @sh)
+          issue_title=$(echo "${{ steps.get_issue_dispatch.outputs.issue_title }}" | tr -d '"' | tr -d "'")
+          issue_body=$(echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | tr -d '"' | tr -d "'")
         elif [ "${{ github.event_name }}" == "issues" ]; then
           issue_number="${{ steps.get_issue_event.outputs.issue_number }}"
-          issue_title=$(echo "${{ steps.get_issue_event.outputs.issue_title }}" | jq -Rr @sh)
-          issue_body=$(echo "${{ steps.get_issue_event.outputs.issue_body }}" | jq -Rr @sh)
+          issue_title=$(echo "${{ steps.get_issue_event.outputs.issue_title }}" | tr -d '"' | tr -d "'")
+          issue_body=$(echo "${{ steps.get_issue_event.outputs.issue_body }}" | tr -d '"' | tr -d "'")
         fi
-        us=$(echo "${{ steps.fetch_us.outputs.us }}" | jq -Rr @sh)
+        us=$(echo "${{ steps.fetch_us.outputs.us }}" | tr -d '"' | tr -d "'")
+
+        # Afficher les variables nettoyées pour vérification (optionnel)
+        echo "ISSUE_NUMBER: $issue_number"
+        echo "ISSUE_TITLE: $issue_title"
+        echo "ISSUE_BODY: $issue_body"
+        echo "US: $us"
 
         result=$(python3 .github/workflows/auto_us/define_us.py "${{ secrets.OPENAI }}" "$issue_number" "$issue_title" "$issue_body" "$us")
         echo "$result"
