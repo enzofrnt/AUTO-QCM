@@ -82,7 +82,12 @@ jobs:
     - name: Run Python script with issue details
       id: run_python
       run: |
-        result=$(python3 .github/workflows/auto_us/define_us.py ${{ secrets.OPENAI }} ${{ steps.get_issue.outputs.issue_number }} "${{ steps.get_issue.outputs.issue_title }}" "${{ steps.get_issue.outputs.issue_body }}" "${{ steps.fetch_us.outputs.us }}")
+        issue_number="${{ steps.get_issue.outputs.issue_number }}"
+        issue_title=$(echo "${{ steps.get_issue.outputs.issue_title }}" | jq -sRr @sh)
+        issue_body=$(echo "${{ steps.get_issue.outputs.issue_body }}" | jq -sRr @sh)
+        us=$(echo "${{ steps.fetch_us.outputs.us }}" | jq -sRr @sh)
+
+        result=$(python3 .github/workflows/auto_us/define_us.py ${{ secrets.OPENAI }} "$issue_number" "$issue_title" "$issue_body" "$us")
         echo "$result"
         echo "result=$result" >> $GITHUB_OUTPUT
 
