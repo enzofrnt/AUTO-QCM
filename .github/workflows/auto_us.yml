@@ -89,16 +89,16 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
           issue_number="${{ steps.get_issue_dispatch.outputs.issue_number }}"
-          issue_title=$(echo "${{ steps.get_issue_dispatch.outputs.issue_title }}" | jq -sRr @sh)
-          issue_body=$(echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | jq -sRr @sh)
+          issue_title=$(echo "${{ steps.get_issue_dispatch.outputs.issue_title }}" | jq -Rr @sh)
+          issue_body=$(echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | jq -Rr @sh)
         elif [ "${{ github.event_name }}" == "issues" ]; then
           issue_number="${{ steps.get_issue_event.outputs.issue_number }}"
-          issue_title=$(echo "${{ steps.get_issue_event.outputs.issue_title }}" | jq -sRr @sh)
-          issue_body=$(echo "${{ steps.get_issue_event.outputs.issue_body }}" | jq -sRr @sh)
+          issue_title=$(echo "${{ steps.get_issue_event.outputs.issue_title }}" | jq -Rr @sh)
+          issue_body=$(echo "${{ steps.get_issue_event.outputs.issue_body }}" | jq -Rr @sh)
         fi
-        us=$(echo "${{ steps.fetch_us.outputs.us }}" | jq -sRr @sh)
+        us=$(echo "${{ steps.fetch_us.outputs.us }}" | jq -Rr @sh)
 
-        result=$(python3 .github/workflows/auto_us/define_us.py ${{ secrets.OPENAI }} "$issue_number" "$issue_title" "$issue_body" "$us")
+        result=$(python3 .github/workflows/auto_us/define_us.py "${{ secrets.OPENAI }}" "$issue_number" "$issue_title" "$issue_body" "$us")
         echo "$result"
         echo "result=$result" >> $GITHUB_OUTPUT
 
