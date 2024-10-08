@@ -72,12 +72,17 @@ jobs:
         echo "us=$US" >> $GITHUB_OUTPUT
 
     # Vérifier si le body contient une chaîne spécifique (ex: STOP)
-    - name: Check for specific string in issue body
+    - name: Check for specific string in issue body (workflow_dispatch)
+      if: github.event_name == 'workflow_dispatch'
       run: |
         if echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
           exit 0
         fi
+
+    - name: Check for specific string in issue body (issues event)
+      if: github.event_name == 'issues'
+      run: |
         if echo "${{ steps.get_issue_event.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
           exit 0
@@ -86,25 +91,21 @@ jobs:
     # Appeler le programme Python en lui envoyant les variables et la clé API OpenAI
     - name: Run Python script with issue details
       id: run_python
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI }}
+        ISSUE_NUMBER: ${{ steps.get_issue_dispatch.outputs.issue_number || steps.get_issue_event.outputs.issue_number }}
+        ISSUE_TITLE: ${{ steps.get_issue_dispatch.outputs.issue_title || steps.get_issue_event.outputs.issue_title }}
+        ISSUE_BODY: ${{ steps.get_issue_dispatch.outputs.issue_body || steps.get_issue_event.outputs.issue_body }}
+        US: ${{ steps.fetch_us.outputs.us }}
       run: |
-        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-          issue_number="${{ steps.get_issue_dispatch.outputs.issue_number }}"
-          issue_title=$(echo "${{ steps.get_issue_dispatch.outputs.issue_title }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
-          issue_body=$(echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
-        elif [ "${{ github.event_name }}" == "issues" ]; then
-          issue_number="${{ steps.get_issue_event.outputs.issue_number }}"
-          issue_title=$(echo "${{ steps.get_issue_event.outputs.issue_title }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
-          issue_body=$(echo "${{ steps.get_issue_event.outputs.issue_body }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
-        fi
-        us=$(echo "${{ steps.fetch_us.outputs.us }}" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
-
         # Afficher les variables nettoyées pour vérification (optionnel)
-        echo "ISSUE_NUMBER: $issue_number"
-        echo "ISSUE_TITLE: $issue_title"
-        echo "ISSUE_BODY: $issue_body"
-        echo "US: $us"
+        echo "ISSUE_NUMBER: $ISSUE_NUMBER"
+        echo "ISSUE_TITLE: $ISSUE_TITLE"
+        echo "ISSUE_BODY: $ISSUE_BODY"
+        echo "US: $US"
 
-        result=$(python3 .github/workflows/auto_us/define_us.py "${{ secrets.OPENAI }}" "$issue_number" "$issue_title" "$issue_body" "$us")
+        # Appeler le script Python sans passer d'arguments
+        result=$(python3 .github/workflows/auto_us/define_us.py)
         echo "$result"
         echo "result=$result" >> $GITHUB_OUTPUT
 

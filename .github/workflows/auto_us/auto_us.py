@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 
 import openai
@@ -15,7 +16,7 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
     - #<id_user_story>
 
     api_key : str : OpenAI API key
-    us : dict : Toutes les user stories sous la forme [{id: 1, title: "En tant que dev..."}, ...]
+    us : list : Toutes les user stories sous la forme [{id: 1, title: "En tant que dev..."}, ...]
     issue_title : str : Le titre de l'issue
     issue_body : str : Le corps de l'issue
     """
@@ -46,7 +47,7 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
                     - #<id_user_story>
                     - #<id_user_story>
 
-                    Même si cela semble étrange il faut trouver à minima une user story ou toute si c'est trop absurde, qui concernent l'issue, aprés s'il sagit de taches trés génarales, dont toute l'application a besoin, il faut toute les retourner.
+                    Même si cela semble étrange il faut trouver à minima une user story ou toute si c'est trop absurde, qui concernent l'issue, après s'il s'agit de tâches très générales, dont toute l'application a besoin, il faut toutes les retourner.
                     """,
                 },
                 {
@@ -67,19 +68,36 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 6:
-        print(
-            "Usage: python3 define_us.py <openai_api_key> <issue_number> <issue_title> <issue_body> <user_stories>"
-        )
+    openai_api_key = os.environ.get("OPENAI_API_KEY")
+    issue_number = os.environ.get("ISSUE_NUMBER")
+    issue_title = os.environ.get("ISSUE_TITLE")
+    issue_body = os.environ.get("ISSUE_BODY")
+    us = os.environ.get("US")
+
+    if not all([openai_api_key, issue_number, issue_title, issue_body, us]):
+        print("Erreur: Une ou plusieurs variables d'environnement sont manquantes.")
         sys.exit(1)
 
-    openai_api_key = sys.argv[1]
-    issue_number = sys.argv[2]
-    issue_title = sys.argv[3]
-    issue_body = sys.argv[4]
-    us = sys.argv[5]
+    try:
+        us = json.loads(us)
+    except json.JSONDecodeError as e:
+        print(f"Erreur lors du décodage du JSON des User Stories: {str(e)}")
+        sys.exit(1)
 
-    us = json.loads(us)
+    # Nettoyage des caractères problématiques directement en Python
+    # Par exemple, remplacer ou échapper les caractères si nécessaire
+    # Ici, nous n'avons pas besoin de les échapper car Python gère les chaînes correctement
+    # Cependant, si vous souhaitez retirer certains caractères, vous pouvez les filtrer ici
+
+    # Exemple de nettoyage : supprimer les caractères non ASCII
+    issue_title = "".join(c for c in issue_title if ord(c) < 128)
+    issue_body = "".join(c for c in issue_body if ord(c) < 128)
+
+    # Ou remplacer les caractères problématiques par des espaces ou autre
+    issue_title = issue_title.replace('"', "").replace("'", "")
+    issue_body = issue_body.replace('"', "").replace("'", "")
+
+    # Pour cet exemple, nous n'effectuons aucun nettoyage supplémentaire
 
     result = define_us_of_an_issue(
         api_key=openai_api_key, us=us, issue_title=issue_title, issue_body=issue_body
