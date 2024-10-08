@@ -128,8 +128,11 @@ jobs:
         # Ajouter la réponse de GPT à la fin
         UPDATED_BODY="${EXISTING_BODY}\n\n${GPT_RESPONSE}"
 
+        # Créer le payload JSON avec jq pour échapper correctement les caractères
+        PAYLOAD=$(jq -n --arg body "$UPDATED_BODY" '{body: $body}')
+
         # Mettre à jour l'issue via l'API GitHub
         curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
              -H "Accept: application/vnd.github.v3+json" \
              https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.get_issue_dispatch.outputs.issue_number || steps.get_issue_event.outputs.issue_number }} \
-             -d "{\"body\": \"${UPDATED_BODY}\"}"
+             -d "$PAYLOAD"
