@@ -105,11 +105,10 @@ jobs:
         echo "US: $US"
 
         # Appeler le script Python sans passer d'arguments
-        result=$(python3 .github/workflows/auto_us/auto_us.py)
-        echo "$result"
-        echo "result=$result" >> $GITHUB_OUTPUT
+        python3 .github/workflows/auto_us/auto_us.py
 
     # Afficher le résultat du script Python
     - name: Display Python script result
       run: |
-        echo "Résultat du script Python : ${{ steps.run_python.outputs.result }}"
+        echo "Résultat du script Python :"
+        cat .github/workflows/auto_us/result.txt
