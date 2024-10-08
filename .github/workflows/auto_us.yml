@@ -1,16 +1,17 @@
 name: Auto US
 
 on:
+  workflow_dispatch:
+      inputs:
+        issue_number:
+          description: 'ID de l issue à traiter'
+          required: true
+          type: number
   push:
     branches: [auto-US-OMG]
   issues:
     types: [opened, edited, reopened]
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: 'ID de l issue à traiter'
-        required: true
-        type: number
+
 
 jobs:
   auto_us:
