@@ -19,6 +19,9 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
     issue_title : str : Le titre de l'issue
     issue_body : str : Le corps de l'issue
     """
+    if not issue_title or not issue_body:
+        return "Erreur: Le titre ou le corps de l'issue est vide."
+
     endpoint = "https://models.inference.ai.azure.com"
     model_name = "gpt-4o"
 
@@ -58,36 +61,28 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
         )
     except Exception as e:
         print(f"Erreur lors de la génération des User Stories via OpenAI : {str(e)}")
-        exit(1)
+        return "Erreur lors de la requête OpenAI"
 
-    response_content = response.choices[0].message.content
-
-    print(response_content)
-    return response_content
+    return response.choices[0].message.content
 
 
 if __name__ == "__main__":
-    # Vérifier que nous avons bien tous les arguments nécessaires
     if len(sys.argv) != 6:
         print(
             "Usage: python3 define_us.py <openai_api_key> <issue_number> <issue_title> <issue_body> <user_stories>"
         )
         sys.exit(1)
 
-    # Récupérer les arguments passés depuis GitHub Actions
     openai_api_key = sys.argv[1]
     issue_number = sys.argv[2]
     issue_title = sys.argv[3]
     issue_body = sys.argv[4]
     us = sys.argv[5]
 
-    # Convertir `us` de chaîne JSON en dictionnaire Python
     us = json.loads(us)
 
-    # Appel à OpenAI pour traiter les User Stories liées à l'issue
     result = define_us_of_an_issue(
         api_key=openai_api_key, us=us, issue_title=issue_title, issue_body=issue_body
     )
 
-    # Afficher le résultat pour GitHub Actions
     print(result)
