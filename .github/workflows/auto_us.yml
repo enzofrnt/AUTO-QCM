@@ -128,12 +128,14 @@ jobs:
           const fs = require('fs');
           const gptResponse = fs.readFileSync('.github/workflows/auto_us/result.txt', 'utf8');
 
-          const existingBody = "${{ steps.get_issue_dispatch.outputs.issue_body || steps.get_issue_event.outputs.issue_body }}";
+          const existingBody = `{{ steps.get_issue_dispatch.outputs.issue_body || steps.get_issue_event.outputs.issue_body }}`;
           const updatedBody = `${existingBody}\n\n${gptResponse}`;
 
           github.rest.issues.update({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            issue_number: ${{ steps.get_issue_dispatch.outputs.issue_number || steps.get_issue_event.outputs.issue_number }},
+            issue_number: {{ steps.get_issue_dispatch.outputs.issue_number || steps.get_issue_event.outputs.issue_number }},
             body: updatedBody
           });
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        debug: false
