@@ -45,11 +45,11 @@ jobs:
         ISSUE_TITLE=$(echo "$RESPONSE" | jq -r '.title')
         ISSUE_BODY=$(echo "$RESPONSE" | jq -r '.body')
 
-        echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
-        echo "issue_title=$ISSUE_TITLE" >> $GITHUB_OUTPUT
-        echo "issue_body<<EOF" >> $GITHUB_OUTPUT
-        echo "$ISSUE_BODY" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+        echo "ISSUE_TITLE=$ISSUE_TITLE" >> $GITHUB_ENV
+        echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+        echo "$ISSUE_BODY" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
     - name: Get issue (from issues event)
       id: get_issue_event
@@ -59,11 +59,11 @@ jobs:
         ISSUE_TITLE="${{ github.event.issue.title }}"
         ISSUE_BODY="${{ github.event.issue.body }}"
 
-        echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
-        echo "issue_title=$ISSUE_TITLE" >> $GITHUB_OUTPUT
-        echo "issue_body<<EOF" >> $GITHUB_OUTPUT
-        echo "$ISSUE_BODY" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+        echo "ISSUE_TITLE=$ISSUE_TITLE" >> $GITHUB_ENV
+        echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+        echo "$ISSUE_BODY" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
     # Récupérer les User Stories via GitHub API
     - name: Fetch User Stories from GitHub
@@ -75,13 +75,13 @@ jobs:
 
         US=$(echo "$RESPONSE" | jq -c '[.[] | {id: .number, title: .title}]')
 
-        echo "us=$US" >> $GITHUB_OUTPUT
+        echo "US=$US" >> $GITHUB_ENV
 
     # Vérifier si le body contient une chaîne spécifique (ex: STOP)
     - name: Check for specific string in issue body (workflow_dispatch)
       if: github.event_name == 'workflow_dispatch'
       run: |
-        if echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
+        if echo "${ISSUE_BODY}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
           exit 1
         fi
@@ -89,7 +89,7 @@ jobs:
     - name: Check for specific string in issue body (issues event)
       if: github.event_name == 'issues'
       run: |
-        if echo "${{ steps.get_issue_event.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
+        if echo "${ISSUE_BODY}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
           exit 1
         fi
@@ -99,10 +99,10 @@ jobs:
       id: run_python
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI }}
-        ISSUE_NUMBER: ${{ steps.get_issue_dispatch.outputs.issue_number || steps.get_issue_event.outputs.issue_number }}
-        ISSUE_TITLE: ${{ steps.get_issue_dispatch.outputs.issue_title || steps.get_issue_event.outputs.issue_title }}
-        ISSUE_BODY: ${{ steps.get_issue_dispatch.outputs.issue_body || steps.get_issue_event.outputs.issue_body }}
-        US: ${{ steps.fetch_us.outputs.us }}
+        ISSUE_NUMBER: ${{ env.ISSUE_NUMBER }}
+        ISSUE_TITLE: ${{ env.ISSUE_TITLE }}
+        ISSUE_BODY: ${{ env.ISSUE_BODY }}
+        US: ${{ env.US }}
       run: |
         # Afficher les variables nettoyées pour vérification (optionnel)
         echo "ISSUE_NUMBER: $ISSUE_NUMBER"
@@ -128,13 +128,13 @@ jobs:
           const fs = require('fs');
           const gptResponse = fs.readFileSync('.github/workflows/auto_us/result.txt', 'utf8');
 
-          const existingBody = `{{ steps.get_issue_dispatch.outputs.issue_body || steps.get_issue_event.outputs.issue_body }}`;
+          const existingBody = process.env.ISSUE_BODY;
           const updatedBody = `${existingBody}\n\n${gptResponse}`;
 
           github.rest.issues.update({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            issue_number: {{ steps.get_issue_dispatch.outputs.issue_number || steps.get_issue_event.outputs.issue_number }},
+            issue_number: parseInt(process.env.ISSUE_NUMBER),
             body: updatedBody
           });
         github-token: ${{ secrets.GITHUB_TOKEN }}
