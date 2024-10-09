@@ -40,7 +40,9 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
                     "content": """
                     Tu vas recevoir une liste de User Stories et une issue (titre + description).
                     Tu dois retourner en markdown les User Stories qui correspondent le plus à l'issue fournie.
-                    Tu retourneras les User Stories sous la forme :
+                    Tu retourneras sous la forme :
+
+                    <body de l'issue>
 
                     # UserStory lié <!-- ALREADY DONE -->
                     - #<id_user_story>
