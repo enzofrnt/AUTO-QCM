@@ -24,7 +24,7 @@ jobs:
           # Récupérer toutes les issues ouvertes, excluant les pull requests
           RESPONSE=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
                           -H "Accept: application/vnd.github.v3+json" \
-                          "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&per_page=100")
+                          "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?per_page=1000")
 
           # Filtrer les issues qui ne sont pas des pull requests et qui n'ont pas le label 'user story'
           ISSUE_NUMBERS=$(echo "$RESPONSE" | jq '[.[] | select(.pull_request | not) | select((.labels | map(.name | ascii_downcase) | index("user story")) | not) | .number] | @json')
