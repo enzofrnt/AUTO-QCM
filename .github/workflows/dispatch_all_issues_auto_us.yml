@@ -29,12 +29,15 @@ jobs:
                           "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=all&per_page=100")
 
           # Filtrer les issues qui ne sont pas des pull requests et qui n'ont pas le label 'user story'
-          ISSUE_NUMBERS=$(echo "$RESPONSE" | jq '[.[] | select(.pull_request | not) | select((.labels | map(.name | ascii_downcase) | index("user story")) | not) | .number] | @json')
+          ISSUE_NUMBERS=$(echo "$RESPONSE" | jq '[.[] | select(.pull_request | not) | select((.labels | map(.name | ascii_downcase) | index("user story")) | not) | .number]')
 
           echo "Non-User Story Issues: $ISSUE_NUMBERS"
 
           # Définir la sortie en utilisant GITHUB_OUTPUT
           echo "issue_numbers=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
+
+      - name: Debug issue_numbers
+        run: echo "Issue Numbers: ${{ steps.fetch_issues.outputs.issue_numbers }}"
 
       - name: Set has_issues
         id: set_has_issues
