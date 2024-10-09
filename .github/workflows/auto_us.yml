@@ -7,6 +7,13 @@ on:
         description: 'ID de l issue à traiter'
         required: true
         type: number
+    secrets:
+      OPENAI_API_KEY:
+        description: 'Clé API OpenAI'
+        required: true
+      GITHUB_TOKEN:
+        description: 'Token GitHub pour l authentification'
+        required: true
 
   # Permet également le déclenchement manuel
   workflow_dispatch:
