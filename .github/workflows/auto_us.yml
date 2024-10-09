@@ -105,6 +105,7 @@ jobs:
         US: ${{ env.US }}
       run: |
         # Afficher les variables nettoyées pour vérification (optionnel)
+        echo "secrets.OPENAI: ${{ secrets.OPENAI }}"
         echo "OPENAI_API_KEY: $OPENAI_API_KEY"
         echo "ISSUE_NUMBER: $ISSUE_NUMBER"
         echo "ISSUE_TITLE: $ISSUE_TITLE"
