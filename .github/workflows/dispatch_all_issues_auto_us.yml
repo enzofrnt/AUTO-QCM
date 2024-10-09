@@ -53,7 +53,7 @@ jobs:
 
       - name: Debug has_issues
         run: |
-          echo "Has Issues: ${{ steps.set_has_issues.outputs.has_issues }}"
+          echo "Has Issues: ${{ steps.set_has_issues.outputs.has_issues }}"s
 
   call_auto_us_workflows:
     needs: fetch_non_us_issues
@@ -66,5 +66,3 @@ jobs:
     uses: ./.github/workflows/auto_us.yml
     with:
       issue_number: ${{ matrix.issue_number }}
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
