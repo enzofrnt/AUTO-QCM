@@ -54,6 +54,7 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
                     - #<id_user_story>
 
                     Même si cela semble étrange, il faut trouver à minima une user story ou toutes si c'est trop absurde, qui concernent l'issue. Après, s'il s'agit de tâches très générales dont toute l'application a besoin, il faut toutes les retourner.
+                    Il juste un petit détail à prendre en compte dans ce cas là si on doit ajouté toutes les US, il faut ajouter un petit comentaire pour signaler que cette issue va concerner toutes les US et essayer de justifier rapidement pourquoi.
 
                     Exemple de avant aprés la modification :
                     avant :
