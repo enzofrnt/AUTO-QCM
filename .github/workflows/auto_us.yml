@@ -83,7 +83,7 @@ jobs:
       run: |
         if echo "${{ steps.get_issue_dispatch.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
-          exit 0
+          exit 1
         fi
 
     - name: Check for specific string in issue body (issues event)
@@ -91,7 +91,7 @@ jobs:
       run: |
         if echo "${{ steps.get_issue_event.outputs.issue_body }}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
-          exit 0
+          exit 1
         fi
 
     # Appeler le programme Python en lui envoyant les variables et la clé API OpenAI
