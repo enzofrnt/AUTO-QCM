@@ -39,39 +39,32 @@ jobs:
 
       - name: Debug issue_numbers
         run: |
-          echo "Issue Numbers: ${{ needs.fetch_non_us_issues.outputs.issue_numbers }}"
+          echo "Issue Numbers: ${{ steps.fetch_issues.outputs.issue_numbers }}"
 
       - name: Set has_issues
         id: set_has_issues
         run: |
-          ISSUE_COUNT=$(echo '${{ needs.fetch_non_us_issues.outputs.issue_numbers }}' | jq 'length')
+          ISSUE_COUNT=$(echo "${{ steps.fetch_issues.outputs.issue_numbers }}" | jq 'length')
           if [ "$ISSUE_COUNT" -gt 0 ]; then
             echo "has_issues=true" >> $GITHUB_OUTPUT
           else
             echo "has_issues=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Debug has_issues
+        run: |
+          echo "Has Issues: ${{ steps.set_has_issues.outputs.has_issues }}"
+
   call_auto_us_workflows:
     needs: fetch_non_us_issues
     if: ${{ needs.fetch_non_us_issues.outputs.has_issues == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger auto_us workflow for each issue
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const issueNumbers = '${{ needs.fetch_non_us_issues.outputs.issue_numbers }}';
-            const issues = JSON.parse(issueNumbers);
-            for (const issue of issues) {
-              await github.actions.createWorkflowDispatch({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                workflow_id: 'auto_us.yml', // Assurez-vous que le nom correspond
-                ref: 'main', // Remplacez par la branche appropriée si nécessaire
-                inputs: {
-                  issue_number: issue
-                }
-              });
-            }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      issues: write
+    strategy:
+      matrix:
+        issue_number: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) }}
+    uses: ./.github/workflows/auto_us.yml
+    with:
+      issue_number: ${{ matrix.issue_number }}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
