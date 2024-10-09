@@ -47,7 +47,9 @@ jobs:
 
         echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
         echo "issue_title=$ISSUE_TITLE" >> $GITHUB_OUTPUT
-        echo "issue_body=$ISSUE_BODY" >> $GITHUB_OUTPUT
+        echo "issue_body<<EOF" >> $GITHUB_OUTPUT
+        echo "$ISSUE_BODY" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
 
     - name: Get issue (from issues event)
       id: get_issue_event
@@ -59,7 +61,9 @@ jobs:
 
         echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
         echo "issue_title=$ISSUE_TITLE" >> $GITHUB_OUTPUT
-        echo "issue_body=$ISSUE_BODY" >> $GITHUB_OUTPUT
+        echo "issue_body<<EOF" >> $GITHUB_OUTPUT
+        echo "$ISSUE_BODY" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
 
     # Récupérer les User Stories via GitHub API
     - name: Fetch User Stories from GitHub
