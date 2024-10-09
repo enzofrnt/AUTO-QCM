@@ -98,7 +98,7 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
 
 
 if __name__ == "__main__":
-    openai_api_key = os.environ.get("OPENAI")
+    openai_api_key = os.environ.get("OPENAI_API_KEY")
     issue_number = os.environ.get("ISSUE_NUMBER")
     issue_title = os.environ.get("ISSUE_TITLE")
     issue_body = os.environ.get("ISSUE_BODY")
