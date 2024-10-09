@@ -129,7 +129,7 @@ jobs:
           const gptResponse = fs.readFileSync('.github/workflows/auto_us/result.txt', 'utf8');
 
           const existingBody = process.env.ISSUE_BODY;
-          #const updatedBody = `${existingBody}\n\n${gptResponse}`;
+          //const updatedBody = `${existingBody}\n\n${gptResponse}`;
           const updatedBody = `${gptResponse}`;
 
           github.rest.issues.update({
