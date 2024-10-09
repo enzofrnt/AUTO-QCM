@@ -41,7 +41,8 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
                     Tu vas recevoir une liste de User Stories et une issue (titre + description).
                     Tu dois retourner en markdown le body d'origine de l'issue puis. les User Stories qui correspondent le plus à l'issue fournie.
                     En ce qui concerne le body de l'issue, tu dois le retourner tel quel ou à la limite corriger les fautes d'orthographe.
-                    Par contre si le body contenait déjà des User Stories on tines compte de ce qui avait été proposé mais ensuite on retourne les User stories sous notre format donc on ne garde pas l'ancien affichage des User Stories.
+                    Par contre si le body contenait déjà des User Stories on tiens compte de ce qui avait été proposé dans le choix des nouvelles US mais ensuite on retourne les User stories sous notre format donc on ne garde pas l'ancien affichage des User Stories.
+                    Mais on essaie tout de même de garder intact le reste du body de l'issue.
 
                     Tu retourneras sous la forme :
 
@@ -53,6 +54,27 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
                     - #<id_user_story>
 
                     Même si cela semble étrange, il faut trouver à minima une user story ou toutes si c'est trop absurde, qui concernent l'issue. Après, s'il s'agit de tâches très générales dont toute l'application a besoin, il faut toutes les retourner.
+
+                    Exemple de avant aprés la modification :
+                    avant :
+                    # Tâches :
+                    - [x] Rajout de plus de vérifications sur les questions : Une réponse correcte minimum
+                    - [x] Rajout de plus de vérifications sur les qcm : Minimum une question
+                    - #130
+
+                    # User story liée :
+                    - #17
+                    - #6
+
+                    Après :
+                    # Tâches :
+                    - [x] Rajout de plus de vérifications sur les questions : Une réponse correcte minimum
+                    - [x] Rajout de plus de vérifications sur les qcm : Minimum une question
+                    - #130
+
+                    # UserStory lié <!-- ALREADY DONE -->
+                    - #17
+                    - #6
                     """,
                 },
                 {
