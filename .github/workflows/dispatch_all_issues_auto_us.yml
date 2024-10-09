@@ -61,6 +61,7 @@ jobs:
     permissions:
       issues: write
     strategy:
+      fail-fast: false        # Désactiver fail-fast
       matrix:
         issue_number: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) }}
     uses: ./.github/workflows/auto_us.yml
