@@ -1,4 +1,4 @@
-# .github/workflows/process_non_us_issues.yml
+# .github/workflows/dispatch_all_issues_auto_us.yml
 name: Process Non-User Story Issues
 
 on:
@@ -36,7 +36,7 @@ jobs:
 
   call_auto_us_workflows:
     needs: fetch_non_us_issues
-    if: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) | length > 0 }}
+    if: ${{ length(fromJson(needs.fetch_non_us_issues.outputs.issue_numbers)) > 0 }}
     strategy:
       matrix:
         issue_number: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) }}
