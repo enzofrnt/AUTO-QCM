@@ -42,9 +42,10 @@ def define_us_of_an_issue(api_key, us, issue_title, issue_body):
                     Tu dois retourner en markdown le body d'origine de l'issue puis. les User Stories qui correspondent le plus à l'issue fournie.
                     En ce qui concerne le body de l'issue, tu dois le retourner tel quel ou à la limite corriger les fautes d'orthographe.
                     Par contre si le body contenait déjà des User Stories on tines compte de ce qui avait été proposé mais ensuite on retourne les User stories sous notre format donc on ne garde pas l'ancien affichage des User Stories.
+
                     Tu retourneras sous la forme :
 
-                    <body de l'issue>
+                    <body de l'issue qui ne comporte pas le tiltle n'y les anceinne US>
 
                     # UserStory lié <!-- ALREADY DONE -->
                     - #<id_user_story>
