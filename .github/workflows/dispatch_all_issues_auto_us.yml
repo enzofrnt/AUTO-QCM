@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       issue_numbers: ${{ steps.fetch_issues.outputs.issue_numbers }}
+      has_issues: ${{ steps.set_has_issues.outputs.has_issues }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -34,9 +35,18 @@ jobs:
           # Définir la sortie en utilisant GITHUB_OUTPUT
           echo "issue_numbers=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
 
+      - name: Set has_issues
+        id: set_has_issues
+        run: |
+          ISSUE_COUNT=$(echo '${{ steps.fetch_issues.outputs.issue_numbers }}' | jq 'length')
+          if [ "$ISSUE_COUNT" -gt 0 ]; then
+            echo "has_issues=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_issues=false" >> $GITHUB_OUTPUT
+
   call_auto_us_workflows:
     needs: fetch_non_us_issues
-    if: ${{ length(fromJson(needs.fetch_non_us_issues.outputs.issue_numbers)) > 0 }}
+    if: ${{ needs.fetch_non_us_issues.outputs.has_issues == 'true' }}
     strategy:
       matrix:
         issue_number: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) }}
