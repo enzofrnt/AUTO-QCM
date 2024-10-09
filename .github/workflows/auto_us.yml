@@ -41,9 +41,27 @@ jobs:
     # Récupération de l'issue selon l'événement déclencheur
     - name: Get issue (from workflow_dispatch)
       id: get_issue_dispatch
-      if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call'
+      if: github.event_name == 'workflow_dispatch'
       run: |
         ISSUE_NUMBER=${{ github.event.inputs.issue_number }}
+        RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                         -H "Accept: application/vnd.github.v3+json" \
+                         https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER)
+
+        ISSUE_TITLE=$(echo "$RESPONSE" | jq -r '.title')
+        ISSUE_BODY=$(echo "$RESPONSE" | jq -r '.body')
+
+        echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+        echo "ISSUE_TITLE=$ISSUE_TITLE" >> $GITHUB_ENV
+        echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+        echo "$ISSUE_BODY" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    - name: Get issue (from workflow_call)
+      id: get_issue_call
+      if: github.event_name == 'workflow_call'
+      run: |
+        ISSUE_NUMBER=${{ inputs.issue_number }}
         RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                          -H "Accept: application/vnd.github.v3+json" \
                          https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER)
@@ -83,17 +101,7 @@ jobs:
 
         echo "US=$US" >> $GITHUB_ENV
 
-    # Vérifier si le body contient une chaîne spécifique (ex: STOP)
-    - name: Check for specific string in issue body (workflow_dispatch)
-      if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call'
-      run: |
-        if echo "${ISSUE_BODY}" | grep -q "<!-- ALREADY DONE -->"; then
-          echo "The issue body contains a forbidden string. Stopping workflow."
-          exit 1
-        fi
-
-    - name: Check for specific string in issue body (issues event)
-      if: github.event_name == 'issues'
+    - name: Check for specific string in issue body
       run: |
         if echo "${ISSUE_BODY}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
