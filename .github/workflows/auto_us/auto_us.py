@@ -106,6 +106,17 @@ if __name__ == "__main__":
 
     if not all([openai_api_key, issue_number, issue_title, issue_body, us]):
         print("Erreur: Une ou plusieurs variables d'environnement sont manquantes.")
+        # Display which variables are missing
+        if not openai_api_key:
+            print("OPENAI")
+        if not issue_number:
+            print("ISSUE_NUMBER")
+        if not issue_title:
+            print("ISSUE_TITLE")
+        if not issue_body:
+            print("ISSUE_BODY")
+        if not us:
+            print("US")
         sys.exit(1)
 
     try:
