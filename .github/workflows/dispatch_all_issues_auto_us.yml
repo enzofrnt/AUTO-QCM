@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up jq
+      - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Fetch non-user story issues
@@ -34,18 +34,14 @@ jobs:
           # Définir la sortie en utilisant GITHUB_OUTPUT
           echo "issue_numbers=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
 
-#   call_auto_us_workflows:
-#     needs: fetch_non_us_issues
-#     if: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) != [] }}
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         issue_number: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) }}
-#     steps:
-#       - name: Call auto_us workflow
-#         uses: peter-evans/workflow-dispatch@v1
-#         with:
-#           workflow: auto_us.yml
-#           token: ${{ secrets.GITHUB_TOKEN }}
-#           ref: main  # Remplacez par la branche appropriée si nécessaire
-#           inputs: |
+  call_auto_us_workflows:
+    needs: fetch_non_us_issues
+    if: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) | length > 0 }}
+    strategy:
+      matrix:
+        issue_number: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) }}
+    uses: ./.github/workflows/auto_us.yml
+    with:
+      issue_number: ${{ matrix.issue_number }}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
