@@ -1,14 +1,20 @@
 name: Auto US
 
 on:
+  workflow_call:
+    inputs:
+      issue_number:
+        description: 'ID de l issue à traiter'
+        required: true
+        type: number
+
+  # Permet également le déclenchement manuel
   workflow_dispatch:
     inputs:
       issue_number:
         description: 'ID de l issue à traiter'
         required: true
         type: number
-  push:
-    branches: [auto-US-OMG]
   issues:
     types: [opened, edited, reopened]
 
@@ -35,7 +41,7 @@ jobs:
     # Récupération de l'issue selon l'événement déclencheur
     - name: Get issue (from workflow_dispatch)
       id: get_issue_dispatch
-      if: github.event_name == 'workflow_dispatch'
+      if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call'
       run: |
         ISSUE_NUMBER=${{ github.event.inputs.issue_number }}
         RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
@@ -79,7 +85,7 @@ jobs:
 
     # Vérifier si le body contient une chaîne spécifique (ex: STOP)
     - name: Check for specific string in issue body (workflow_dispatch)
-      if: github.event_name == 'workflow_dispatch'
+      if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call'
       run: |
         if echo "${ISSUE_BODY}" | grep -q "<!-- ALREADY DONE -->"; then
           echo "The issue body contains a forbidden string. Stopping workflow."
