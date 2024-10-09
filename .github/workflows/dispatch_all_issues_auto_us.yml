@@ -7,6 +7,8 @@ on:
 jobs:
   fetch_non_us_issues:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     outputs:
       issue_numbers: ${{ steps.fetch_issues.outputs.issue_numbers }}
       has_issues: ${{ steps.set_has_issues.outputs.has_issues }}
