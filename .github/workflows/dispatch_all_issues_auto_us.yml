@@ -44,6 +44,7 @@ jobs:
             echo "has_issues=true" >> $GITHUB_OUTPUT
           else
             echo "has_issues=false" >> $GITHUB_OUTPUT
+          fi
 
   call_auto_us_workflows:
     needs: fetch_non_us_issues
