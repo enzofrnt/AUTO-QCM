@@ -53,5 +53,3 @@ jobs:
     uses: ./.github/workflows/auto_us.yml
     with:
       issue_number: ${{ matrix.issue_number }}
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
