@@ -1,7 +1,7 @@
 services:
   auto_qcm_python:
     container_name: auto_qcm_python
-    image: piorigin/auto_qcm_python-dev:1.0.0
+    image: piorigin/auto_qcm_python-dev:1.0.1
     build:
       context: ../
       dockerfile: Dockerfile
