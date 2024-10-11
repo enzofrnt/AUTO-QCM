@@ -2,9 +2,12 @@ name: Docker Compose Release CI
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release'
+        required: true
   release:
     types: [published]
-
 
 jobs:
   test:
@@ -34,9 +37,21 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+    - name: Set Docker image tag
+      id: set-tag
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+        elif [ "${{ github.event_name }}" == "release" ]; then
+          echo "tag=${{ github.ref_name }}" >> $GITHUB_ENV
+        else
+          echo "No valid tag found"
+          exit 1
     - name: Build and push Docker images using Buildx
       run: |
         export env=${{ matrix.environment }}
         cd ./deploiement-${{ matrix.environment }}
         docker buildx create --use
-        docker buildx build --push --platform linux/amd64,linux/arm64 .
+        docker buildx build --push \
+          --platform linux/amd64,linux/arm64 \
+          -t piorigin/auto_qcm_python-${{ matrix.environment }}:${{ env.tag }} .
