@@ -47,6 +47,8 @@ jobs:
         else
           echo "No valid tag found"
           exit 1
+        fi
+
     - name: Build and push Docker images using Buildx
       run: |
         export env=${{ matrix.environment }}
