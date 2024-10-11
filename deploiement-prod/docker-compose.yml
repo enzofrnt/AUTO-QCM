@@ -1,7 +1,7 @@
 services:
   auto_qcm_python:
     container_name: auto_qcm_python
-    image: piorigin/auto_qcm_python-prod:1.0.0
+    image: piorigin/auto_qcm_python-prod:1.0.1
     build:
       context: ../
       dockerfile: Dockerfile
@@ -22,7 +22,5 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: root
-    ports:
-      - "5432:5432"
     volumes:
       - ./database:/var/lib/postgresql/data
