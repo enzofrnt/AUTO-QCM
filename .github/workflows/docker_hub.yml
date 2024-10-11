@@ -34,9 +34,9 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Build and push Docker image (using docker compose)
+    - name: Build and push Docker images using Buildx
       run: |
         export env=${{ matrix.environment }}
         cd ./deploiement-${{ matrix.environment }}
-        docker compose build
-        docker compose push
+        docker buildx create --use
+        docker buildx build --push --platform linux/amd64,linux/arm64 .
