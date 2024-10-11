@@ -34,9 +34,19 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Build and push Docker image (using docker compose)
+    - name: Go to the deployment directory
       run: |
         export env=${{ matrix.environment }}
         cd ./deploiement-${{ matrix.environment }}
-        docker compose build
-        docker compose push
+        echo "Working directory changed to ./deploiement-${{ matrix.environment}}"
+
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./docker-compose.yml
+        push: true
+        platforms: linux/amd64,linux/arm64
+
+    - name: Logout Docker Hub
+      run: docker logout
