@@ -1,6 +1,6 @@
 Django==5.1.1
 django_wait_for_db==1.0.6
-psycopg2==2.9.9
+psycopg2==2.9.10
 colormap==1.1.0
 django-latexify==0.3
 PyPDF2==3.0.1
