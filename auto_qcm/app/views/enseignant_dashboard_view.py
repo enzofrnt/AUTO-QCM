@@ -2,13 +2,13 @@ import logging
 from datetime import timedelta
 
 from app.decorators import self_required, teacher_required
-from app.models import (
+from app.models import (  # Import du modèle Plage
     QCM,
+    Plage,
     Question,
     ReponseQCM,
     Utilisateur,
-    Plage,
-)  # Import du modèle Plage
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group  # Import du modèle Group
 from django.db.models import Q
