@@ -151,15 +151,18 @@
 
         calendar.render();
 
-        // Gestion des filtres
-        document.getElementById('promoFilter').addEventListener('change', function() {
-            applyFilters();
-        });
+        // Réinitialiser les filtres à "Toutes les promotions" et "Tous les groupes" lors du chargement de la page
+        document.getElementById('promoFilter').selectedIndex = 0;
+        document.getElementById('groupFilter').selectedIndex = 0;
 
-        document.getElementById('groupFilter').addEventListener('change', function() {
-            applyFilters();
-        });
+        // Appliquer les filtres par défaut pour charger les événements initiaux
+        applyFilters();
 
+        // Gestion des filtres (listener sur changement)
+        document.getElementById('promoFilter').addEventListener('change', applyFilters);
+        document.getElementById('groupFilter').addEventListener('change', applyFilters);
+
+        // Fonction pour appliquer les filtres
         function applyFilters() {
             var selectedPromo = document.getElementById('promoFilter').value;
             var selectedGroup = document.getElementById('groupFilter').value;
@@ -170,10 +173,12 @@
                 return matchesPromo && matchesGroup;
             });
 
+            // Mise à jour du calendrier avec les événements filtrés
             calendar.removeAllEvents();
             calendar.addEventSource(filteredEvents);
         }
     });
+
 
 
     function getRandomColor() {

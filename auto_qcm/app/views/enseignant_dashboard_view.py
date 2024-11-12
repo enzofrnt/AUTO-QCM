@@ -48,8 +48,12 @@ def enseignant_dashboard(request, pk=None):
     )
 
     # Récupérer les promotions et groupes depuis Plage
-    promotions = Group.objects.filter(plagespromo__isnull=False).distinct()
-    groupes = Group.objects.filter(plagesgroup__isnull=False).distinct()
+    promotions = (
+        Group.objects.filter(plagespromo__isnull=False).distinct().order_by("name")
+    )
+    groupes = (
+        Group.objects.filter(plagesgroup__isnull=False).distinct().order_by("name")
+    )
 
     context = {
         "enseignant": enseignant,
