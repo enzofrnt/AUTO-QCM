@@ -106,3 +106,7 @@ input[type="password"]::placeholder {
     background-color: #dc3545; /* Rouge Bootstrap */
     color: red; /* Texte en blanc */
 }
+
+.blocDroit{
+  display: none;
+}
