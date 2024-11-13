@@ -3,115 +3,65 @@
 {% load static %}
 
 {% block content %}
-  <style>
-    label[for^="id_form-"][for$="-DELETE"],
-    input[type="checkbox"][name$="-DELETE"] {
-      display: none;
-    }
+<style>
+  /* Ajoute des styles pour masquer les étapes sauf la première */
+  .form-step {
+    display: none;
+  }
+  .form-step-active {
+    display: block;
+  }
+</style>
 
-    .hidden {
-      display: none;
-    }
+<h2>{% if qcm.pk %}Modifier le QCM{% else %}Créer un nouveau QCM{% endif %}</h2>
 
-    .formset-row {
-      display: flex;
-      justify-content: space-between;
-    }
-    .tag-badge.selected {
-      opacity: 1;
-    }
-    .tag-badge {
-      opacity: 0.6;
-    }
-  </style>
-    <h2>
-      {% if qcm.pk %}
-        Modifier le QCM
-      {% else %}
-        Créer un nouveau QCM
-      {% endif %}
-    </h2>
+<form method="post" id="qcmForm">
+  {% csrf_token %}
 
-  <div class="w-100" >
-    <div class=" m-1">
-    
-      <div>
-        <!-- Affichage des erreurs -->
-        {% if form.errors or formset.errors %}
-          <div class="alert alert-danger">
-            <ul>
-              {% for field in form %}
-                {% for error in field.errors %}
-                  <li>{{ error }}</li>
-                {% endfor %}
-              {% endfor %}
-              {% for error in form.non_field_errors %}
-                <li>{{ error }}</li>
-              {% endfor %}
-              {% for formset_form in formset %}
-                {% for field in formset_form %}
-                    {% for error in field.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                {% endfor %}
-              {% endfor %}
-            </ul>
-          </div>
-        {% endif %}
+  <!-- Étape 1 : Informations générales -->
+  <div class="form-step form-step-active"  id="step-1">
+    <div class="form-group">
+      {{ form.titre.label_tag }} 
+      {{ form.titre }}
+    </div>
+    <div class="form-group">
+      {{ form.description.label_tag }}
+      {{ form.description }}
+    </div>
+    <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
+  </div>
 
-        <!-- Formulaire de filtrage (en dehors du formulaire principal) -->
-        <h3>Sélectionnez les questions :</h3>
-        {% include 'questions/question_filter_form.html' %}
+  <!-- Étape 2 : Accessibilité et nombre de réponses -->
+  <div class="form-step" id="step-2">
+    <div class="form-group">
+      {{ form.est_accessible.label_tag }}
+      {{ form.est_accessible }}
+    </div>
+    <div class="form-group">
+      {{ form.nb_reponses.label_tag }}
+      {{ form.nb_reponses }}
+    </div>
+    <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
+    <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
+  </div>
 
-        <!-- Formulaire principal -->
-        <form method="post" id="qcmForm" class="" >
-          <div style="display: flex;justify-content: space-around;">
-            {% csrf_token %}
-            <div class="d-flex flex-column m-1">
-              <!-- Champ pour le titre du QCM -->
-              <div class="form-group d-flex flex-column">
-                {{ form.titre.label_tag }} 
-                {{ form.titre }}
-              </div>
-              <!-- Champ pour la description du QCM -->
-              <div class="form-group d-flex flex-column">
-                {{ form.description.label_tag }}
-                {{ form.description }}
-              </div>
-              <div class="form-group d-flex flex-column">
-                {{ form.est_accessible.label_tag }}
-                {{ form.est_accessible }}
-              </div>
-              <div class="form-group d-flex flex-column">
-                {{ form.nb_reponses.label_tag }}
-                {{ form.nb_reponses }}
-              </div>
-              <div class="d-flex align-items-center mb-2">
-              <h3>Plages</h3>
-              <button type="button" id="add-plage" class="btn btn-sm btn-outline-primary ml-2">+</button>
-            </div>
+  <!-- Étape 3 : Plages et questions -->
+  <div class="form-step" id="step-3">
+    <h3>Plages</h3>
+    <button type="button" id="add-plage" class="btn btn-sm btn-outline-primary">+</button>
+    <div id="plagesFormset">{{ formset.management_form }}
+      {% for formset_form in formset %}
+        <div class="formset-row item">
+          {{ formset_form.as_p }}
+          <button type="button" class="btn btn-danger remove-plage">Supprimer</button>
+        </div>
+      {% endfor %}
+    </div>
+    <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
+    <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
+  </div>
 
-            <div id="plagesFormset" class="">
-                {{ formset.management_form }}
-                {% for formset_form in formset %}
-                  <div class="formset-row item" style="display: flex; flex-direction: column; ">
-                    {{ formset_form.as_p }}
-                    <div class="form-group">
-                      <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
-            </div>
-            
-            <div id="plageVide" class="hidden">
-              {{formset.empty_form.as_p }}
-              <div class="form-group">
-                <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
-              </div>
-            </div>
-            
-            <div style="display: flex;flex-direction: column;align-items: flex-end;">
+  <div  class="form-step" id="step-4">
               
               <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 m-4">Créer une nouvelle Question</a>
               <button type="button" class="btn btn-success ml-2 w-10 " id="openModal">Générer automatiquement des questions</button>
@@ -121,7 +71,7 @@
               <div id="questions-list" style="overflow-y: auto; height: 500px; width: 800px; border-radius: 20px">
                 {% include 'questions/question_list_content.html' with selectable=True  %}
               </div>
-
+              <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
               <button type="submit" class="btn btn-success mt-5">
                 {% if qcm.pk %}
                   Modifier
@@ -130,49 +80,19 @@
                 {% endif %}
               </button>
             </div>
-          </div>  
-        </form>
-      </div> 
-    </div> 
-
-    <!-- Modal Popup pour l'upload du fichier et l'affichage des questions générées -->
-    <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="fileModalLabel">Envoyer un fichier PDF de cours pour générer des questions</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="fileUploadForm">
-              {% csrf_token %}
-              <div class="mb-3">
-                <label for="fileInput" class="form-label">Choisir un fichier PDF</label>
-                <input type="file" class="form-control" id="fileInput" name="file" accept=".pdf" required>
-              </div>
-            </form>
-            <!-- Indicateur de chargement -->
-            <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display:none;">
-              <span class="sr-only">Chargement...</span>
-            </div>
-            <!-- Conteneur pour les questions générées -->
-            <div id="generatedQuestionsContainer" style="display: none;">
-              <h4>Questions générées</h4>
-              <div id="generatedQuestionsList"></div>
-              <button type="button" class="btn btn-primary" id="saveSelectedQuestions">Ajouter les questions sélectionnées</button>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="closeModal" data-dismiss="modal">Fermer</button>
-            <button type="button" class="btn btn-primary" id="generateBtn">Générer</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
-  {% endblock %}
+    
+
+  <!-- Étape 4 : Résumé et soumission -->
+  {% comment %} <div class="form-step modal-footer" id="step-5">
+    <h3>Résumé</h3>
+    <!-- Ajouter un résumé des informations ici si nécessaire -->
+    <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
+    <button type="submit" class="btn btn-success">Soumettre</button> {% endcomment %}
+  </div>
+</form>
+{% endblock %}
+
 
   {% block extra_scripts %}
   <script src="{% static 'js/questions/question_filter.js' %}"></script>
@@ -348,5 +268,36 @@
     });
   </script>
     <!-- Inclusion des scripts personnalisés -->
+<script>
+let currentStep = 1;
+const totalSteps = 4;
+
+function showStep(step) {
+  document.querySelectorAll('.form-step').forEach((formStep, index) => {
+    formStep.classList.remove('form-step-active');
+    if (index + 1 === step) {
+      formStep.classList.add('form-step-active');
+    }
+  });
+}
+
+function nextStep() {
+  if (currentStep < totalSteps) {
+    currentStep++;
+    showStep(currentStep);
+  }
+}
+
+function previousStep() {
+  if (currentStep > 1) {
+    currentStep--;
+    showStep(currentStep);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  showStep(currentStep);
+});
+</script>
 
   {% endblock %}
