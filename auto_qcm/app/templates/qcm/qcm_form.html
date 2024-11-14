@@ -9,77 +9,158 @@
     display: none;
   }
   .form-step-active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
   }
+
+  .space{
+    height: 445px;
+  }
+
+  .hidden {
+    display: none;
+  }
+  
+  input#id_titre {
+    width: 300px;
+    border-radius:10px;
+    margin-bottom:5px;
+  }
+
+  input#id_nb_reponses{
+    width: 300px;
+    border-radius:10px;
+    margin-bottom:5px;
+  }
+
+  input#id_form-0-debut{
+    border-radius:10px;
+  }
+  input#id_form-0-fin{
+    border-radius:10px;
+  }
+
+  select#id_form-0-promo{
+    border-radius:10px;
+  }
+  select#id_form-0-groupe{
+    border-radius:10px;
+  }
+
+  textarea#id_description {
+    width: 300px;
+    height: 100px;
+    border-radius:10px;
+    margin-bottom:5px;
+  }
+  label{
+    width:120px
+  }
+
+  .form-group{
+    display:flex
+  }
+
+  .btn-delete-plg{
+    display:flex;
+    justify-content: center;
+
+  }
+
+{% comment %} 
+  form#qcmForm{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+
+  } {% endcomment %}
+
+
 </style>
 
-<h2>{% if qcm.pk %}Modifier le QCM{% else %}Créer un nouveau QCM{% endif %}</h2>
+<h2 style="text-align:center; margin-bottom:30px;">{% if qcm.pk %}Modifier le QCM{% else %}Créer un nouveau QCM{% endif %}</h2>
 
 <form method="post" id="qcmForm">
   {% csrf_token %}
 
   <!-- Étape 1 : Informations générales -->
-  <div class="form-step form-step-active"  id="step-1">
-    <div class="form-group">
-      {{ form.titre.label_tag }} 
-      {{ form.titre }}
+  <div class="form-step form-step-active" id="step-1">
+    <div class="space">
+      <div class="form-group step1">
+        {{ form.titre.label_tag }} 
+        {{ form.titre }}
+      </div>
+      <div class="form-group">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+      </div>
+      <div class="form-group">
+        {{ form.nb_reponses.label_tag }}
+        {{ form.nb_reponses }}
+      </div>
+      <div class="form-group">
+        {{ form.est_accessible.label_tag }}
+        {{ form.est_accessible }}
+      </div>
     </div>
-    <div class="form-group">
-      {{ form.description.label_tag }}
-      {{ form.description }}
+    <div style="display: flex;justify-content: space-around;">
+      <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
     </div>
-    <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
   </div>
 
-  <!-- Étape 2 : Accessibilité et nombre de réponses -->
-  <div class="form-step" id="step-2">
-    <div class="form-group">
-      {{ form.est_accessible.label_tag }}
-      {{ form.est_accessible }}
-    </div>
-    <div class="form-group">
-      {{ form.nb_reponses.label_tag }}
-      {{ form.nb_reponses }}
-    </div>
-    <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
-    <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
-  </div>
 
   <!-- Étape 3 : Plages et questions -->
-  <div class="form-step" id="step-3">
-    <h3>Plages</h3>
-    <button type="button" id="add-plage" class="btn btn-sm btn-outline-primary">+</button>
-    <div id="plagesFormset">{{ formset.management_form }}
-      {% for formset_form in formset %}
-        <div class="formset-row item">
-          {{ formset_form.as_p }}
-          <button type="button" class="btn btn-danger remove-plage">Supprimer</button>
-        </div>
-      {% endfor %}
+  <div class="form-step" id="step-2">
+    <div class="space">
+      <h3>Plages</h3>
+      <button type="button" id="add-plage" class="btn btn-sm btn-outline-primary">+</button>
+      <div id="plagesFormset">{{ formset.management_form }}
+        {% for formset_form in formset %}
+          <div class="formset-row item ">
+            {{ formset_form.as_p }}
+            <div class="btn-delete-plg">
+              <button type="button" class="btn btn-danger remove-plage">Supprimer</button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div id="plageVide" class="hidden">
+                {{formset.empty_form.as_p }}
+                <div class="form-group">
+                  <button type="button" class="btn btn-danger remove-plage"><i class="bi bi-trash"></i></button>
+                </div>
+              </div>
     </div>
-    <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
-    <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
+    <div style="display: flex;justify-content: space-around;">
+      <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
+      <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
+    </div>  
   </div>
 
-  <div  class="form-step" id="step-4">
-              
-              <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 m-4">Créer une nouvelle Question</a>
-              <button type="button" class="btn btn-success ml-2 w-10 " id="openModal">Générer automatiquement des questions</button>
-              
-
-              <!-- Liste des questions -->
-              <div id="questions-list" style="overflow-y: auto; height: 500px; width: 800px; border-radius: 20px">
-                {% include 'questions/question_list_content.html' with selectable=True  %}
-              </div>
-              <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
-              <button type="submit" class="btn btn-success mt-5">
-                {% if qcm.pk %}
-                  Modifier
-                {% else %}
-                  Créer
-                {% endif %}
-              </button>
-            </div>
+  <div  class="form-step" id="step-3">
+    <div class="space">
+        <div>
+          <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 ">Créer une nouvelle Question</a>
+          <button type="button" class="btn btn-success ml-2 w-10 " id="openModal">Générer automatiquement des questions</button>
+        </div>  
+        <!-- Liste des questions -->
+        <div id="questions-list" style="overflow-y: auto; height: 400px; width: 800px; border-radius: 20px">
+          {% include 'questions/question_list_content.html' with selectable=True  %}
+        </div>
+    </div>
+      <div style="display: flex;justify-content: space-around;">
+        <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
+        <button type="submit" class="btn btn-success ">
+          {% if qcm.pk %}
+            Modifier
+          {% else %}
+            Créer
+          {% endif %}
+        </button>
+      </div>
+    </div>
   </div>
     
 
@@ -277,6 +358,7 @@ function showStep(step) {
     formStep.classList.remove('form-step-active');
     if (index + 1 === step) {
       formStep.classList.add('form-step-active');
+        
     }
   });
 }
