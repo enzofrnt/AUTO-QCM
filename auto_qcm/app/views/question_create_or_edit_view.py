@@ -34,12 +34,16 @@ def create_or_edit_question(request, pk=None):
         )
 
     if request.method == "POST":
-        form = QuestionForm(request.POST, instance=question)
+        form = QuestionForm(request.POST, request.FILES, instance=question)
         formset = ReponseFormSet(request.POST, instance=question)
 
         if form.is_valid() and formset.is_valid():
             # Sauvegarder la question
             question = form.save(commit=False)
+            if request.POST.get("delete_image") == "true":
+                question.image.delete()  # Supprimer l'image du modèle (si une image existe)
+                question.image = None  # Définir l'image à None dans la base de données
+
             question.creator = request.user
             question.save()
 

@@ -33,6 +33,7 @@ from app.views import (
     delete_question,
     enseignant_dashboard,
     etudiant_dashboard,
+    export_qcm_amctxt,
     export_qcm_latex,
     export_qcm_xml,
     export_question_xml,
@@ -47,10 +48,13 @@ from app.views import (
     support_doc,
 )
 from django.conf.urls import handler403, handler404, handler500
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls.conf import include
+
+from auto_qcm.settings import base
 
 urlpatterns = [
     path("", home, name="home"),
@@ -100,6 +104,9 @@ urlpatterns = [
     ),
     path("qcm/export-xml/<int:qcm_id>/", export_qcm_xml, name="qcm-export-xml"),
     path("qcm/export-latex/<int:qcm_id>/", export_qcm_latex, name="qcm-export-latex"),
+    path(
+        "qcm/export-amctxt/<int:qcm_id>/", export_qcm_amctxt, name="qcm-export-amctxt"
+    ),
     # TEST
     path("cause-server-error/", cause_server_error, name="cause-server-error"),
 ]
@@ -113,3 +120,6 @@ if os.environ.get("env", "dev") == "dev":
 handler403 = "app.views.custom_error_view.custom_permission_denied_view"
 handler404 = "app.views.custom_error_view.custom_page_not_found_view"
 handler500 = "app.views.custom_error_view.custom_server_error_view"
+
+if base.DEBUG:
+    urlpatterns += static(base.MEDIA_URL, document_root=base.MEDIA_ROOT)
