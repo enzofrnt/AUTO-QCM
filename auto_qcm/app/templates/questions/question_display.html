@@ -2,6 +2,8 @@
 {% load latexify %}
 {% load static %}
 
+<link rel="stylesheet" type="text/css" href="{% static 'css/question_display.css' %}">
+
 <div class="question-container position-relative" >
 
   <!-- En-tête de la question -->
@@ -36,11 +38,22 @@
     {% endfor %}
   </div>
 
+
   <!-- Section des réponses à afficher/cacher -->
   <div class="answers-list" id="answers-{{ question.id }}" style="display: none; margin-top: 10px;">
     <br />
+
+
+
     {% latexify question.texte parse_math=True %}
     <br /><br />
+
+     {% if question.image %}
+    <div class="question-image">
+      <img src="{{ question.image.url }}" alt="Image de la question" style="max-width: 300px; max-height: 300px; margin-top: 10px; border-radius: 5px; ">
+    </div>
+  {% endif %}
+    <br />
 
     <p>
       Nombre de bonnes réponses : <b>{{ question.number_of_correct_answers }}</b>
