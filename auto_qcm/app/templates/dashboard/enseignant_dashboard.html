@@ -43,7 +43,7 @@
                 <div style="max-height: 400px; overflow-y: auto;">
                     {% for qcm in qcms_with_questions %}
                         <div class="mb-3">
-                            <strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
+                            <a href="{% url 'qcm-edit' qcm.id%}"><strong>{{ qcm.titre }}</strong></a> - {{ qcm.date_modif|date:"d/m/Y" }}
                             <div class="ms-3">
                                 {% if qcm.reponses_qcm.count > 0 %}
                                     {{ qcm.reponses_qcm.count }} réponses -
