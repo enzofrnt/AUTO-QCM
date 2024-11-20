@@ -131,7 +131,7 @@
           <label for="id_image">Ajouter une image :</label>
           <input type="file" id="id_image" name="image" accept="image/png, image/jpeg, image/jpg, image/svg,image/gif">
           {% if question.image %}
-            <span id="imageFileName">{{ question.image.name }}</span>          
+            <span id="imageFileName">{{ question.image.name }}</span>
           {% else %}
             <span id="imageFileName" class="ml-2">Aucun fichier sélectionné</span>
           {% endif %}
@@ -139,7 +139,7 @@
       <div id="imagePreviewContainer">
           {% if question.image %}
               <img id="imagePreview" src="{{ question.image.url }}" alt="Prévisualisation de l'image" class="img-thumbnail" style="max-width: 250px; max-height:250px;">
-              
+
           {% else %}
               <img id="imagePreview" src="#" alt="Prévisualisation de l'image" class="img-thumbnail" style="max-width: 200px; display: none;">
           {% endif %}
@@ -148,8 +148,8 @@
                   <i class="fas fa-trash-alt"></i> Enlever l'image
               </button>
       </div>
-      
-      
+
+
 
       <!-- Champ pour la preview LaTeX -->
       <!-- Champ pour la preview LaTeX avec infobulle -->

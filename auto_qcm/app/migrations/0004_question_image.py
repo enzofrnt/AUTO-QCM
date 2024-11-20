@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0003_qcm_date_creation'),
+        ("app", "0003_qcm_date_creation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='question',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to='question_images/'),
+            model_name="question",
+            name="image",
+            field=models.ImageField(
+                blank=True, null=True, upload_to="question_images/"
+            ),
         ),
     ]
