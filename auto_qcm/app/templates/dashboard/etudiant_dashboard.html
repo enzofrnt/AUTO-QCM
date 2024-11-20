@@ -7,7 +7,7 @@
 
     <div class="row">
 
-        <!-- Liste des QCM contenant des questions du professeurliste des réponses au qcm et statistiques -->
+        <!-- Liste des QCM contenant des questions du professeur liste des réponses au qcm et statistiques -->
 		<div class="col-md-6">
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-primary text-white">
@@ -35,6 +35,42 @@
                 </div>
             </div>
 
+            <!-- Popup pour les QCM disponibles aujourd'hui -->
+            <div id="qcmReminderModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="qcmReminderLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="qcmReminderLabel">Rappel des QCM réalisables aujourd'hui</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% if accessible_today_qcms %}
+                                <ul>
+                                    {% for qcm in accessible_today_qcms %}
+                                        <li>
+                                            <div class="border p-2 rounded">
+                                                <strong>{{ qcm.titre }}</strong> - Disponible jusqu'au {{ qcm.plages.first.fin|date:"d/m/Y" }} à {{ qcm.plages.first.fin|date:"H:i" }}<br>
+                                                <br>
+                                                <a href="{% url 'qcm-acces' qcm.id %}" class="btn btn-primary btn-sm mt-1">Accéder au QCM</a>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>Aucun QCM disponible aujourd'hui.</p>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            
+
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-primary text-white">
                     <h3>Votre progression aux QCM hebdomadaires</h3>
@@ -58,6 +94,7 @@
             </div>
             </div>
         </div>
+
     </div>
 
 
@@ -69,6 +106,15 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
+
+        // Vérifier si des QCM sont disponibles aujourd'hui
+        var todayQCMCount = {{ accessible_today_qcms.count }};
+
+        if (todayQCMCount > 0) {
+            // Afficher la modale au chargement de la page
+            var qcmModal = new bootstrap.Modal(document.getElementById('qcmReminderModal'));
+            qcmModal.show();
+        }
 
         // Création des événements à partir des plages de chaque QCM
         var events = [
@@ -282,7 +328,14 @@
     .fc-event {
         cursor: pointer; /* Ajoutez cette ligne pour changer le curseur en pointer */
     }
+    .modal ul {
+        list-style: none;
+        padding: 0;
+    }
 
+    .modal ul li {
+        margin-bottom: 10px;
+    }
 
 </style>
 {% endblock %}
