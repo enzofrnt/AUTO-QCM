@@ -47,10 +47,13 @@ from app.views import (
     support_doc,
 )
 from django.conf.urls import handler403, handler404, handler500
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.urls.conf import include
+
+from auto_qcm.settings import base
 
 urlpatterns = [
     path("", home, name="home"),
@@ -113,3 +116,6 @@ if os.environ.get("env", "dev") == "dev":
 handler403 = "app.views.custom_error_view.custom_permission_denied_view"
 handler404 = "app.views.custom_error_view.custom_page_not_found_view"
 handler500 = "app.views.custom_error_view.custom_server_error_view"
+
+if base.DEBUG:
+    urlpatterns += static(base.MEDIA_URL, document_root=base.MEDIA_ROOT)

@@ -15,6 +15,7 @@ class Question(models.Model):
     melange_rep = models.BooleanField(default=True)
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
     creator = models.ForeignKey("Utilisateur", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='question_images/', null=True, blank=True) 
 
     def __str__(self):
         return self.texte

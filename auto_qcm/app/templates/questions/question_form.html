@@ -37,6 +37,29 @@
       padding: 10px; /* Ajoute un peu de padding pour plus de confort */
     }
 
+    .image-upload-container {
+        display: flex;
+        align-items: center;
+    }
+
+    #imageFileName {
+        margin-left: 10px;
+        color: #666;
+    }
+
+    #imagePreview {
+        margin-top: 10px;
+        max-width: 200px;
+        max-height: 200px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px;
+    }
+
+    #removeImageButton {
+        margin-top: 10px;
+    }
+
   </style>
   <div class="container mt-4">
     <h2>
@@ -82,7 +105,7 @@
       </div>
     {% endif %}
 
-    <form method="post" id="questionForm">
+    <form method="post" enctype="multipart/form-data" id="questionForm">
       {% csrf_token %}
 
       <!-- Champ caché pour l'URL de redirection -->
@@ -102,6 +125,31 @@
 
       <!-- Champ pour si la question a des reponses mélangées -->
       <div class="form-group">{{ form.melange_rep.label_tag }}{{ form.melange_rep }}</div>
+
+      <!-- Champ pour ajout image (optionnel)-->
+      <div class="image-upload-container">
+          <label for="id_image">Ajouter une image :</label>
+          <input type="file" id="id_image" name="image" accept="image/png, image/jpeg, image/jpg, image/svg,image/gif">
+          {% if question.image %}
+            <span id="imageFileName">{{ question.image.name }}</span>          
+          {% else %}
+            <span id="imageFileName" class="ml-2">Aucun fichier sélectionné</span>
+          {% endif %}
+      </div>
+      <div id="imagePreviewContainer">
+          {% if question.image %}
+              <img id="imagePreview" src="{{ question.image.url }}" alt="Prévisualisation de l'image" class="img-thumbnail" style="max-width: 250px; max-height:250px;">
+              
+          {% else %}
+              <img id="imagePreview" src="#" alt="Prévisualisation de l'image" class="img-thumbnail" style="max-width: 200px; display: none;">
+          {% endif %}
+          <br />
+              <button type="button" id="removeImageButton" class="btn btn-danger ml-2" style="display:none;">
+                  <i class="fas fa-trash-alt"></i> Enlever l'image
+              </button>
+      </div>
+      
+      
 
       <!-- Champ pour la preview LaTeX -->
       <!-- Champ pour la preview LaTeX avec infobulle -->
@@ -169,6 +217,78 @@
         html: true,
         placement: 'right'
       });
+
+      const fileInput = $('#id_image');
+      const fileNameDisplay = $('#imageFileName');
+      const imagePreview = $('#imagePreview');
+      const removeImageButton = $('#removeImageButton');
+
+      // Vérifie si le champ existe et si une image est déjà définie
+      if (fileInput.length > 0) {
+          const uploadButton = $('<button type="button" id="imageUploadButton" class="btn btn-secondary ml-2"><i class="fas fa-upload"></i> Choisir une image</button>');
+
+          // Ajoute le bouton
+          fileInput.after(uploadButton);
+          fileInput.hide();
+
+          // Ouvrir le sélecteur de fichiers
+          uploadButton.on('click', function () {
+              fileInput.click();
+          });
+
+          // Mise à jour du nom et de la preview après sélection
+          fileInput.on('change', function (event) {
+              const file = fileInput[0].files[0];
+              if (file) {
+                  fileNameDisplay.text(file.name);
+
+                  // Afficher l'aperçu
+                  const reader = new FileReader();
+                  reader.onload = function (e) {
+                      imagePreview.attr('src', e.target.result).show();
+                  };
+                  reader.readAsDataURL(file); // Lire l'image pour la preview
+
+                  // Afficher le bouton "Enlever l'image"
+                  removeImageButton.show();
+                  uploadButton.text('Remplacer l\'image');
+              } else {
+                  fileNameDisplay.text("Aucun fichier sélectionné");
+                  imagePreview.hide();
+
+                  // Masquer le bouton "Enlever l'image" si aucun fichier n'est sélectionné
+                  removeImageButton.hide();
+                  uploadButton.text('Choisir une image');
+              }
+          });
+
+          // Si une image existe déjà, affichez le bouton pour la supprimer
+          if (imagePreview.attr('src') !== "#") {
+              removeImageButton.show();
+              uploadButton.text('Remplacer l\'image');
+          }
+
+          // Gestion du bouton "Enlever l'image"
+          removeImageButton.on('click', function () {
+              // Réinitialiser le champ de fichier et cacher l'aperçu de l'image
+              fileInput.val('');
+              fileNameDisplay.text('Aucun fichier sélectionné');
+              imagePreview.hide();
+
+              // Masquer le bouton "Enlever l'image"
+              removeImageButton.hide();
+              uploadButton.text('Choisir une image');
+
+              // Vous devrez également gérer cette suppression côté serveur lors de la soumission du formulaire.
+              // Par exemple, vous pourriez définir un champ hidden pour marquer l'image comme supprimée, ou gérer cela dans la vue.
+              const deleteCheckbox = $('<input>').attr({
+                  type: 'hidden',
+                  name: 'delete_image',
+                  value: 'true'
+              });
+              fileInput.after(deleteCheckbox);
+          });
+      }
 
       var formsetPrefix = '{{ formset.prefix }}'
       var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
