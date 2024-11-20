@@ -210,7 +210,17 @@
       {% comment %} </div> {% endcomment %}
     </div>
   </div>
-  <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
+
+
+  <!-- Étape 4 : Résumé et soumission -->
+  {% comment %} <div class="form-step modal-footer" id="step-5">
+    <h3>Résumé</h3>
+    <!-- Ajouter un résumé des informations ici si nécessaire -->
+    <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
+    <button type="submit" class="btn btn-success">Soumettre</button> {% endcomment %}
+  </div>
+</form>
+ <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -245,15 +255,6 @@
         </div>
       </div>
     </div>
-
-  <!-- Étape 4 : Résumé et soumission -->
-  {% comment %} <div class="form-step modal-footer" id="step-5">
-    <h3>Résumé</h3>
-    <!-- Ajouter un résumé des informations ici si nécessaire -->
-    <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
-    <button type="submit" class="btn btn-success">Soumettre</button> {% endcomment %}
-  </div>
-</form>
 {% endblock %}
 
 
