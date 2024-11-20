@@ -14,6 +14,7 @@ class QCM(models.Model):
     )  # 1 est l'ID d'un utilisateur par défaut
     est_accessible = models.BooleanField(default=False)
     nb_reponses = models.IntegerField(default=1)
+    date_creation = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.titre

@@ -22,34 +22,43 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm mb-3">
-                <div class="card-header ">
-                    <h3>QCM avec vos questions</h3>
-                </div>
-                <div class="card-body">
-                    <div style="max-height: 243px; overflow-y: auto;">
-                        <ul class="list-group">
-                            {% for qcm in qcms_with_questions %}
-                            <li class="list-group-item text-dark">
-                                <strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
-                                <ul>
-                                    {% if qcm.reponses_qcm.count > 0 %}
-                                    <li>
-                                        {{ qcm.reponses_qcm.count }} réponses -
-                                        <a href="{% url 'qcm-responses' qcm.id %}">Voir toutes les réponses</a>
-                                    </li>
-                                    {% else %}
-                                    <li>Aucune réponse pour ce QCM.</li>
-                                    {% endif %}
-                                </ul>
-                            </li>
-                            {% empty %}
-                            <li class="list-group-item">Aucun QCM trouvé.</li>
+           <div class="card shadow-sm mb-3">
+            <div class="card-header">
+                <h3>QCM avec vos questions</h3>
+                <div class="d-flex align-items-center mt-2">
+                    <form method="get" class="d-flex align-items-center">
+                        <select name="year" class="form-select me-2" onchange="this.form.submit()">
+                            <option value="all" {% if selected_year == 'all' %}selected{% endif %}>Toutes les années</option>
+                            {% for year in years %}
+                                <option value="{{ year }}" {% if selected_year|stringformat:"s" == year|stringformat:"s" %}selected{% endif %}>
+                                    {{ year }}
+                                </option>
                             {% endfor %}
-                        </ul>
-                    </div>
+                        </select>
+                    </form>
                 </div>
             </div>
+
+            <div class="card-body">
+                <div style="max-height: 400px; overflow-y: auto;">
+                    {% for qcm in qcms_with_questions %}
+                        <div class="mb-3">
+                            <strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
+                            <div class="ms-3">
+                                {% if qcm.reponses_qcm.count > 0 %}
+                                    {{ qcm.reponses_qcm.count }} réponses -
+                                    <a href="{% url 'qcm-responses' qcm.id %}">Voir toutes les réponses</a>
+                                {% else %}
+                                    Aucune réponse pour ce QCM.
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>Aucun QCM trouvé.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
         </div>
 
         <!-- Colonne de droite : Calendrier -->

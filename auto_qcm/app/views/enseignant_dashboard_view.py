@@ -2,15 +2,9 @@ import logging
 from datetime import timedelta
 
 from app.decorators import self_required, teacher_required
-from app.models import (  # Import du modèle Plage
-    QCM,
-    Plage,
-    Question,
-    ReponseQCM,
-    Utilisateur,
-)
+from app.models import QCM, Plage, Question, ReponseQCM, Utilisateur
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group  # Import du modèle Group
+from django.contrib.auth.models import Group
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
@@ -25,29 +19,47 @@ logger = logging.getLogger(__name__)
 def enseignant_dashboard(request, pk=None):
     enseignant = get_object_or_404(Utilisateur, pk=pk)
 
-    # Récupérer les QCM contenant des questions créées par cet enseignant
-    qcms_with_questions = (
-        QCM.objects.filter(questions__creator=enseignant)
-        .distinct()
-        .prefetch_related("reponses_qcm")
-        .order_by("-date_modif")[:10]
-    )
+    # Get the selected year from the query parameters, default to current year
+    selected_year = request.GET.get("year", "all")
 
-    # Récupérer les QCM à venir pour les 3 prochains mois
+    # Base query for QCMs with questions created by the teacher
+    qcms_query = QCM.objects.filter(questions__creator=enseignant).distinct()
+
+    # Apply year filter if a specific year is selected
+    if selected_year != "all":
+        try:
+            year = int(selected_year)
+            qcms_query = qcms_query.filter(date_creation__year=year)
+        except ValueError:
+            # Handle invalid year parameter
+            pass
+
+    # Get the filtered and ordered QCMs
+    qcms_with_questions = qcms_query.prefetch_related("reponses_qcm").order_by(
+        "-date_modif"
+    )[:10]
+
+    # Get available years for filtering
+    years = (
+        QCM.objects.filter(questions__creator=enseignant)
+        .dates("date_creation", "year")
+        .distinct()
+    )
+    years = [year.year for year in years]
+
+    # Rest of the dashboard data
     today = timezone.now().date()
     three_months_later = today + timedelta(days=90)
     upcoming_qcms = QCM.objects.filter(
         date_modif__gt=today, date_modif__lte=three_months_later
     ).order_by("date_modif")
 
-    # Récupérer les statistiques des QCM
     total_qcms = QCM.objects.filter(questions__creator=enseignant).distinct().count()
     total_questions = Question.objects.filter(creator=enseignant).count()
     total_responses = (
         ReponseQCM.objects.filter(qcm__questions__creator=enseignant).distinct().count()
     )
 
-    # Récupérer les promotions et groupes depuis Plage
     promotions = (
         Group.objects.filter(plagespromo__isnull=False).distinct().order_by("name")
     )
@@ -62,8 +74,10 @@ def enseignant_dashboard(request, pk=None):
         "total_qcms": total_qcms,
         "total_questions": total_questions,
         "total_responses": total_responses,
-        "promotions": promotions,  # Promotions basées sur Group
-        "groupes": groupes,  # Groupes basés sur Group
+        "promotions": promotions,
+        "groupes": groupes,
+        "years": years,
+        "selected_year": selected_year,
     }
 
     return render(request, "dashboard/enseignant_dashboard.html", context)
