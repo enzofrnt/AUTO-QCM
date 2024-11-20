@@ -46,7 +46,7 @@
                             <strong>{{ qcm.titre }}</strong> - {{ qcm.date|date:"d/m/Y" }}
                             <div class="ms-3">
                                 {% if qcm.reponses_qcm.count > 0 %}
-                                    {{ qcm.reponses_qcm.count }} réponses - 
+                                    {{ qcm.reponses_qcm.count }} réponses -
                                     <a href="{% url 'qcm-responses' qcm.id %}">Voir toutes les réponses</a>
                                 {% else %}
                                     Aucune réponse pour ce QCM.
