@@ -33,6 +33,7 @@ from app.views import (
     delete_question,
     enseignant_dashboard,
     etudiant_dashboard,
+    export_qcm_amctxt,
     export_qcm_latex,
     export_qcm_xml,
     export_question_xml,
@@ -100,6 +101,9 @@ urlpatterns = [
     ),
     path("qcm/export-xml/<int:qcm_id>/", export_qcm_xml, name="qcm-export-xml"),
     path("qcm/export-latex/<int:qcm_id>/", export_qcm_latex, name="qcm-export-latex"),
+    path(
+        "qcm/export-amctxt/<int:qcm_id>/", export_qcm_amctxt, name="qcm-export-amctxt"
+    ),
     # TEST
     path("cause-server-error/", cause_server_error, name="cause-server-error"),
 ]
