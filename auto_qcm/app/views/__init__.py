@@ -9,7 +9,12 @@ from .custom_error_view import (
 from .delete_multiple_qcms_view import delete_multiple_qcms
 from .enseignant_dashboard_view import enseignant_dashboard
 from .etudiant_dashboard_view import etudiant_dashboard
-from .export_view import export_qcm_latex, export_qcm_xml, export_question_xml
+from .export_view import (
+    export_qcm_latex,
+    export_qcm_xml,
+    export_question_xml,
+    export_qcm_amctxt,
+)
 from .home_view import home
 from .login_view import CustomLoginView
 from .qcm_acces_view import acces_qcm
