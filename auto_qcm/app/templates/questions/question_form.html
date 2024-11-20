@@ -1,29 +1,30 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} 
 
 {% load latexify %}
 
 {% block content %}
   {% include 'latexify/stylesheets.html' %}
   <style>
+    label[for^='id_reponses'][for$='-DELETE'],
+    input[type='checkbox'][name$='-DELETE'] {
+      display: none;
+    }
+
     .hidden {
       display: none;
     }
 
-    .form-navigation {
+    .formset_row {
       display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
+      flex-direction: row;
+      gap: 10px;
     }
 
-    .step {
-      display: none;
-    }
-
-    .step.active {
-      display: block;
+    .removeReponse {
+      top: 5px;
+      right: 5px;
     }
   </style>
-
   <div class="container mt-4">
     <h2>
       {% if question.pk %}
@@ -37,6 +38,7 @@
     {% if form.errors or formset.errors %}
       <div class="alert alert-danger">
         <ul>
+          <!-- Affichage des erreurs du formulaire principal -->
           {% for field in form %}
             {% if field.errors %}
               {% for error in field.errors %}
@@ -44,9 +46,13 @@
               {% endfor %}
             {% endif %}
           {% endfor %}
-          {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
-          {% endfor %}
+          {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endif %}
+
+          <!-- Affichage des erreurs du formset -->
           {% for formset_form in formset %}
             {% if formset_form.errors %}
               {% for field, errors in formset_form.errors.items %}
@@ -54,112 +60,165 @@
               {% endfor %}
             {% endif %}
           {% endfor %}
-          {% for error in formset.non_form_errors %}
-            <li>{{ error }}</li>
-          {% endfor %}
+          {% if formset.non_form_errors %}
+            {% for error in formset.non_form_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endif %}
         </ul>
       </div>
     {% endif %}
 
     <form method="post" id="questionForm">
       {% csrf_token %}
+
+      <!-- Champ caché pour l'URL de redirection -->
       <input type="hidden" name="next" value="{{ next }}" />
 
-      <!-- Étape 1 : Informations générales -->
-      <div class="step active" id="step-1">
-        <h3>Étape 1 : Informations générales</h3>
-        <div class="form-group">{{ form.nom.label_tag }} {{ form.nom }}</div>
-        <div class="form-group">{{ form.texte.label_tag }} {{ form.texte }}</div>
-        <div class="form-group">{{ form.note.label_tag }} {{ form.note }}</div>
-        <div class="form-group">{{ form.tags.label_tag }} {{ form.tags }}</div>
-        <div class="form-group">
-          <label for="new_tags">Ajouter de nouveaux tags :</label>
-          <div id="newTagsContainer"></div>
-          <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
-        </div>
+      <!-- Champ pour le nom de la question -->
+      <div class="form-group">{{ form.nom.label_tag }}
+        {{ form.nom }}</div>
+
+      <!-- Champ pour le texte de la question -->
+      <div class="form-group">{{ form.texte.label_tag }}
+        {{ form.texte }}</div>
+
+      <!-- Champ pour la note de la question -->
+      <div class="form-group">{{ form.note.label_tag }}
+        {{ form.note }}</div>
+
+      <!-- Champ pour si la question a des reponses mélangées -->
+      <div class="form-group">{{ form.melange_rep.label_tag }}{{ form.melange_rep }}</div>
+
+      <!-- Champ pour la preview LaTeX -->
+      <div>
+        <label for="preview">Preview LaTeX :</label>
+        <div id="copy_text"></div>
       </div>
 
-      <!-- Étape 2 : Options avancées -->
-      <div class="step" id="step-2">
-        <h3>Étape 2 : Options avancées</h3>
-        <div class="form-group">{{ form.melange_rep.label_tag }} {{ form.melange_rep }}</div>
-        <div>
-          <label for="preview">Preview LaTeX :</label>
-          <div id="copy_text"></div>
-        </div>
+      <!-- Champ pour les tags existants -->
+      <div class="form-group">{{ form.tags.label_tag }}
+        {{ form.tags }}</div>
+
+      <!-- Bouton pour ajouter de nouveaux tags -->
+      <div class="form-group">
+        <label for="new_tags">Ajouter de nouveaux tags :</label>
+        <div id="newTagsContainer"></div>
+        <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
       </div>
 
-      <!-- Étape 3 : Réponses -->
-      <div class="step" id="step-3">
-        <h3>Étape 3 : Réponses</h3>
-        <div id="reponseFormset">
-          {{ formset.management_form }}
-          {% for formset_form in formset %}
-            <div class="formset_row border rounded position-relative">
-              {{ formset_form.as_p }}
-              <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute">
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>
-          {% endfor %}
-        </div>
-
-        <div id="reponseVide" class="hidden">
-          {{ formset.empty_form.as_p }}
-          <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute">
-            <i class="bi bi-trash"></i>
-          </button>
-        </div>
-
-        <button type="button" id="addReponse" class="btn btn-sm btn-outline-primary">Ajouter une réponse</button>
+      <!-- Titre et bouton pour ajouter des réponses -->
+      <div class="d-flex align-items-center mb-2">
+        <h3>Réponses</h3>
+        <button type="button" id="addReponse" class="btn btn-sm btn-outline-primary ml-2">+</button>
       </div>
 
-      <!-- Navigation -->
-      <div class="form-navigation">
-        <button type="button" id="prevStep" class="btn btn-outline-primary hidden">Étape précédente</button>
-        <button type="button" id="nextStep" class="btn btn-outline-primary">Étape suivante</button>
-        <button type="submit" class="btn btn-success hidden" id="submitForm">
-          {% if question.pk %}
-            Enregistrer les modifications
-          {% else %}
-            Créer la question
-          {% endif %}
-        </button>
+      <!-- Formset pour les réponses -->
+      <div id="reponseFormset">
+        {{ formset.management_form }}
+        {% for formset_form in formset %}
+          <div class="formset_row border rounded position-relative">
+            {{ formset_form.as_p }}
+            <!-- Bouton pour supprimer une réponse -->
+            <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute"><i class="bi bi-trash"></i></button>
+          </div>
+        {% endfor %}
       </div>
+
+      <div id="reponseVide" class="hidden">
+        {{ formset.empty_form.as_p }}
+        <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute"><i class="bi bi-trash"></i></button>
+      </div>
+
+      <!-- Bouton pour soumettre le formulaire -->
+      <button type="submit" class="btn btn-success">
+        {% if question.pk %}
+          Enregistrer les modifications
+        {% else %}
+          Créer la question
+        {% endif %}
+      </button>
+      <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-danger">Annuler</a>
     </form>
   </div>
 
   {% include 'latexify/scripts.html' %}
 {% endblock %}
-
 {% block extra_scripts %}
   <script>
     $(document).ready(function () {
-      let currentStep = 1;
-      const totalSteps = 3;
+      var formsetPrefix = '{{ formset.prefix }}'
+      var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
+      var formsetContainer = $('#reponseFormset')
+      const emptyRep = $('#reponseVide')
 
-      function updateStep() {
-        $(".step").removeClass("active");
-        $(`#step-${currentStep}`).addClass("active");
-
-        // Show/hide navigation buttons
-        $("#prevStep").toggleClass("hidden", currentStep === 1);
-        $("#nextStep").toggleClass("hidden", currentStep === totalSteps);
-        $("#submitForm").toggleClass("hidden", currentStep !== totalSteps);
+      // Fonction pour parser le texte LaTeX et le convertir en HTML
+      function parseLatexText(text) {
+        // Utilise une expression régulière pour identifier les formules LaTeX délimitées par '$...$'
+        return text.replace(/\\\$(.*?)\\\$/g, function (match, p1) {
+          // Remplace le LaTeX inline par une balise span avec la classe 'django-latexify math inline'
+          return '<span class="django-latexify math inline">' + p1 + '</span>'
+        })
       }
 
-      $("#nextStep").click(function () {
-        if (currentStep < totalSteps) currentStep++;
-        updateStep();
-      });
+      // Fonction pour mettre à jour la preview à partir du champ de texte
+      function updatePreview() {
+        var latexText = $('#id_texte').val()
+        var parsedText = parseLatexText(latexText)
+        $('#copy_text').html('<span class="django-latexify text">' + parsedText + '</span>')
+        latex_render_math(math_latex_inline_elements, false)
+      }
 
-      $("#prevStep").click(function () {
-        if (currentStep > 1) currentStep--;
-        updateStep();
-      });
+      // Appelle la fonction de mise à jour à l'ouverture de la page pour afficher le texte existant
+      updatePreview()
 
-      // Dynamique pour le formset et les tags
-      // (ajoutez ici la logique existante pour LaTeX et les réponses dynamiques)
-    });
+      // Ajoute un écouteur d'événement sur le champ de texte pour mettre à jour la preview à chaque changement
+      $('#id_texte').on('input', function () {
+        updatePreview()
+      })
+
+      // Gestion de l'ajout dynamique de réponses
+      $('#addReponse').click(function () {
+        let formCount = parseInt(totalForms.val())
+        let newForm = emptyRep.clone()
+
+        newForm.removeClass('hidden')
+        newForm.addClass('formset_row border rounded position-relative')
+
+        //On remplate le __prefix__ par la bonne valeur
+        const regex = new RegExp('__prefix__', 'g')
+        newForm.html(newForm.html().replace(regex, formCount))
+
+        formsetContainer.append(newForm)
+        totalForms.val(formCount + 1)
+      })
+
+      // Gestion de la suppression de réponses
+      $(document).on('click', '.removeReponse', function () {
+        // Marquer le formulaire pour suppression en cochant le champ 'DELETE'
+        var formRow = $(this).closest('.formset_row')
+        formRow.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true)
+
+        // Masquer le formulaire, mais le garder dans le DOM pour l'envoyer à Django
+        formRow.hide()
+      })
+
+      // Initialiser le bouton supprimer
+      $('.removeReponse').each(function () {
+        if ($(this).closest('.formset_row').index() === 0) {
+          $(this).hide()
+        }
+      })
+
+      // Gestion de l'ajout dynamique de nouveaux tags
+      $('#addNewTag').click(function () {
+        var newTagHtml = 
+                                                                                                                                <div class="input-group mb-2">
+                                                                                                                                    <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+                                                                                                                                    <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+                                                                                                                                </div>
+        $('#newTagsContainer').append(newTagHtml)
+      })
+    })
   </script>
 {% endblock %}
