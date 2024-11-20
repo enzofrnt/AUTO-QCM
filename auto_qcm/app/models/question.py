@@ -116,3 +116,10 @@ class Question(models.Model):
         texte += "</question></quiz>"
 
         return texte
+
+    def convertToAmcTxt(self):
+        texte = "**" + self.texte + " :\n"
+        for rep in self.reponses.all():
+            texte += "+" if rep.is_correct else "-"
+            texte += rep.texte + "\n"
+        return texte

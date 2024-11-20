@@ -39,6 +39,14 @@ class QCM(models.Model):
         texte += "</quiz>"
         return texte
 
+    def convertToAmcTxt(self):
+        texte = (
+            "PaperSize: A4\nLang: FR\nCompleteMulti: 0\nShuffleQuestions: 0\nLaTeX: 1\n"
+        )
+        for quest in self.questions.all():
+            texte += quest.convertToAmcTxt()
+        return texte
+
     def convert_to_latex(self):
         """
         Convertit un QCM en document LaTeX.
