@@ -52,13 +52,10 @@
                         <ul class="dropdown-menu" aria-labelledby="exportDropdown">
                           <li><a class="dropdown-item export-qcm-xml-btn" href="#">Export XML</a></li>
                           <li><a class="dropdown-item export-qcm-latex-btn" href="#">Export AMC</a></li>
+                          <li><a class="dropdown-item export-qcm-amc-txt-btn" href="#">Export AMC TXT</a></li>
                         </ul>
                       </div>
-
-                      {% comment %} <button type="button" class="btn btn-info btn-sm export-qcm-xml-btn"><i class="bi bi-arrow-bar-down"></i></button> {% endcomment %}
-
                       <button type="button" class="btn btn-warning btn-sm edit-qcm-btn"><i class="bi bi-pencil"></i></button>
-                      {% comment %} <button type="button" class="btn btn-danger btn-sm delete-qcm-btn"><i class="bi bi-trash"></i></button> {% endcomment %}
                     </div>
 
                   </div>
@@ -147,6 +144,7 @@
         window.location.href = "{% url 'qcm-edit' pk=0 %}".replace('0', qcmId)
       })
 
+      // Empeche l'affichage des questions du qcm lorsqu'on clique sur le dropdown d'export
       $(document).on('click', '.dropdown-toggle', function (e) {
         e.preventDefault()
         e.stopPropagation()
@@ -170,6 +168,16 @@
         window.location.href = "{% url 'qcm-export-latex' qcm_id=0 %}".replace('0', qcmId)
       })
 
+      // Exporter le qcm en Amc txt
+      $(document).on('click', '.export-qcm-amc-txt-btn', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const qcmRow = $(this).closest('.qcm-row')
+        const qcmId = qcmRow.data('qcm-id')
+        window.location.href = "{% url 'qcm-export-amctxt' qcm_id=0 %}".replace('0', qcmId)
+      })
+
+      // Afficher / cacher les questions du qcm
       $(document).on('click','.qcm-row',function(e){
         e.preventDefault();
         e.stopPropagation();
