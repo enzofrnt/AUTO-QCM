@@ -170,11 +170,11 @@
         window.location.href = "{% url 'qcm-export-latex' qcm_id=0 %}".replace('0', qcmId)
       })
 
-      const qcmHeader = $('.qcm-header');
       $(document).on('click','.qcm-row',function(e){
         e.preventDefault();
         e.stopPropagation();
-        const qcmId = qcmHeader.data('qcm-id');
+        const qcmParent = $(this).closest('.qcm-header');
+        const qcmId = qcmParent.data('qcm-id');
         const questionList = $('#questions-' + qcmId);
         if (questionList.is(':visible')) {
           questionList.slideUp();
@@ -182,14 +182,6 @@
           questionList.slideDown();
         }
       })
-      qcmHeader.on('click', '.qcm-header-btn', function(e) {
-        const qcmParent = $(this).closest('.qcm-header');
-        
-       
-        
-        
-      });
-
     })
   </script>
 {% endblock %}
