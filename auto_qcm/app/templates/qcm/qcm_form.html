@@ -60,13 +60,61 @@
   }
 
   .form-group{
-    display:flex
+    display:flex;
+    flex-direction: column;
   }
 
   .btn-delete-plg{
     display:flex;
     justify-content: center;
 
+  }
+
+  .switch-form-btn-prev{
+    position: fixed;
+    top : 50%;
+    left: 18%;
+    background-color: none;
+    border-radius: 50%;
+    border: none;
+    height: 50px;
+    width: 50px;
+    font-size: 25px;
+    transition: 0.2s ease all;
+  }
+
+  .switch-form-btn-next{
+    position: fixed;
+    top : 50%;
+    right: 5%;
+    background-color: none;
+    border-radius: 50%;
+    border: none;
+    font-size: 25px;
+    height: 50px;
+    width: 50px;
+    
+    transition: 0.2s ease all;
+  }
+
+  .switch-form-btn-next:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transform: scale(1.2);
+    transition: 0.2s ease all;
+    
+
+  }
+
+  .switch-form-btn-prev:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transform: scale(1.2);
+    transition: 0.2s ease all;
+    
+  }
+
+  .switch-form-btn-prev.dark-mode{
+    background-color: #333;
+    border: 1px solid #555;
   }
 
 {% comment %} 
@@ -88,7 +136,7 @@
   <!-- Étape 1 : Informations générales -->
   <div class="form-step form-step-active" id="step-1">
     <div class="space">
-      <div class="form-group step1">
+      <div class="form-group step1 mt-5">
         {{ form.titre.label_tag }} 
         {{ form.titre }}
       </div>
@@ -105,9 +153,9 @@
         {{ form.est_accessible }}
       </div>
     </div>
-    <div style="display: flex;justify-content: space-around;">
-      <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
-    </div>
+    {% comment %} <div style="display: flex;justify-content: space-around;"> {% endcomment %}
+      <button type="button" class="switch-form-btn-next" onclick="nextStep()"><i class="bi bi-caret-right"></i></button>
+    {% comment %} </div> {% endcomment %}
   </div>
 
 
@@ -133,10 +181,10 @@
                 </div>
               </div>
     </div>
-    <div style="display: flex;justify-content: space-around;">
-      <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
-      <button type="button" class="btn btn-primary" onclick="nextStep()">Suivant</button>
-    </div>  
+    {% comment %} <div style="display: flex;justify-content: space-around;"> {% endcomment %}
+      <button type="button" class="switch-form-btn-prev" onclick="previousStep()"><i class="bi bi-caret-left"></i></button>
+      <button type="button" class="switch-form-btn-next" onclick="nextStep()"><i class="bi bi-caret-right"></i></button>
+    {% comment %} </div>   {% endcomment %}
   </div>
 
   <div  class="form-step" id="step-3">
@@ -146,12 +194,12 @@
           <button type="button" class="btn btn-success ml-2 w-10 " id="openModal">Générer automatiquement des questions</button>
         </div>  
         <!-- Liste des questions -->
-        <div id="questions-list" style="overflow-y: auto; height: 400px; width: 800px; border-radius: 20px">
+        <div id="questions-list" style="overflow-y: auto; height: 400px; width: 1050px; border-radius: 20px">
           {% include 'questions/question_list_content.html' with selectable=True  %}
         </div>
     </div>
-      <div style="display: flex;justify-content: space-around;">
-        <button type="button" class="btn btn-secondary" onclick="previousStep()">Précédent</button>
+      {% comment %} <div style="display: flex;justify-content: space-around;"> {% endcomment %}
+        <button type="button" class="switch-form-btn-prev" onclick="previousStep()"><i class="bi bi-caret-left"></i></button>
         <button type="submit" class="btn btn-success ">
           {% if qcm.pk %}
             Modifier
@@ -159,10 +207,44 @@
             Créer
           {% endif %}
         </button>
-      </div>
+      {% comment %} </div> {% endcomment %}
     </div>
   </div>
-    
+  <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="fileModalLabel">Envoyer un fichier PDF de cours pour générer des questions</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="fileUploadForm">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="fileInput" class="form-label">Choisir un fichier PDF</label>
+                <input type="file" class="form-control" id="fileInput" name="file" accept=".pdf" required>
+              </div>
+            </form>
+            <!-- Indicateur de chargement -->
+            <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display:none;">
+              <span class="sr-only"></span>
+            </div>
+            <!-- Conteneur pour les questions générées -->
+            <div id="generatedQuestionsContainer" style="display: none;">
+              <h4>Questions générées</h4>
+              <div id="generatedQuestionsList"></div>
+              <button type="button" class="btn btn-primary" id="saveSelectedQuestions">Ajouter les questions sélectionnées</button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="closeModal" data-dismiss="modal">Fermer</button>
+            <button type="button" class="btn btn-primary" id="generateBtn">Générer</button>
+          </div>
+        </div>
+      </div>
+    </div>  
 
   <!-- Étape 4 : Résumé et soumission -->
   {% comment %} <div class="form-step modal-footer" id="step-5">
