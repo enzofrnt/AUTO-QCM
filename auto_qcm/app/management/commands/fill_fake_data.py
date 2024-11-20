@@ -154,7 +154,6 @@ class Command(BaseCommand):
 
             qcm.questions.set(fake.random_elements(elements=questions, unique=True))
 
-
         # Créer un QCM spécifique pour Moquette pour aujourd'hui
         aujourdhui = timezone.now()
         qcm_pour_moquette = QCM.objects.create(
@@ -162,7 +161,7 @@ class Command(BaseCommand):
             description="Un QCM créé spécifiquement pour Moquette aujourd'hui.",
             date_modif=aujourdhui,
             creator=kilian,
-            est_accessible=True  
+            est_accessible=True,
         )
         # Créer un QCM spécifique pour Moquette pour aujourd'hui
         aujourdhui = timezone.now()
@@ -170,20 +169,24 @@ class Command(BaseCommand):
             titre="qcm de aujd accessible",
             description="Un QCM créé spécifiquement pour Moquette aujourd'hui.",
             date_modif=aujourdhui,
-            creator=kilian, 
-            est_accessible=True
-        )        # Créer un QCM spécifique pour Moquette pour aujourd'hui
+            creator=kilian,
+            est_accessible=True,
+        )  # Créer un QCM spécifique pour Moquette pour aujourd'hui
         aujourdhui = timezone.now()
         qcm_pour_moquette = QCM.objects.create(
             titre="qcm de aujd inaccessible",
             description="Un QCM créé spécifiquement pour Moquette aujourd'hui.",
             date_modif=aujourdhui,
-            creator=kilian
+            creator=kilian,
         )
 
         # Ajouter des plages horaires pour ce QCM
-        dateDeb = aujourdhui.replace(hour=1, minute=0, second=0, microsecond=0)  # Début à 9h
-        dateFin = aujourdhui.replace(hour=23, minute=0, second=0, microsecond=0)  # Fin à 17h
+        dateDeb = aujourdhui.replace(
+            hour=1, minute=0, second=0, microsecond=0
+        )  # Début à 9h
+        dateFin = aujourdhui.replace(
+            hour=23, minute=0, second=0, microsecond=0
+        )  # Fin à 17h
         plage_pour_moquette = Plage.objects.create(
             debut=dateDeb,
             fin=dateFin,
@@ -193,14 +196,14 @@ class Command(BaseCommand):
         )
 
         # Associer quelques questions au QCM
-        questions_pour_qcm = fake.random_elements(elements=questions, unique=True, length=3)
+        questions_pour_qcm = fake.random_elements(
+            elements=questions, unique=True, length=3
+        )
         qcm_pour_moquette.questions.set(questions_pour_qcm)
-
 
         self.stdout.write(
             self.style.SUCCESS("QCM spécifique pour Moquette ajouté avec succès.")
         )
-
 
         # Récupérer un QCM aléatoire
         qcm_random = QCM.objects.order_by("?").first()
@@ -230,7 +233,6 @@ class Command(BaseCommand):
             )  # Associe les réponses aléatoires à la question
             reponse_qcm.save()
 
-        
             reponses_qcm.append(reponse_qcm)
 
         rep.reponses.set(reponses_qcm)
