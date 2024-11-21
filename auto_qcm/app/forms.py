@@ -1,4 +1,5 @@
 from app.models import QCM, Plage, Question, Reponse
+from app.models.tag import Tag
 from django import forms
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -24,6 +25,12 @@ class QuestionForm(forms.ModelForm):
                 attrs={"rows": 5, "cols": 60}
             ),  # plus grand textarea
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Filtrer les tags pour exclure ceux correspondant à des années
+        self.fields["tags"].queryset = Tag.objects.exclude(name__regex=r"^20\d{2}$")
 
 
 class BaseReponseFormSet(forms.BaseInlineFormSet):
