@@ -22,7 +22,7 @@
                   ✖
                 </button>
               </span>
-              
+
             {% endfor %}
           </div>
         </div>
@@ -38,7 +38,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const deleteButtons = document.querySelectorAll('.delete-tag-btn');
-    
+
     deleteButtons.forEach(button => {
         button.addEventListener('click', function (event) {
             event.stopPropagation();  // Empêche la propagation de l'événement (qui pourrait soumettre un formulaire ou déclencher la recherche)

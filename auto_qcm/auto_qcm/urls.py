@@ -31,6 +31,7 @@ from app.views import (
     delete_multiple_qcms,
     delete_qcm,
     delete_question,
+    delete_tag,
     enseignant_dashboard,
     etudiant_dashboard,
     export_qcm_amctxt,
@@ -46,7 +47,6 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
-    delete_tag,
 )
 from django.conf.urls import handler403, handler404, handler500
 from django.conf.urls.static import static
@@ -110,7 +110,6 @@ urlpatterns = [
     ),
     # TEST
     path("cause-server-error/", cause_server_error, name="cause-server-error"),
-
     # DELETE TAG
     path("delete-tag/<int:tag_id>/", delete_tag, name="delete-tag"),
 ]

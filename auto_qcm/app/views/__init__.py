@@ -7,6 +7,7 @@ from .custom_error_view import (
     custom_server_error_view,
 )
 from .delete_multiple_qcms_view import delete_multiple_qcms
+from .delete_tag_view import delete_tag
 from .enseignant_dashboard_view import enseignant_dashboard
 from .etudiant_dashboard_view import etudiant_dashboard
 from .export_view import (
@@ -33,4 +34,3 @@ from .reponse_qcm_dashboard_view import qcm_responses
 from .save_generated_questions_view import save_generated_questions
 from .search_students_view import search_student
 from .support_doc_view import support_doc
-from .delete_tag_view import delete_tag
