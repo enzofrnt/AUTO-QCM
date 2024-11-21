@@ -21,7 +21,6 @@ def etudiant_dashboard(request, pk):
     promo = utilisateur.promotion
     groupe = utilisateur.groupe
 
-
     # Date actuelle
     now = timezone.now()
     today = now.date()
