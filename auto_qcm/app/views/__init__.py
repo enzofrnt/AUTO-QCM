@@ -7,6 +7,7 @@ from .custom_error_view import (
     custom_server_error_view,
 )
 from .delete_multiple_qcms_view import delete_multiple_qcms
+from .delete_tag_view import delete_tag
 from .enseignant_dashboard_view import enseignant_dashboard
 from .etudiant_dashboard_view import etudiant_dashboard
 from .export_view import (

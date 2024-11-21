@@ -31,6 +31,7 @@ from app.views import (
     delete_multiple_qcms,
     delete_qcm,
     delete_question,
+    delete_tag,
     enseignant_dashboard,
     etudiant_dashboard,
     export_qcm_amctxt,
@@ -109,6 +110,8 @@ urlpatterns = [
     ),
     # TEST
     path("cause-server-error/", cause_server_error, name="cause-server-error"),
+    # DELETE TAG
+    path("delete-tag/<int:tag_id>/", delete_tag, name="delete-tag"),
 ]
 
 if os.environ.get("env", "dev") == "dev":
