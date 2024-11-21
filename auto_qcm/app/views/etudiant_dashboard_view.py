@@ -59,8 +59,7 @@ def etudiant_dashboard(request, pk):
             est_accessible=True,  # QCM accessible
         )
         # .exclude(id__in=reponse_qcm_ids)
-        .distinct()
-        .order_by("plages__debut")
+        .distinct().order_by("plages__debut")
     )
 
     return render(
