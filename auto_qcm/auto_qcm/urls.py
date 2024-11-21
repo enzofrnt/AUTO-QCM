@@ -46,6 +46,7 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
+    import_questions,
 )
 from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin
@@ -73,6 +74,7 @@ urlpatterns = [
     path("question/delete/<int:question_id>/", delete_question, name="question-delete"),
     path("question/generation/", question_generation_view, name="generate-questions"),
     path("save-questions/", save_generated_questions, name="save-questions"),
+    path("question/import/", import_questions, name="questions-import"),
     # DASHBOARD
     path("etudiant-dashboard/<int:pk>/", etudiant_dashboard, name="etudiant-dashboard"),
     path(

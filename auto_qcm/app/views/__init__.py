@@ -15,6 +15,7 @@ from .export_view import (
     export_qcm_xml,
     export_question_xml,
 )
+from .import_view import import_questions
 from .home_view import home
 from .login_view import CustomLoginView
 from .qcm_acces_view import acces_qcm
