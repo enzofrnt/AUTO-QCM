@@ -4,6 +4,8 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
+from app.models.tag import Tag
+
 
 class QuestionForm(forms.ModelForm):
     # Champ pour ajouter de nouveaux tags
@@ -24,6 +26,14 @@ class QuestionForm(forms.ModelForm):
                 attrs={"rows": 5, "cols": 60}
             ),  # plus grand textarea
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Filtrer les tags pour exclure ceux correspondant à des années
+        self.fields["tags"].queryset = Tag.objects.exclude(name__regex=r"^20\d{2}$")
+
+
 
 
 class BaseReponseFormSet(forms.BaseInlineFormSet):

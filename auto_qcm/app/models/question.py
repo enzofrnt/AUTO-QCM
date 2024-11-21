@@ -1,9 +1,12 @@
+from django.utils import timezone
 from logging import getLogger
+import random
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from app.models.tag import Tag
 
 logger = getLogger(__name__)
 
