@@ -122,4 +122,5 @@ class Question(models.Model):
         for rep in self.reponses.all():
             texte += "+" if rep.is_correct else "-"
             texte += rep.texte + "\n"
+        texte += "\n"
         return texte
