@@ -21,13 +21,6 @@ def etudiant_dashboard(request, pk):
     promo = utilisateur.promotion
     groupe = utilisateur.groupe
 
-    if promo == "Erreur" or groupe == "Erreur":
-        # Gestion des erreurs si promo ou groupe ne sont pas correctement configurés
-        return render(
-            request,
-            "dashboard/error.html",
-            {"message": "Votre profil n'est pas correctement configuré."},
-        )
 
     # Date actuelle
     now = timezone.now()
