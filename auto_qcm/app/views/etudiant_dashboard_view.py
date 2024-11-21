@@ -31,7 +31,6 @@ def etudiant_dashboard(request, pk):
 
     # Récupérer les réponses existantes de l'utilisateur
     reponse_qcm = ReponseQCM.objects.filter(utilisateur=utilisateur)
-    reponse_qcm_ids = reponse_qcm.values_list("qcm_id", flat=True)
 
     # QCM accessibles via plage (promo, groupe, et plage active aujourd'hui)
     accessible_today_qcms = (
@@ -42,7 +41,7 @@ def etudiant_dashboard(request, pk):
             plages__groupe=groupe,  # Groupe correspondant
             est_accessible=True,  # QCM accessible
         )
-        .exclude(id__in=reponse_qcm_ids)
+        # .exclude(id__in=reponse_qcm_ids)
         .distinct()
     )
 
@@ -59,7 +58,7 @@ def etudiant_dashboard(request, pk):
             plages__groupe=groupe,  # Groupe correspondant
             est_accessible=True,  # QCM accessible
         )
-        .exclude(id__in=reponse_qcm_ids)
+        # .exclude(id__in=reponse_qcm_ids)
         .distinct()
         .order_by("plages__debut")
     )
