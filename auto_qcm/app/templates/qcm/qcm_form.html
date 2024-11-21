@@ -125,7 +125,18 @@
 
   } {% endcomment %}
 
+  .divTags {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    width: 1050px;
+    margin-bottom: 20px;
+  }
 
+  .divTags label{
+    width: 130px;
+  }
 </style>
 
 <h2 style="text-align:center; margin-bottom:30px;">{% if qcm.pk %}Modifier le QCM{% else %}Créer un nouveau QCM{% endif %}</h2>
@@ -188,6 +199,7 @@
   </div>
 
   <div  class="form-step" id="step-3">
+    {% include 'questions/question_filter_form.html' %}
     <div class="space">
         <div>
           <a href="{% url 'question-create' %}" class="btn btn-primary ml-2 w-10 ">Créer une nouvelle Question</a>
