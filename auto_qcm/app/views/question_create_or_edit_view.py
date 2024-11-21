@@ -1,4 +1,6 @@
+import logging
 import random
+
 from app.decorators import teacher_required
 from app.forms import BaseReponseFormSet, QuestionForm
 from app.models import Question, Reponse, Tag
@@ -6,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-import logging
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -58,12 +59,14 @@ def create_or_edit_question(request, pk=None):
             year = timezone.now().year  # Utiliser la date actuelle pour obtenir l'année
             year_tag, created = Tag.objects.get_or_create(
                 name=str(year),
-                defaults={"color": generate_random_color()}  # Couleur aléatoire si le tag est créé
+                defaults={
+                    "color": generate_random_color()
+                },  # Couleur aléatoire si le tag est créé
             )
 
             if year_tag not in question.tags.all():
                 question.tags.add(year_tag)
-            
+
             # Traiter les nouveaux tags et leurs couleurs
             new_tags = request.POST.getlist("new_tags[]")
             new_tag_colors = request.POST.getlist("new_tag_colors[]")
