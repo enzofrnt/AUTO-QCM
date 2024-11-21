@@ -13,6 +13,12 @@
             <div class="question">
                 <h4>{{ forloop.counter }}. {{ question.texte }}</h4>
                 <p>{{scores|index:forloop.counter0}} </p>
+                {% if question.image %}
+                    <div class="question-image">
+                    <img src="{{ question.image.url }}" alt="Image de la question" style="max-width: 300px; max-height: 300px; margin-top: 10px; border-radius: 5px; ">
+                    </div>
+                {% endif %}
+                <br />
                 <div class="reponses">
                     {% for reponse in question.reponses.all %}
                         <div class="form-check">
