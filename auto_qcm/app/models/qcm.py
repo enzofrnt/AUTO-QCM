@@ -13,7 +13,7 @@ class QCM(models.Model):
         "Utilisateur", on_delete=models.CASCADE
     )  # 1 est l'ID d'un utilisateur par défaut
     est_accessible = models.BooleanField(default=False)
-    nb_reponses = models.IntegerField(default=1)
+    nb_tentatives = models.IntegerField(default=1)
     date_creation = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

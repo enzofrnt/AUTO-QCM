@@ -53,7 +53,7 @@ class BaseReponseFormSet(forms.BaseInlineFormSet):
 class QcmForm(forms.ModelForm):
     class Meta:
         model = QCM
-        fields = ["titre", "description", "est_accessible", "nb_reponses"]
+        fields = ["titre", "description", "est_accessible", "nb_tentatives"]
 
 
 class PlageForm(forms.ModelForm):
