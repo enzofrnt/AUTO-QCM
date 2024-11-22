@@ -31,6 +31,7 @@ from app.views import (
     delete_multiple_qcms,
     delete_qcm,
     delete_question,
+    duplicate_question,
     delete_tag,
     enseignant_dashboard,
     etudiant_dashboard,
@@ -79,6 +80,11 @@ urlpatterns = [
     path("question/generation/", question_generation_view, name="generate-questions"),
     path("save-questions/", save_generated_questions, name="save-questions"),
     path("question/import/", import_questions, name="questions-import"),
+    path(
+        "question/duplicate/<int:pk>/",
+        duplicate_question,
+        name="question-duplicate",
+    ),
     # DASHBOARD
     path("etudiant-dashboard/<int:pk>/", etudiant_dashboard, name="etudiant-dashboard"),
     path(
