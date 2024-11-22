@@ -27,8 +27,8 @@ from .qcm_delete_view import delete_qcm
 from .qcm_list_view import QcmListView
 from .qcm_statistique_view import qcm_statistics
 from .question_create_or_edit_view import create_or_edit_question
-from .question_duplicate_view import duplicate_question
 from .question_delete_view import delete_question
+from .question_duplicate_view import duplicate_question
 from .question_generation_view import question_generation_view
 from .question_list_view import QuestionListView
 from .remove_tags_view import remove_tag

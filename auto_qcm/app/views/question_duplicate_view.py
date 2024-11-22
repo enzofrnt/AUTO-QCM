@@ -1,9 +1,10 @@
-from django.shortcuts import get_object_or_404, redirect
 from logging import getLogger
+
+from app.decorators import teacher_required
 from app.models import Question, Reponse
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from app.decorators import teacher_required
 
 logger = getLogger(__name__)
 
