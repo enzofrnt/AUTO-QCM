@@ -86,8 +86,14 @@ def import_questions(request):
                     ):  # Si une question précédente existe, enregistrer-la
                         # Créer l'objet question
                         try:
+                            # Si la len du texte est plus grande que 50 on renomme
+
                             questObj = Question.objects.create(
-                                nom=question_text,
+                                nom=(
+                                    question_text
+                                    if len(question_text) < 50
+                                    else "ImportAmcTxt"
+                                ),
                                 texte=question_text,
                                 note=1.0,  # Vous pouvez ajuster la note ici
                                 melange_rep=True,  # Indiquer si les réponses sont mélangées
@@ -123,7 +129,9 @@ def import_questions(request):
             if question_text:
                 try:
                     questObj = Question.objects.create(
-                        nom=question_text,
+                        nom=(
+                            question_text if len(question_text) < 50 else "ImportAmcTxt"
+                        ),
                         texte=question_text,
                         note=1.0,  # Vous pouvez ajuster la note ici
                         melange_rep=True,  # Indiquer si les réponses sont mélangées
