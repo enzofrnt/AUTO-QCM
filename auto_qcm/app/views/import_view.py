@@ -1,9 +1,10 @@
-from django.http import JsonResponse
-from logging import getLogger
+import re
 import defusedxml.ElementTree as ET
+from logging import getLogger
+
 from app.models import Question, Reponse
 from django.db import IntegrityError
-import re
+from django.http import JsonResponse
 
 logger = getLogger(__name__)
 

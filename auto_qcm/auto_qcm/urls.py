@@ -38,6 +38,7 @@ from app.views import (
     export_qcm_xml,
     export_question_xml,
     home,
+    import_questions,
     qcm_responses,
     qcm_statistics,
     question_generation_view,
@@ -46,7 +47,6 @@ from app.views import (
     save_generated_questions,
     search_student,
     support_doc,
-    import_questions,
 )
 from django.conf.urls import handler403, handler404, handler500
 from django.contrib import admin
