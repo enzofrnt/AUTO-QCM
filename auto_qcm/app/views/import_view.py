@@ -1,7 +1,7 @@
 import re
-import defusedxml.ElementTree as ET
 from logging import getLogger
 
+import defusedxml.ElementTree as ET
 from app.models import Question, Reponse
 from django.db import IntegrityError
 from django.http import JsonResponse
