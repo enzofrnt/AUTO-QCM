@@ -2,6 +2,13 @@ $(document).ready(function () {
     // Variable globale pour stocker les IDs des questions sélectionnées
     window.selectedQuestionIds = [];
 
+    $('.duplicate-question-btn').off('click').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const questionId = $(this).data('question-id');
+      window.location.href = duplicateUrlTemplate.replace('0', questionId);
+    });
+
     $('.delete-question-btn').off('click').on('click', function(e) {
         e.preventDefault();
         e.stopPropagation(); // Empêche le clic de se propager à l'élément parent
@@ -11,19 +18,18 @@ $(document).ready(function () {
         }
     });
 
-    // Répétez pour les autres boutons
     $('.edit-question-btn').off('click').on('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const questionId = $(this).data('question-id');
-    window.location.href = editUrlTemplate.replace('0', questionId);
+      e.preventDefault();
+      e.stopPropagation();
+      const questionId = $(this).data('question-id');
+      window.location.href = editUrlTemplate.replace('0', questionId);
     });
 
     $('.export-question-btn').off('click').on('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const questionId = $(this).data('question-id');
-    window.location.href = exportUrlTemplate.replace('0', questionId);
+      e.preventDefault();
+      e.stopPropagation();
+      const questionId = $(this).data('question-id');
+      window.location.href = exportUrlTemplate.replace('0', questionId);
     });
 
     // Initialiser selectedQuestionIds au chargement de la page
