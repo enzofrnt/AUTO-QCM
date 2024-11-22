@@ -39,6 +39,7 @@ from app.views import (
     export_qcm_xml,
     export_question_xml,
     home,
+    import_questions,
     qcm_responses,
     qcm_statistics,
     question_generation_view,
@@ -77,6 +78,7 @@ urlpatterns = [
     path("question/delete/<int:question_id>/", delete_question, name="question-delete"),
     path("question/generation/", question_generation_view, name="generate-questions"),
     path("save-questions/", save_generated_questions, name="save-questions"),
+    path("question/import/", import_questions, name="questions-import"),
     # DASHBOARD
     path("etudiant-dashboard/<int:pk>/", etudiant_dashboard, name="etudiant-dashboard"),
     path(
