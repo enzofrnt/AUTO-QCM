@@ -18,7 +18,7 @@
         <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
         <a id="openImport" class="btn btn-primary mb-4">Importer des questions</a>
       {% endif %}
-      
+
       {% include 'questions/question_list_content.html' %}
     </div>
   </div>
@@ -76,9 +76,9 @@
         }
         var formData = new FormData($('#fileImportForm')[0])
         var importType = $('#importType').val()
-    
+
         formData.append('import_type', importType)
-    
+
         $.ajax({
           url: '/question/import/',
           type: 'POST',
@@ -118,7 +118,7 @@
           }
         })
       })
-    
+
       $('#closeModal').click(function () {
         $('#importModal').modal('hide')
         $('#fileInput').val('')
