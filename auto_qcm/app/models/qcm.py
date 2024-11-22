@@ -78,7 +78,7 @@ class QCM(models.Model):
 
             # Ajouter la question LaTeX
             latex_content += f"  \\begin{{{question_type}}}{{{question.nom}}}\n"
-            latex_content += "    \\bareme{b=2}\n"  # Ajustez le barème si nécessaire
+            latex_content += f"    \\bareme{{b={question.note}}}\n"
             latex_content += f"    {question.texte}\n"
             latex_content += "    \\begin{multicols}{2}\n"
             latex_content += "      \\begin{reponses}\n"
@@ -107,7 +107,7 @@ class QCM(models.Model):
 
     \vspace{2ex}
 
-    Cet examen a pour but d'illustrer l'utilisation d'\emph{Auto Multiple Choice}. Vous pourrez trouver sur le site d'AMC les copies de Jojo Boulix et André Roullot afin de tester la saisie automatique, ainsi que le fichier listant les étudiants de la classe d'application d'AMC (dont font partie Jojo et André) afin de tester l'association automatique à partir des numéros d'étudiants.
+    Cet examen a été réalisé avec l'application AUTO-QCM
 
     \vspace{3ex}
 

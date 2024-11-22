@@ -2,9 +2,13 @@ from django.http import JsonResponse
 import xml.etree.ElementTree as ET
 from app.models import Question, Reponse
 from django.db import IntegrityError
+import re
 
 
 def import_questions(request):
+    """
+    Gère l'import de fichier externe pour ajouter des questions à la base de données.
+    """
     if request.method == "POST":
         import_type = request.POST.get("import_type")
         uploaded_file = request.FILES.get("file")
@@ -64,14 +68,87 @@ def import_questions(request):
                     nbEchec += 1
 
         elif import_type == "latex_amc":
-            # Traiter le fichier LaTeX AMC
-            pass
+            with uploaded_file.open() as f:
+                file_content = f.read().decode("utf-8")
+
+            # Initialiser les variables pour stocker les informations de la question courante
+            question_text = ""
+            answers = []
+            note = 1.0  # Note par défaut
+
+            # Trouver toutes les questions (questionmult et question simple)
+            questions_mult = re.finditer(
+                r"\\begin{questionmult}{([^}]+)}([^\\]+)\\bareme{b=([^}]+)}([^\\]+)\\begin{reponses}(.*?)\\end{reponses}",
+                file_content,
+                re.DOTALL,
+            )
+            questions_simple = re.finditer(
+                r"\\begin{question}{([^}]+)}([^\\]+)\\bareme{b=([^}]+)}([^\\]+)\\begin{reponses}(.*?)\\end{reponses}",
+                file_content,
+                re.DOTALL,
+            )
+
+            def process_question(match, is_mult=True):
+                nonlocal nbReussi, nbEchec
+                try:
+                    # Extraire les informations de la question
+                    question_id = match.group(1)
+                    question_text = match.group(2).strip() + match.group(4).strip()
+                    note = float(match.group(3))
+                    reponses_text = match.group(5)
+
+                    # Créer l'objet question
+                    questObj = Question.objects.create(
+                        nom=(
+                            question_text
+                            if len(question_text) < 50
+                            else f"ImportAmcLatex_{question_id}"
+                        ),
+                        texte=question_text,
+                        note=note,
+                        melange_rep=True,
+                        creator=request.user,
+                    )
+
+                    # Extraire et traiter les réponses
+                    bonnes = re.finditer(r"\\bonne{([^}]+)}", reponses_text)
+                    mauvaises = re.finditer(r"\\mauvaise{([^}]+)}", reponses_text)
+
+                    # Ajouter les bonnes réponses
+                    for bonne in bonnes:
+                        Reponse.objects.create(
+                            question=questObj,
+                            texte=bonne.group(1).strip(),
+                            is_correct=True,
+                        )
+
+                    # Ajouter les mauvaises réponses
+                    for mauvaise in mauvaises:
+                        Reponse.objects.create(
+                            question=questObj,
+                            texte=mauvaise.group(1).strip(),
+                            is_correct=False,
+                        )
+
+                    nbReussi += 1
+
+                except (AttributeError, ValueError, IntegrityError) as e:
+                    erreurs.append(
+                        f"Erreur lors de l'importation de la question {question_id}: {str(e)}"
+                    )
+                    nbEchec += 1
+
+            # Traiter toutes les questions à choix multiples
+            for question in questions_mult:
+                process_question(question, is_mult=True)
+
+            # Traiter toutes les questions à choix simple
+            for question in questions_simple:
+                process_question(question, is_mult=False)
         elif import_type == "amc_txt":
             with uploaded_file.open() as f:
-                file_content = f.read().decode(
-                    "utf-8"
-                )  # Décoder le fichier en chaîne de caractères
-                lines = file_content.splitlines()  # Diviser le contenu en lignes
+                file_content = f.read().decode("utf-8")
+                lines = file_content.splitlines()
 
             question_text = ""
             answers = []
@@ -110,7 +187,7 @@ def import_questions(request):
                                 )
 
                             nbReussi += 1
-                        except Exception as e:
+                        except (AttributeError, ValueError, IntegrityError) as e:
                             erreurs.append(
                                 f"Erreur lors de l'importation de la question: {str(e)}"
                             )
@@ -145,7 +222,7 @@ def import_questions(request):
                         )
 
                     nbReussi += 1
-                except Exception as e:
+                except (AttributeError, ValueError, IntegrityError) as e:
                     erreurs.append(
                         f"Erreur lors de l'importation de la question: {str(e)}"
                     )
