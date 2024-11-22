@@ -102,7 +102,7 @@ class CreateOrEditQcmViewTests(TestCase):
             "description": "Description du nouveau QCM",
             "selected_questions": [self.question1.pk],  # Sélection d'une question
             "form-0-debut": "2024-01-01 09:00",
-            "nb_reponses": 3,  # Ajout de la valeur pour nb_reponses
+            "nb_tentatives": 3,  # Ajout de la valeur pour nb_tentatives
             "form-0-fin": "2024-01-01 11:00",
             "form-0-promo": self.promo_group.pk,
             "form-0-groupe": self.groupe_group.pk,
