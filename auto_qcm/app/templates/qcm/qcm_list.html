@@ -94,7 +94,7 @@
     $(document).ready(function () {
       const filterForm = $('#filterForm')
       const selectedTagsContainer = $('#selected-tags-container')
-      
+
       // Confirmation de suppression avant de supprimer le qcm
       $(document).on('click', '.delete-qcm-btn', function (e) {
         e.preventDefault()
@@ -106,7 +106,7 @@
           window.location.href = "{% url 'qcm-delete' qcm_id=0 %}".replace('0', qcmId)
         }
       })
-      
+
       $('#select-all').on('click', function () {
         $('input[name="selected_qcms"]').prop('checked', this.checked);
       });
