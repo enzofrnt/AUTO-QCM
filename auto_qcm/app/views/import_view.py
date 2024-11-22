@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from logging import getLogger
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 from app.models import Question, Reponse
 from django.db import IntegrityError
 import re
