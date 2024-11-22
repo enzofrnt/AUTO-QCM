@@ -18,7 +18,7 @@
           <button type="submit" class="btn btn-danger">Supprimer les QCM sélectionnés</button>
         </div>
       </div>
-      <table class="table  qcm-table">
+      <table class="table qcm-table">
         <thead class="rounded">
           <tr>
             <th>
@@ -31,11 +31,9 @@
           {% for qcm in qcms %}
           <tr class="qcm-row position-relative qcm-header" data-qcm-id="{{ qcm.id }}" style="cursor: pointer;">
             <td class="">
-
-                <div class="form-check ">
-                  <input class="form-check-input" type="checkbox" name="selected_qcms" value="{{ qcm.id }}">
-                </div>
-
+              <div class="form-check ">
+                <input class="form-check-input" type="checkbox" name="selected_qcms" value="{{ qcm.id }}">
+              </div>
             </td>
             <td class="w-100 qcm-header-btn">
               <div style="display: flex; flex-direction: column">
@@ -96,8 +94,7 @@
     $(document).ready(function () {
       const filterForm = $('#filterForm')
       const selectedTagsContainer = $('#selected-tags-container')
-
-
+      
       // Confirmation de suppression avant de supprimer le qcm
       $(document).on('click', '.delete-qcm-btn', function (e) {
         e.preventDefault()
@@ -109,21 +106,17 @@
           window.location.href = "{% url 'qcm-delete' qcm_id=0 %}".replace('0', qcmId)
         }
       })
+      
+      $('#select-all').on('click', function () {
+        $('input[name="selected_qcms"]').prop('checked', this.checked);
+      });
 
-      $(document).ready(function () {
-        // Sélectionner / désélectionner tous les QCM
-        $('#select-all').on('click', function () {
-          $('input[name="selected_qcms"]').prop('checked', this.checked);
-        });
-
-        // Si tous les QCM sont cochés ou non
-        $('input[name="selected_qcms"]').on('click', function () {
-          if ($('input[name="selected_qcms"]:checked').length === $('input[name="selected_qcms"]').length) {
-            $('#select-all').prop('checked', true);
-          } else {
-            $('#select-all').prop('checked', false);
-          }
-        });
+      $('input[name="selected_qcms"]').on('click', function (e) {
+        if ($('input[name="selected_qcms"]:checked').length === $('input[name="selected_qcms"]').length) {
+          $('#select-all').prop('checked', true);
+        } else {
+          $('#select-all').prop('checked', false);
+        }
       });
 
       // Previsualiser le qcm
@@ -178,7 +171,7 @@
       })
 
       // Afficher / cacher les questions du qcm
-      $(document).on('click','.qcm-row',function(e){
+      $(document).on('click','.qcm-header-btn',function(e){
         e.preventDefault();
         e.stopPropagation();
         const qcmParent = $(this).closest('.qcm-header');
