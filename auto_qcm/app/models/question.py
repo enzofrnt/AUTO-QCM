@@ -1,9 +1,12 @@
+import random
 from logging import getLogger
 
+from app.models.tag import Tag
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 logger = getLogger(__name__)
 
@@ -123,4 +126,5 @@ class Question(models.Model):
         for rep in self.reponses.all():
             texte += "+" if rep.is_correct else "-"
             texte += rep.texte + "\n"
+        texte += "\n"
         return texte

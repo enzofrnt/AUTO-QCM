@@ -31,6 +31,8 @@ from app.views import (
     delete_multiple_qcms,
     delete_qcm,
     delete_question,
+    delete_tag,
+    duplicate_question,
     enseignant_dashboard,
     etudiant_dashboard,
     export_qcm_amctxt,
@@ -38,6 +40,7 @@ from app.views import (
     export_qcm_xml,
     export_question_xml,
     home,
+    import_questions,
     qcm_responses,
     qcm_statistics,
     question_generation_view,
@@ -76,6 +79,12 @@ urlpatterns = [
     path("question/delete/<int:question_id>/", delete_question, name="question-delete"),
     path("question/generation/", question_generation_view, name="generate-questions"),
     path("save-questions/", save_generated_questions, name="save-questions"),
+    path("question/import/", import_questions, name="questions-import"),
+    path(
+        "question/duplicate/<int:pk>/",
+        duplicate_question,
+        name="question-duplicate",
+    ),
     # DASHBOARD
     path("etudiant-dashboard/<int:pk>/", etudiant_dashboard, name="etudiant-dashboard"),
     path(
@@ -109,6 +118,8 @@ urlpatterns = [
     ),
     # TEST
     path("cause-server-error/", cause_server_error, name="cause-server-error"),
+    # DELETE TAG
+    path("delete-tag/<int:tag_id>/", delete_tag, name="delete-tag"),
 ]
 
 if os.environ.get("env", "dev") == "dev":

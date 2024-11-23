@@ -111,6 +111,7 @@ class Command(BaseCommand):
             )  # Créateur défini
             question.save()
             question.tags.set(fake.random_elements(elements=tags, unique=True))
+            question.save()
             questions.append(question)
 
         # Créer des réponses factices
