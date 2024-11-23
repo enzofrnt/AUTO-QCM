@@ -133,7 +133,7 @@
       </div>
     {% endif %}
 
-    <form method="post" id="questionForm">
+    <form method="post"  enctype="multipart/form-data" id="questionForm">
       {% csrf_token %}
       <input type="hidden" name="next" value="{{ next }}" />
 
@@ -163,7 +163,28 @@
           <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
         </div>
         <div class="form-group">{{ form.melange_rep.label_tag }} {{ form.melange_rep }}</div>
-       
+        <!-- Champ pour ajout image (optionnel)-->
+      <div class="image-upload-container">
+          <label for="id_image">Ajouter une image :</label>
+          <input type="file" id="id_image" name="image" accept="image/png, image/jpeg, image/jpg, image/svg,image/gif">
+          {% if question.image %}
+            <span id="imageFileName">{{ question.image.name }}</span>
+          {% else %}
+            <span id="imageFileName" class="ml-2">Aucun fichier sélectionné</span>
+          {% endif %}
+      </div>
+      <div id="imagePreviewContainer">
+          {% if question.image %}
+              <img id="imagePreview" src="{{ question.image.url }}" alt="Prévisualisation de l'image" class="img-thumbnail" style="max-width: 250px; max-height:250px;">
+
+          {% else %}
+              <img id="imagePreview" src="#" alt="Prévisualisation de l'image" class="img-thumbnail" style="max-width: 200px; display: none;">
+          {% endif %}
+          <br />
+              <button type="button" id="removeImageButton" class="btn btn-danger ml-2" style="display:none;">
+                  <i class="fas fa-trash-alt"></i> Enlever l'image
+              </button>
+      </div>
       </div>
 
       <!-- Étape 3 : Réponses -->
