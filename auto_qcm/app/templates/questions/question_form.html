@@ -93,6 +93,11 @@
     margin-bottom:5px;
   }
 
+  .formset_row > * {
+    margin: 5px;
+    padding: 10px;
+  }
+
 
   </style>
 
@@ -193,18 +198,18 @@
         <div id="reponseFormset">
           {{ formset.management_form }}
           {% for formset_form in formset %}
-            <div class="formset_row border rounded position-relative">
+            <div class="formset_row border rounded position-relative" style="display: flex; flex-direction:row">
               {{ formset_form.as_p }}
-              <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute">
+              <button type="button" class="btn btn-danger btn-sm removeReponse ">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
           {% endfor %}
         </div>
 
-        <div id="reponseVide" class="hidden">
+        <div id="reponseVide"  class="hidden">
           {{ formset.empty_form.as_p }}
-          <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute">
+          <button type="button" class="btn btn-danger btn-sm removeReponse ">
             <i class="bi bi-trash"></i>
           </button>
         </div>
@@ -371,7 +376,7 @@
         let newForm = emptyRep.clone()
 
         newForm.removeClass('hidden')
-        newForm.addClass('formset_row border rounded position-relative')
+        newForm.addClass('formset_row border rounded position-relative d-flex flex-row')
 
         //On remplace le __prefix__ par la bonne valeur
         const regex = new RegExp('__prefix__', 'g')
@@ -385,6 +390,7 @@
       $(document).on('click', '.removeReponse', function () {
         // Marquer le formulaire pour suppression en cochant le champ 'DELETE'
         var formRow = $(this).closest('.formset_row')
+        formRow.removeClass('d-flex flex-row')
         formRow.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true)
 
         // Masquer le formulaire, mais le garder dans le DOM pour l'envoyer à Django
