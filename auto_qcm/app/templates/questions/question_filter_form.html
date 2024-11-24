@@ -17,7 +17,12 @@
             {% for tag in tags %}
               <span class="badge tag-badge form-check-label {% if tag.name in tag_filtre %}selected{% endif %}" data-tag-name="{{ tag.name }}" style="background-color: {{ tag.color }}; color: #fff; margin: 5px; padding: 6px 12px; border-radius: 20px; border: 2px solid {{ tag.color|darken_color:'0.3' }}; cursor: pointer;">
                 {{ tag.name }}
+                <!-- Bouton de suppression du tag -->
+                <button type="button" class="delete-tag-btn" data-tag-id="{{ tag.id }}" style="background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; margin-left: 8px;">
+                  ✖
+                </button>
               </span>
+
             {% endfor %}
           </div>
         </div>
@@ -30,3 +35,43 @@
       </div>
     </div>
 </form>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.delete-tag-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.stopPropagation();  // Empêche la propagation de l'événement (qui pourrait soumettre un formulaire ou déclencher la recherche)
+
+            const tagId = this.getAttribute('data-tag-id');
+            const tagElement = this.closest('.badge'); // Trouver l'élément du tag pour le supprimer après
+            console.log("Id du tag ", tagId);
+
+            if (confirm('Voulez-vous vraiment supprimer ce tag (cela supprimera le tag de toutes les questions possédant ce tag)?')) {
+                fetch(`/delete-tag/${tagId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ tag_id: tagId })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Si la suppression a réussi, supprimer l'élément du DOM
+                        tagElement.remove();
+                        alert('Tag supprimé avec succès.');
+                        location.reload();
+                    } else {
+                        alert('Une erreur est survenue lors de la suppression du tag.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                });
+            }
+        });
+    });
+});
+
+</script>

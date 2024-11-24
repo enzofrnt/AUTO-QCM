@@ -1,4 +1,5 @@
 from app.models import QCM, Plage, Question, Reponse
+from app.models.tag import Tag
 from django import forms
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -17,13 +18,19 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ["nom", "texte", "note", "melange_rep", "tags", "new_tags"]
+        fields = ["nom", "texte", "note", "melange_rep", "tags", "new_tags", "image"]
         widgets = {
             "tags": forms.CheckboxSelectMultiple(),  # Affichage des tags existants en tant que checkboxes
             "texte": forms.Textarea(
                 attrs={"rows": 5, "cols": 60}
             ),  # plus grand textarea
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Filtrer les tags pour exclure ceux correspondant à des années
+        self.fields["tags"].queryset = Tag.objects.exclude(name__regex=r"^20\d{2}$")
 
 
 class BaseReponseFormSet(forms.BaseInlineFormSet):
@@ -46,7 +53,7 @@ class BaseReponseFormSet(forms.BaseInlineFormSet):
 class QcmForm(forms.ModelForm):
     class Meta:
         model = QCM
-        fields = ["titre", "description", "est_accessible", "nb_reponses"]
+        fields = ["titre", "description", "est_accessible", "nb_tentatives"]
 
 
 class PlageForm(forms.ModelForm):

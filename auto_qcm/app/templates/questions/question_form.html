@@ -5,26 +5,102 @@
 {% block content %}
   {% include 'latexify/stylesheets.html' %}
   <style>
-    label[for^='id_reponses'][for$='-DELETE'],
-    input[type='checkbox'][name$='-DELETE'] {
-      display: none;
-    }
-
     .hidden {
       display: none;
     }
 
-    .formset_row {
+    .form-navigation {
       display: flex;
-      flex-direction: row;
-      gap: 10px;
+      justify-content: space-between;
+      margin-top: 20px;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .removeReponse {
-      top: 5px;
-      right: 5px;
+    .step {
+      display: none;
     }
+
+    .step.active {
+       display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+
+  .switch-form-btn-prev{
+    position: fixed;
+    top : 50%;
+    left: 18%;
+    background-color: none;
+    border-radius: 50%;
+    border: none;
+    height: 50px;
+    width: 50px;
+    font-size: 25px;
+    transition: 0.2s ease all;
+  }
+
+  .switch-form-btn-next{
+    position: fixed;
+    top : 50%;
+    right: 5%;
+    background-color: none;
+    border-radius: 50%;
+    border: none;
+    font-size: 25px;
+    height: 50px;
+    width: 50px;
+
+    transition: 0.2s ease all;
+  }
+
+  .switch-form-btn-next:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transform: scale(1.2);
+    transition: 0.2s ease all;
+
+
+  }
+
+  .switch-form-btn-prev:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transform: scale(1.2);
+    transition: 0.2s ease all;
+
+  }
+
+  .switch-form-btn-prev.dark-mode{
+    background-color: #333;
+    border: 1px solid #555;
+  }
+
+  input#id_nom {
+    width: 300px;
+    border-radius:10px;
+    margin-bottom:5px;
+  }
+
+  input#id_note {
+    width: 300px;
+    border-radius:10px;
+    margin-bottom:5px;
+  }
+
+  textarea#id_texte {
+    width: 300px;
+    border-radius:10px;
+    margin-bottom:5px;
+  }
+
+  .formset_row > * {
+    margin: 5px;
+    padding: 10px;
+  }
+
+
   </style>
+
   <div class="container mt-4">
     <h2>
       {% if question.pk %}
@@ -38,7 +114,6 @@
     {% if form.errors or formset.errors %}
       <div class="alert alert-danger">
         <ul>
-          <!-- Affichage des erreurs du formulaire principal -->
           {% for field in form %}
             {% if field.errors %}
               {% for error in field.errors %}
@@ -46,13 +121,9 @@
               {% endfor %}
             {% endif %}
           {% endfor %}
-          {% if form.non_field_errors %}
-            {% for error in form.non_field_errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          {% endif %}
-
-          <!-- Affichage des erreurs du formset -->
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
           {% for formset_form in formset %}
             {% if formset_form.errors %}
               {% for field, errors in formset_form.errors.items %}
@@ -60,93 +131,215 @@
               {% endfor %}
             {% endif %}
           {% endfor %}
-          {% if formset.non_form_errors %}
-            {% for error in formset.non_form_errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          {% endif %}
+          {% for error in formset.non_form_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
         </ul>
       </div>
     {% endif %}
 
-    <form method="post" id="questionForm">
+    <form method="post"  enctype="multipart/form-data" id="questionForm">
       {% csrf_token %}
-
-      <!-- Champ caché pour l'URL de redirection -->
       <input type="hidden" name="next" value="{{ next }}" />
 
-      <!-- Champ pour le nom de la question -->
-      <div class="form-group">{{ form.nom.label_tag }}
-        {{ form.nom }}</div>
-
-      <!-- Champ pour le texte de la question -->
-      <div class="form-group">{{ form.texte.label_tag }}
-        {{ form.texte }}</div>
-
-      <!-- Champ pour la note de la question -->
-      <div class="form-group">{{ form.note.label_tag }}
-        {{ form.note }}</div>
-
-      <!-- Champ pour si la question a des reponses mélangées -->
-      <div class="form-group">{{ form.melange_rep.label_tag }}{{ form.melange_rep }}</div>
-
-      <!-- Champ pour la preview LaTeX -->
-      <div>
-        <label for="preview">Preview LaTeX :</label>
+      <!-- Étape 1 : Informations générales -->
+      <div class="step active centerded-form" id="step-1">
+        <h3>Étape 1 : Informations générales</h3>
+        <div class="form-group input-nom" style="display:flex; flex-direction: column;">{{ form.nom.label_tag }} {{ form.nom }}</div>
+        <div class="form-group input-texte" style="display:flex; flex-direction: column;">{{ form.texte.label_tag }} {{ form.texte }}</div>
+        <div class="form-group" style="display:flex; flex-direction: column;">{{ form.note.label_tag }} {{ form.note }}</div>
+        <div>
+        <label for="preview" data-toggle="tooltip" title="Utilisez des formules LaTeX entre les symboles \$...\$ (par exemple, \$a^2 + b^2 = c^2\$).<br>Pas de balises HTML (comme {tabulation}), seulement des formules mathématiques.">
+          Preview LaTeX :
+        </label>
         <div id="copy_text"></div>
       </div>
 
-      <!-- Champ pour les tags existants -->
-      <div class="form-group">{{ form.tags.label_tag }}
-        {{ form.tags }}</div>
 
-      <!-- Bouton pour ajouter de nouveaux tags -->
-      <div class="form-group">
-        <label for="new_tags">Ajouter de nouveaux tags :</label>
-        <div id="newTagsContainer"></div>
-        <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
       </div>
 
-      <!-- Titre et bouton pour ajouter des réponses -->
-      <div class="d-flex align-items-center mb-2">
-        <h3>Réponses</h3>
-        <button type="button" id="addReponse" class="btn btn-sm btn-outline-primary ml-2">+</button>
+      <!-- Étape 2 : Options avancées -->
+      <div class="step" id="step-2">
+        <h3>Étape 2 : Options avancées</h3>
+        <div class="form-group">{{ form.tags.label_tag }} {{ form.tags }}</div>
+        <div class="form-group">
+          <label for="new_tags">Ajouter de nouveaux tags :</label>
+          <div id="newTagsContainer"></div>
+          <button type="button" id="addNewTag" class="btn btn-sm btn-outline-primary">+</button>
+        </div>
+        <div class="form-group">{{ form.melange_rep.label_tag }} {{ form.melange_rep }}</div>
+        <!-- Champ pour ajout image (optionnel)-->
+      <div class="image-upload-container">
+          <label for="id_image">Ajouter une image :</label>
+          <input type="file" id="id_image" name="image" accept="image/png, image/jpeg, image/jpg, image/svg,image/gif">
+          {% if question.image %}
+            <span id="imageFileName">{{ question.image.name }}</span>
+          {% else %}
+            <span id="imageFileName" class="ml-2">Aucun fichier sélectionné</span>
+          {% endif %}
+      </div>
+      <div id="imagePreviewContainer">
+          {% if question.image %}
+              <img id="imagePreview" src="{{ question.image.url }}" alt="Prévisualisation de l'image" class="img-thumbnail" style="max-width: 250px; max-height:250px;">
+
+          {% else %}
+              <img id="imagePreview" src="#" alt="Prévisualisation de l'image" class="img-thumbnail" style="max-width: 200px; display: none;">
+          {% endif %}
+          <br />
+              <button type="button" id="removeImageButton" class="btn btn-danger ml-2" style="display:none;">
+                  <i class="fas fa-trash-alt"></i> Enlever l'image
+              </button>
+      </div>
       </div>
 
-      <!-- Formset pour les réponses -->
-      <div id="reponseFormset">
-        {{ formset.management_form }}
-        {% for formset_form in formset %}
-          <div class="formset_row border rounded position-relative">
-            {{ formset_form.as_p }}
-            <!-- Bouton pour supprimer une réponse -->
-            <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute"><i class="bi bi-trash"></i></button>
-          </div>
-        {% endfor %}
+      <!-- Étape 3 : Réponses -->
+      <div class="step" id="step-3">
+        <h3>Étape 3 : Réponses</h3>
+        <div id="reponseFormset">
+          {{ formset.management_form }}
+          {% for formset_form in formset %}
+            <div class="formset_row border rounded position-relative" style="display: flex; flex-direction:row">
+              {{ formset_form.as_p }}
+              <button type="button" class="btn btn-danger btn-sm removeReponse ">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div id="reponseVide"  class="hidden">
+          {{ formset.empty_form.as_p }}
+          <button type="button" class="btn btn-danger btn-sm removeReponse ">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+
+        <button type="button" id="addReponse" class="btn btn-sm btn-outline-primary">Ajouter une réponse</button>
       </div>
 
-      <div id="reponseVide" class="hidden">
-        {{ formset.empty_form.as_p }}
-        <button type="button" class="btn btn-danger btn-sm removeReponse position-absolute"><i class="bi bi-trash"></i></button>
+      <!-- Navigation -->
+      <div class="form-navigation">
+        <button type="button" id="prevStep" class="switch-form-btn-prev hidden"><i class="bi bi-caret-left"></i></button>
+        <button type="button" id="nextStep" class="switch-form-btn-next"><i class="bi bi-caret-right"></i></button>
+        <button type="submit" class="btn btn-success hidden" id="submitForm">
+          {% if question.pk %}
+            Enregistrer les modifications
+          {% else %}
+            Créer la question
+          {% endif %}
+        </button>
       </div>
-
-      <!-- Bouton pour soumettre le formulaire -->
-      <button type="submit" class="btn btn-success">
-        {% if question.pk %}
-          Enregistrer les modifications
-        {% else %}
-          Créer la question
-        {% endif %}
-      </button>
-      <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-danger">Annuler</a>
     </form>
   </div>
 
   {% include 'latexify/scripts.html' %}
 {% endblock %}
+
 {% block extra_scripts %}
   <script>
     $(document).ready(function () {
+      let currentStep = 1;
+      const totalSteps = 3;
+
+      function updateStep() {
+        $(".step").removeClass("active");
+        $(`#step-${currentStep}`).addClass("active");
+
+        // Show/hide navigation buttons
+        $("#prevStep").toggleClass("hidden", currentStep === 1);
+        $("#nextStep").toggleClass("hidden", currentStep === totalSteps);
+        $("#submitForm").toggleClass("hidden", currentStep !== totalSteps);
+      }
+
+      $("#nextStep").click(function () {
+        if (currentStep < totalSteps) currentStep++;
+        updateStep();
+      });
+
+      $("#prevStep").click(function () {
+        if (currentStep > 1) currentStep--;
+        updateStep();
+      });
+
+       $(document).ready(function () {
+      // Activer les tooltips
+      $('[data-toggle="tooltip"]').tooltip({
+        html: true,
+        placement: 'right'
+      });
+
+      const fileInput = $('#id_image');
+      const fileNameDisplay = $('#imageFileName');
+      const imagePreview = $('#imagePreview');
+      const removeImageButton = $('#removeImageButton');
+
+      // Vérifie si le champ existe et si une image est déjà définie
+      if (fileInput.length > 0) {
+          const uploadButton = $('<button type="button" id="imageUploadButton" class="btn btn-secondary ml-2"><i class="fas fa-upload"></i> Choisir une image</button>');
+
+          // Ajoute le bouton
+          fileInput.after(uploadButton);
+          fileInput.hide();
+
+          // Ouvrir le sélecteur de fichiers
+          uploadButton.on('click', function () {
+              fileInput.click();
+          });
+
+          // Mise à jour du nom et de la preview après sélection
+          fileInput.on('change', function (event) {
+              const file = fileInput[0].files[0];
+              if (file) {
+                  fileNameDisplay.text(file.name);
+
+                  // Afficher l'aperçu
+                  const reader = new FileReader();
+                  reader.onload = function (e) {
+                      imagePreview.attr('src', e.target.result).show();
+                  };
+                  reader.readAsDataURL(file); // Lire l'image pour la preview
+
+                  // Afficher le bouton "Enlever l'image"
+                  removeImageButton.show();
+                  uploadButton.text('Remplacer l\'image');
+              } else {
+                  fileNameDisplay.text("Aucun fichier sélectionné");
+                  imagePreview.hide();
+
+                  // Masquer le bouton "Enlever l'image" si aucun fichier n'est sélectionné
+                  removeImageButton.hide();
+                  uploadButton.text('Choisir une image');
+              }
+          });
+
+          // Si une image existe déjà, affichez le bouton pour la supprimer
+          if (imagePreview.attr('src') !== "#") {
+              removeImageButton.show();
+              uploadButton.text('Remplacer l\'image');
+          }
+
+          // Gestion du bouton "Enlever l'image"
+          removeImageButton.on('click', function () {
+              // Réinitialiser le champ de fichier et cacher l'aperçu de l'image
+              fileInput.val('');
+              fileNameDisplay.text('Aucun fichier sélectionné');
+              imagePreview.hide();
+
+              // Masquer le bouton "Enlever l'image"
+              removeImageButton.hide();
+              uploadButton.text('Choisir une image');
+
+              // Vous devrez également gérer cette suppression côté serveur lors de la soumission du formulaire.
+              // Par exemple, vous pourriez définir un champ hidden pour marquer l'image comme supprimée, ou gérer cela dans la vue.
+              const deleteCheckbox = $('<input>').attr({
+                  type: 'hidden',
+                  name: 'delete_image',
+                  value: 'true'
+              });
+              fileInput.after(deleteCheckbox);
+          });
+      }
+
       var formsetPrefix = '{{ formset.prefix }}'
       var totalForms = $('#id_' + formsetPrefix + '-TOTAL_FORMS')
       var formsetContainer = $('#reponseFormset')
@@ -183,9 +376,9 @@
         let newForm = emptyRep.clone()
 
         newForm.removeClass('hidden')
-        newForm.addClass('formset_row border rounded position-relative')
+        newForm.addClass('formset_row border rounded position-relative d-flex flex-row')
 
-        //On remplate le __prefix__ par la bonne valeur
+        //On remplace le __prefix__ par la bonne valeur
         const regex = new RegExp('__prefix__', 'g')
         newForm.html(newForm.html().replace(regex, formCount))
 
@@ -197,6 +390,7 @@
       $(document).on('click', '.removeReponse', function () {
         // Marquer le formulaire pour suppression en cochant le champ 'DELETE'
         var formRow = $(this).closest('.formset_row')
+        formRow.removeClass('d-flex flex-row')
         formRow.find('input[type="checkbox"][name$="-DELETE"]').prop('checked', true)
 
         // Masquer le formulaire, mais le garder dans le DOM pour l'envoyer à Django
@@ -213,12 +407,16 @@
       // Gestion de l'ajout dynamique de nouveaux tags
       $('#addNewTag').click(function () {
         var newTagHtml = `
-                                                                                                                                <div class="input-group mb-2">
-                                                                                                                                    <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
-                                                                                                                                    <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
-                                                                                                                                </div>`
+          <div class="input-group mb-2">
+            <input type="text" name="new_tags[]" class="form-control" placeholder="Nouveau tag">
+            <input type="color" name="new_tag_colors[]" class="form-control form-control-color" value="#ffffff" title="Choisir une couleur">
+          </div>`
         $('#newTagsContainer').append(newTagHtml)
       })
     })
+
+      // Dynamique pour le formset et les tags
+      // (ajoutez ici la logique existante pour LaTeX et les réponses dynamiques)
+    });
   </script>
 {% endblock %}

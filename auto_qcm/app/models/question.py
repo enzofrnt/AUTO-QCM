@@ -1,9 +1,12 @@
+import random
 from logging import getLogger
 
+from app.models.tag import Tag
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 logger = getLogger(__name__)
 
@@ -15,6 +18,7 @@ class Question(models.Model):
     melange_rep = models.BooleanField(default=True)
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
     creator = models.ForeignKey("Utilisateur", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="question_images/", null=True, blank=True)
 
     def __str__(self):
         return self.texte
@@ -115,4 +119,12 @@ class Question(models.Model):
 
         texte += "</question></quiz>"
 
+        return texte
+
+    def convertToAmcTxt(self):
+        texte = "**" + self.texte + " :\n"
+        for rep in self.reponses.all():
+            texte += "+" if rep.is_correct else "-"
+            texte += rep.texte + "\n"
+        texte += "\n"
         return texte

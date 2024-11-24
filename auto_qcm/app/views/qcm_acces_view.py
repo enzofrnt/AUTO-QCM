@@ -16,7 +16,7 @@ def acces_qcm(request, qcm_id):
             rep_qcm = ReponseQCM.objects.create(
                 utilisateur=request.user,
                 qcm=qcm,
-                date_debut=self.qcm.date_modif,
+                date_debut=qcm.date_modif,
             )
             return redirect("qcm-answer", qcm_id=qcm_id, rep_id=rep_qcm.id)
     return render(

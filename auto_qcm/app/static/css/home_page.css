@@ -19,7 +19,7 @@
     transition: all 0.3s;
 }
 
-.button-home:hover {
+.dark-mode .button-home:hover {
     background-color: #666;
     /* empecher l'hypertexte bleu */
     text-decoration: none;
@@ -27,6 +27,13 @@
     transition: all 0.3s;
 }
 
+.button-home:hover {
+    background-color: #ffffff;
+    /* empecher l'hypertexte bleu */
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    transition: all 0.3s;
+}
 
 .buttons {
     /* margin-top: 120px; */

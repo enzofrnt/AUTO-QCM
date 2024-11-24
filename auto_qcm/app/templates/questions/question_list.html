@@ -16,16 +16,114 @@
     <div id="questions-list">
       {% if not selectable %}
         <a href="{% url 'question-create' %}" class="btn btn-primary mb-4">Créer une nouvelle Question</a>
+        <a id="openImport" class="btn btn-primary mb-4">Importer des questions</a>
       {% endif %}
+
       {% include 'questions/question_list_content.html' %}
     </div>
   </div>
-
+  <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="importModalLabel">Importez des questions depuis Moodle</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form id="fileImportForm">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="importType" class="form-label">Type d'import</label>
+              <select class="form-control" id="importType" name="import_type" required>
+                <option value="moodle_xml">Moodle XML</option>
+                <option value="latex_amc">LaTeX AMC</option>
+                <option value="amc_txt">AMC TXT</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="fileInput" class="form-label">Choisir un fichier</label>
+              <input type="file" class="form-control" id="fileInput" name="file" accept=".xml,.txt,.tex" required />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="closeModal" data-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-primary" id="importBtn">Importer</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Inclure jQuery et le script de filtrage -->
 
-  {% include 'latexify/scripts.html' %}
+{% include 'latexify/scripts.html' %}
 {% endblock %}
 {% block extra_scripts %}
   <script src="{% static 'js/questions/question_filter.js' %}"></script>
   <script src="{% static 'js/questions/question_events.js' %}"></script>
+  <script>
+    $(document).ready(function () {
+      $('#openImport').click(function () {
+        $('#importModal').modal('show')
+      })
+
+      $('#importBtn').click(function () {
+        const fileInput = $('#fileInput')[0];
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert("Veuillez sélectionner un fichier avant de lancer l'import.");
+            return;
+        }
+        var formData = new FormData($('#fileImportForm')[0])
+        var importType = $('#importType').val()
+
+        formData.append('import_type', importType)
+
+        $.ajax({
+          url: '/question/import/',
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            let message = `
+            Import terminé : ${response.message}
+            Questions importées avec succès : ${response.nbReussi}
+            Erreurs : ${response.nbEchec}`;
+
+            if(response.erreurs && response.erreurs.length >0)
+            {
+              message += '\n Erreurs : \n';
+              response.erreurs.forEach(erreur => {
+                message += erreur + '\n';
+              });
+            }
+            alert(message)
+            $('#importModal').modal('hide')
+            $('#fileInput').val('')
+            $('#importType').val('moodle_xml')
+          },
+          error: function (xhr) {
+            let errorMessage;
+            if (xhr.responseJSON) {
+                errorMessage = `Erreur lors de l'import : ${xhr.responseJSON.error || "Une erreur inconnue est survenue."}`;
+                if (xhr.responseJSON.detail) {
+                    errorMessage += `\nDétail : ${xhr.responseJSON.detail}`;
+                }
+            } else {
+                errorMessage = "Erreur lors de l'import : " + xhr.responseText;
+            }
+
+            alert(errorMessage);
+          }
+        })
+      })
+
+      $('#closeModal').click(function () {
+        $('#importModal').modal('hide')
+        $('#fileInput').val('')
+        $('#importType').val('moodle_xml')
+      })
+    })
+  </script>
 {% endblock %}

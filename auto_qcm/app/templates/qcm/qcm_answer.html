@@ -11,6 +11,13 @@
         {% for question in questions %}
           <div class="question">
             <h4>{{ forloop.counter }}. {{ question.texte }}</h4>
+            {% if question.image %}
+              <br />
+              <div class="question-image">
+                <img src="{{ question.image.url }}" alt="Image de la question" style="max-width: 400px; max-height: 400px; margin-top: 10px; border-radius: 5px; ">
+              </div>
+              <br />
+            {% endif %}
             <div class="reponses">
               {% for reponse in question.reponses_random %}
                 <div class="form-check">

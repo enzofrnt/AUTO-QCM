@@ -1,3 +1,6 @@
+import logging
+import random
+
 from app.decorators import teacher_required
 from app.forms import BaseReponseFormSet, QuestionForm
 from app.models import Question, Reponse, Tag
@@ -5,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 
 @login_required(login_url=reverse_lazy("login"))
@@ -34,17 +40,32 @@ def create_or_edit_question(request, pk=None):
         )
 
     if request.method == "POST":
-        form = QuestionForm(request.POST, instance=question)
+        form = QuestionForm(request.POST, request.FILES, instance=question)
         formset = ReponseFormSet(request.POST, instance=question)
 
         if form.is_valid() and formset.is_valid():
             # Sauvegarder la question
             question = form.save(commit=False)
+            if request.POST.get("delete_image") == "true":
+                question.image.delete()  # Supprimer l'image du modèle (si une image existe)
+                question.image = None  # Définir l'image à None dans la base de données
+
             question.creator = request.user
             question.save()
 
             # Sauvegarder les tags existants
             form.save_m2m()
+
+            year = timezone.now().year  # Utiliser la date actuelle pour obtenir l'année
+            year_tag, created = Tag.objects.get_or_create(
+                name=str(year),
+                defaults={
+                    "color": generate_random_color()
+                },  # Couleur aléatoire si le tag est créé
+            )
+
+            if year_tag not in question.tags.all():
+                question.tags.add(year_tag)
 
             # Traiter les nouveaux tags et leurs couleurs
             new_tags = request.POST.getlist("new_tags[]")
@@ -84,3 +105,8 @@ def create_or_edit_question(request, pk=None):
             ),  # Passer la prochaine URL pour redirection
         },
     )
+
+
+def generate_random_color():
+    """Génère une couleur hexadécimale aléatoire."""
+    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
