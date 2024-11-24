@@ -1,0 +1,72 @@
+# .github/workflows/dispatch_all_issues_auto_us.yml
+name: Process Non-User Story Issues
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch_non_us_issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    outputs:
+      issue_numbers: ${{ steps.fetch_issues.outputs.issue_numbers }}
+      has_issues: ${{ steps.set_has_issues.outputs.has_issues }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Fetch non-user story issues
+        id: fetch_issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Récupérer toutes les issues (ouvertes et fermées), excluant les pull requests
+          RESPONSE=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+                          -H "Accept: application/vnd.github.v3+json" \
+                          "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=all&per_page=100")
+
+          # Filtrer les issues qui ne sont pas des pull requests et qui n'ont pas le label 'user story'
+          ISSUE_NUMBERS=$(echo "$RESPONSE" | jq -c '[.[] | select(.pull_request | not) | select((.labels | map(.name | ascii_downcase) | index("user story")) | not) | .number]')
+
+          echo "Non-User Story Issues: $ISSUE_NUMBERS"
+
+          # Définir la sortie en utilisant GITHUB_OUTPUT
+          echo "issue_numbers=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
+
+      - name: Debug issue_numbers
+        run: |
+          echo "Issue Numbers: ${{ steps.fetch_issues.outputs.issue_numbers }}"
+
+      - name: Set has_issues
+        id: set_has_issues
+        run: |
+          ISSUE_COUNT=$(echo "${{ steps.fetch_issues.outputs.issue_numbers }}" | jq 'length')
+          if [ "$ISSUE_COUNT" -gt 0 ]; then
+            echo "has_issues=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_issues=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Debug has_issues
+        run: |
+          echo "Has Issues: ${{ steps.set_has_issues.outputs.has_issues }}"
+
+  call_auto_us_workflows:
+    needs: fetch_non_us_issues
+    if: ${{ needs.fetch_non_us_issues.outputs.has_issues == 'true' }}
+    permissions:
+      issues: write
+    strategy:
+      fail-fast: false        # Désactiver fail-fast
+      matrix:
+        issue_number: ${{ fromJson(needs.fetch_non_us_issues.outputs.issue_numbers) }}
+    uses: ./.github/workflows/auto_us.yml
+    with:
+      issue_number: ${{ matrix.issue_number }}
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

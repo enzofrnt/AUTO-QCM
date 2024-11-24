@@ -7,16 +7,28 @@ STATIC_ROOT = os.path.join(BASE_DIR.parent, "/app/static")
 STATIC_URL = "/static/"
 
 if DEBUG is False:
-    MIDDLEWARE.insert(0, "django.middleware.security.SecurityMiddleware")
-    MIDDLEWARE.append("whitenoise.middleware.WhiteNoiseMiddleware")
+    mddlwr_security_index = MIDDLEWARE.index(
+        "django.middleware.security.SecurityMiddleware"
+    )
+    MIDDLEWARE.insert(
+        mddlwr_security_index + 1, "whitenoise.middleware.WhiteNoiseMiddleware"
+    )
 
-# Configuration de WhiteNoise pour servir les fichiers statiques avec Gunicorn
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
+if ALLOWED_HOSTS == [""]:
+    ALLOWED_HOSTS = ["localhost"]
+
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "DJANGO_CSRF_TRUSTED_ORIGINS", "http://localhost"
 ).split(",")
+if CSRF_TRUSTED_ORIGINS == [""]:
+    CSRF_TRUSTED_ORIGINS = ["http://localhost"]
 
 INSTALLED_APPS.append("django_minify_html")
 

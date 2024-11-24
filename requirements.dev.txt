@@ -1,2 +1,2 @@
-Faker==30.1.0
-django-browser-reload==1.15.0
+Faker==33.0.0
+django-browser-reload==1.17.0

@@ -1,0 +1,151 @@
+# .github/workflows/auto_us.yml
+name: Auto US
+
+on:
+  workflow_call:
+    inputs:
+      issue_number:
+        description: 'ID de l issue à traiter'
+        required: true
+        type: number
+    # secrets:
+    #   OPENAI:
+    #     description: 'Clé API OpenAI'
+    #     required: true
+    #   GITHUB_TOKEN:
+    #     description: 'Token GitHub pour l authentification'
+    #     required: true
+
+  # Permet également le déclenchement manuel
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'ID de l issue à traiter'
+        required: true
+        type: number
+  issues:
+    types: [opened, edited, reopened]
+
+jobs:
+  auto_us:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          cd .github/workflows/auto_us
+          pip install -r requirements.txt
+
+      - name: Debug Inputs
+        run: |
+          echo "Input ISSUE_NUMBER: ${{ inputs.issue_number }}"
+          echo "GitHub Event Name: ${{ github.event_name }}"
+          echo "GitHub Event Issue Number: ${{ github.event.issue.number }}"
+
+      # Récupération de l'issue selon l'événement déclencheur
+      - name: Get issue (from workflow_dispatch and workflow_call)
+        id: get_issue_dispatch
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call'
+        run: |
+          ISSUE_NUMBER=${{ inputs.issue_number }}
+          RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                           -H "Accept: application/vnd.github.v3+json" \
+                           https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER)
+
+          ISSUE_TITLE=$(echo "$RESPONSE" | jq -r '.title')
+          ISSUE_BODY=$(echo "$RESPONSE" | jq -r '.body')
+
+          echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+          echo "ISSUE_TITLE=$ISSUE_TITLE" >> $GITHUB_ENV
+          echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$ISSUE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Get issue (from issues event)
+        id: get_issue_event
+        if: github.event_name == 'issues'
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          ISSUE_BODY="${{ github.event.issue.body }}"
+
+          echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+          echo "ISSUE_TITLE=$ISSUE_TITLE" >> $GITHUB_ENV
+          echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$ISSUE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      # Récupérer les User Stories via GitHub API
+      - name: Fetch User Stories from GitHub
+        id: fetch_us
+        run: |
+          RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                          -H "Accept: application/vnd.github.v3+json" \
+                          "https://api.github.com/repos/${{ github.repository }}/issues?labels=user%20story")
+          US=$(echo "$RESPONSE" | jq -c '[.[] | {id: .number, title: .title}]')
+          echo "US=$US" >> $GITHUB_ENV
+
+      - name: Check for specific string in issue body
+        run: |
+          if echo "${ISSUE_BODY}" | grep -q "<!-- ALREADY DONE -->"; then
+            echo "The issue body contains a forbidden string. Stopping workflow."
+            exit 1
+          fi
+
+      # Appeler le programme Python en lui envoyant les variables et la clé API OpenAI
+      - name: Run Python script with issue details
+        id: run_python
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI }}  # Correction ici
+          ISSUE_NUMBER: ${{ env.ISSUE_NUMBER }}
+          ISSUE_TITLE: ${{ env.ISSUE_TITLE }}
+          ISSUE_BODY: ${{ env.ISSUE_BODY }}
+          US: ${{ env.US }}
+        run: |
+          # Afficher les variables nettoyées pour vérification (optionnel)
+          echo "OPENAI_API_KEY: $OPENAI_API_KEY"
+          echo "ISSUE_NUMBER: $ISSUE_NUMBER"
+          echo "ISSUE_TITLE: $ISSUE_TITLE"
+          echo "ISSUE_BODY: $ISSUE_BODY"
+          echo "US: $US"
+
+          # Appeler le script Python sans passer d'arguments
+          python3 .github/workflows/auto_us/auto_us.py
+
+      # Afficher le résultat du script Python
+      - name: Display Python script result
+        run: |
+          echo "Résultat du script Python :"
+          cat .github/workflows/auto_us/result.txt
+
+      # Ajouter la réponse de GPT à la description de l'issue
+      - name: Append GPT response to issue body
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const gptResponse = fs.readFileSync('.github/workflows/auto_us/result.txt', 'utf8');
+
+            const existingBody = process.env.ISSUE_BODY;
+            //const updatedBody = `${existingBody}\n\n${gptResponse}`;
+            const updatedBody = `${gptResponse}`;
+
+            github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(process.env.ISSUE_NUMBER),
+              body: updatedBody
+            });
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          debug: false
