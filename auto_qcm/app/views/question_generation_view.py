@@ -20,6 +20,8 @@ def question_generation_view(request):
         # Sauvegarder le fichier temporairement
         file_path = default_storage.save(f"temp/{pdf_file.name}", pdf_file)
 
+        file_path = default_storage.path(file_path)
+
         # Charger les informations d'environnement
         if hasattr(settings, "OPEN_AI_TOKEN"):
             token = settings.OPEN_AI_TOKEN
