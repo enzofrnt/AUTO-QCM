@@ -41,7 +41,7 @@ Si ce projet s'avère fructueux, il pourrait bien être adopté par d'autres ét
 
 - [Nathan Pagnucco](https://github.com/November304) développeur
 - [loispacqueteau](https://github.com/loispacqueteau) développeur
-- [Enzo Fournet](https://github.com/enzofrnt) scrum master
+- [Enzo Fournet](https://github.com/enzofrnt) scrum master et dévelopeur
 - [Anthony DECLIPPEL](https://github.com/KeynoIX) développeur
 - [Alexi Fontanilles](https://github.com/AlexiFon) product owner
 - [Kilian Boivert](https://github.com/Kilianspore) développeur
