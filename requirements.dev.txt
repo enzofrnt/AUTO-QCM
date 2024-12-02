@@ -1,2 +1,2 @@
-Faker==33.0.0
+Faker==33.1.0
 django-browser-reload==1.17.0
