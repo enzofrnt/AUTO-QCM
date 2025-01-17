@@ -15,8 +15,8 @@ Feature: Contrôle d'accès aux pages
     Examples:
       | user     | resultat                           |
       | prof     | le tableau de bord enseignant      |
-      | Lois     | une erreur d'accès 403            |
-      | Moquette | une erreur d'accès 403            |
+      | Lois     | une erreur d'accès 403             |
+      | admin    | le tableau de bord enseignant      |
 
   Scenario Outline: Accès au tableau de bord étudiant
     Given je suis connecté en tant que "<user>"
@@ -25,16 +25,15 @@ Feature: Contrôle d'accès aux pages
     Given je me deconnecte
 
     Examples:
-      | user     | resultat                           |
+      | user     | resultat                          |
       | prof     | une erreur d'accès 403            |
       | Lois     | le tableau de bord étudiant       |
-      | Nathan   | une erreur d'accès 403            |
+      | admin    |  une erreur d'accès 403           |
 
-  Scenario Outline: Accès sans authentification
+  Scenario Outline: Accès aux pages sans authentification
     Given je ne suis pas connecté
     When je visite la page "<page>"
     Then je devrais être redirigé vers la page de connexion
-    Given je me deconnecte
 
     Examples:
       | page                          |
