@@ -1,0 +1,31 @@
+name: Test Report Generation
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Compose
+        run: |
+          cd ./deploiement-dev
+          docker compose up -d --build
+
+      - name: Run Tests and Generate Report
+        run: docker compose -f deploiement-dev/docker-compose.yml exec -T auto_qcm_python python manage.py behave --noinput -f behave_html_formatter:HTMLFormatter -o reports/rapport_tests.html
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: auto_qcm/reports/rapport_tests.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./auto_qcm/reports
