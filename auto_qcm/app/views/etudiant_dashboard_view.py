@@ -1,7 +1,7 @@
 import logging
 from datetime import timedelta
 
-from app.decorators import teacher_or_self_student_required
+from app.decorators import student_required
 from app.models import QCM, Plage, ReponseQCM, Utilisateur
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 @login_required(login_url=reverse_lazy("login"))
-@teacher_or_self_student_required
+@student_required
 def etudiant_dashboard(request, pk):
     utilisateur = get_object_or_404(Utilisateur, pk=pk)
 

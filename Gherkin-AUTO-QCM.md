@@ -66,4 +66,4 @@ Utilisateur :
 
 ##### Problème rencontré
 
-Lors des premier tests
+Lors des premier tests sur le tableau de bors étudiant, nous nous sommes rendu compte que entant qu'enseignant, nous avons accès à la page étudiant. Ce qui ne devrait pas être on a donc réalisé un fix pour que les enseignant ne puisse pas accéder à la page étudiant en ajoutant un décorateur `student_required` sur la vue concernée.
