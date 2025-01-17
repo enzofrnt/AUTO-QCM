@@ -16,16 +16,28 @@ jobs:
           docker compose up -d --build
 
       - name: Run Tests and Generate Report
-        run: docker compose -f deploiement-dev/docker-compose.yml exec -T auto_qcm_python python manage.py behave --noinput -f behave_html_formatter:HTMLFormatter -o reports/rapport_tests.html
+        id: run_tests
+        continue-on-error: true
+        run: |
+          mkdir -p auto_qcm/reports
+          docker compose -f deploiement-dev/docker-compose.yml exec -T auto_qcm_python python manage.py behave --noinput -f behave_html_formatter:HTMLFormatter -o reports/rapport_tests.html
 
       - name: Upload Test Report
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-report
           path: auto_qcm/reports/rapport_tests.html
+          retention-days: 14
 
       - name: Deploy to GitHub Pages
+        if: always()
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./auto_qcm/reports
+          keep_files: true
+
+      - name: Check Test Status
+        if: steps.run_tests.outcome == 'failure'
+        run: exit 1
