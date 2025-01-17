@@ -1,3 +1,4 @@
+from app.decorators import admin_required
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import redirect, render
 
@@ -8,6 +9,7 @@ def is_superuser(user):
 
 
 # Vue admin personnalisée
+@admin_required
 @user_passes_test(is_superuser)
 def custom_admin_view(request):
     # Exemple pour afficher tous les objets d'un modèle

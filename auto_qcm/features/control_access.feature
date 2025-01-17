@@ -30,6 +30,19 @@ Feature: Contrôle d'accès aux pages
       | Lois     | le tableau de bord étudiant       |
       | admin    |  une erreur d'accès 403           |
 
+
+  Scenario Outline: Accès au tableau de bord admin
+    Given je suis connecté en tant que "<user>"
+    When je visite la page "tableau de bord admin"
+    Then je devrais voir "<resultat>"
+    Given je me deconnecte
+
+    Examples:
+      | user     | resultat                          |
+      | prof     | une erreur d'accès 403            |
+      | Lois     | une erreur d'accès 403            |
+      | admin    | le tableau de bord admin          |
+
   Scenario Outline: Accès aux pages sans authentification
     Given je ne suis pas connecté
     When je visite la page "<page>"
@@ -41,3 +54,4 @@ Feature: Contrôle d'accès aux pages
       | tableau de bord étudiant      |
       | liste des questions           |
       | création de QCM               |
+      | tableau de bord admin         |

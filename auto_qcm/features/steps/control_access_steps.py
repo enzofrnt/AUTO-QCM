@@ -9,6 +9,7 @@ def step_visit_page(context, page):
     urls = {
         "tableau de bord enseignant": reverse("enseignant-dashboard", args=[user_id]),
         "tableau de bord étudiant": reverse("etudiant-dashboard", args=[user_id]),
+        "tableau de bord admin": reverse("admin-dashboard"),
         "liste des questions": reverse("question-list"),
         "création de QCM": reverse("qcm-create"),
     }

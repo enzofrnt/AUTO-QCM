@@ -40,3 +40,12 @@ def student_required(view_func):
         raise PermissionDenied
 
     return _wrapped_view
+
+
+def admin_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+        raise PermissionDenied
+
+    return _wrapped_view

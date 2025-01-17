@@ -67,3 +67,5 @@ Utilisateur :
 ##### Problème rencontré
 
 Lors des premier tests sur le tableau de bors étudiant, nous nous sommes rendu compte que entant qu'enseignant, nous avons accès à la page étudiant. Ce qui ne devrait pas être on a donc réalisé un fix pour que les enseignant ne puisse pas accéder à la page étudiant en ajoutant un décorateur `student_required` sur la vue concernée.
+
+Aussi lors des test de connexion sur le tableau de bord admin, nous nous sommes rendu compte qu'un utilisateur non administrateur était refirigé vers la page de connexion. Ce qui ne devrait pas être le cas. Nous avons donc réalisé un fix pour que les utilisateur non administrateur ne puisse pas accéder à la page de connexion en ajoutant un décorateur `admin_required` sur la vue concernée. Afin que l'erreur 403 soit renvoyée et que l'utilisateur soit redirigé vers la page de connexion.
