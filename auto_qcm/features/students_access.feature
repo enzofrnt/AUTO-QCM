@@ -4,4 +4,6 @@ Scenario: Student accesses all pages intended for them
   Given I am a student
   When I log in
   Then I should have access to:
-    | /student/dashboard/ |
+    | /etudiant-dashboard/ |
+    | /support-doc/ |
+    | / |
