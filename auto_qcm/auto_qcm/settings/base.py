@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "wait_for_db",
     "latexify",
     "app",
+    "behave_django",
 ]
 
 OPEN_AI_TOKEN = os.environ.get("OPEN_AI_TOKEN")
