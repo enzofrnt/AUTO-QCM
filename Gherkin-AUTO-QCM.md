@@ -57,9 +57,11 @@ Utilisateur :
 
 * Accès au tableau de bord enseignant
 * Accès au tableau de bord étudiant
-* Accès à la page de création de QCM #TODO
-* Accès à la page de création de question #TODO
+* Accès à la page de création de QCM
+* Accès à la page de création de question
 * Accès aux pages sans authentification
+
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/281-cr%C3%A9er-les-test-bdd-relatif-%C3%A0-la-user-story-65/auto_qcm/features/control_access.feature)
 
 ### Problème rencontré
 
@@ -71,7 +73,7 @@ Aussi lors des test de connexion sur le tableau de bord admin, nous nous sommes 
 
 Ces tests permettent de vérifier que l’application est correctement sécurisée et que les utilisateurs ont bien uniquement accès aux pages qui les concernent et non à celles des autres utilisateurs. On constate d’ailleurs que l’implémentation a mis en évidence des soucis de cohérence.
 
-## User story #6
+## User Story #6
 
 ### Scénarios implémentés et résultats
 

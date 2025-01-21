@@ -43,6 +43,30 @@ Feature: Contrôle d'accès aux pages
       | Lois     | une erreur d'accès 403            |
       | admin    | le tableau de bord admin          |
 
+  Scenario Outline: Accès au formulaire de création de QCM
+    Given je suis connecté en tant que "<user>"
+    When je visite la page "création de QCM"
+    Then je devrais voir "<resultat>"
+    Given je me deconnecte
+
+    Examples:
+      | user     | resultat                          |
+      | prof     | le formulaire de création de QCM  |
+      | Lois     | une erreur d'accès 403            |
+      | admin    | le formulaire de création de QCM  |
+
+  Scenario Outline: Accès au formulaire de création de question
+    Given je suis connecté en tant que "<user>"
+    When je visite la page "création de question"
+    Then je devrais voir "<resultat>"
+    Given je me deconnecte
+
+    Examples:
+      | user     | resultat                              |
+      | prof     | le formulaire de création de question |
+      | Lois     | une erreur d'accès 403                |
+      | admin    | le formulaire de création de question |
+
   Scenario Outline: Accès aux pages sans authentification
     Given je ne suis pas connecté
     When je visite la page "<page>"
@@ -54,4 +78,5 @@ Feature: Contrôle d'accès aux pages
       | tableau de bord étudiant      |
       | liste des questions           |
       | création de QCM               |
+      | création de question          |
       | tableau de bord admin         |

@@ -12,6 +12,7 @@ def step_visit_page(context, page):
         "tableau de bord admin": reverse("admin-dashboard"),
         "liste des questions": reverse("question-list"),
         "création de QCM": reverse("qcm-create"),
+        "création de question": reverse("question-create"),
     }
     print("On va visiter la page : ", urls[page])
     context.response = context.test.client.get(urls[page])
@@ -24,6 +25,14 @@ def step_check_response(context, resultat):
         print("On voit : ", context.response.status_code)
         assert context.response.status_code == 403
     elif resultat.startswith("le tableau de bord"):
+        assert context.response.status_code == 200
+        print("On devrait voir : ", resultat)
+        print("On voit : ", context.response.content.decode())
+    elif resultat.startswith("le formulaire de création de QCM"):
+        assert context.response.status_code == 200
+        print("On devrait voir : ", resultat)
+        print("On voit : ", context.response.content.decode())
+    elif resultat.startswith("le formulaire de création de question"):
         assert context.response.status_code == 200
         print("On devrait voir : ", resultat)
         print("On voit : ", context.response.content.decode())
