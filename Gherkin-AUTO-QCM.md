@@ -61,7 +61,7 @@ Utilisateur :
 * Accès à la page de création de question
 * Accès aux pages sans authentification
 
-[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/281-cr%C3%A9er-les-test-bdd-relatif-%C3%A0-la-user-story-65/auto_qcm/features/control_access.feature) #TODO
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/auto_qcm/features/control_access.feature)
 
 ### Problème rencontré
 
@@ -88,24 +88,27 @@ En tant qu'enseignant, je souhaite agréger automatiquement des questions pour g
 ### Scénarios implémentés et résultats
 
 Nous avons mis en œuvre les tests suivants pour les différents utilisateurs :
+
 - prof (rôle enseignant)
 - Lois (rôle étudiant)
 - admin (rôle administrateur)
 
 Les scénarios testés sont :
+
 * Création de QCM
 * Modification de QCM
 * Suppression de QCM
 * Consultation de QCM
 
 Pour chaque scénario, nous vérifions :
+
 1. Les droits d'accès appropriés (403 pour les étudiants)
 2. La persistance des données
 3. La cohérence des informations affichées
 4. La gestion des plages horaires
 5. L'association des questions
 
-[Lien vers le fichier de test](https://github.com/enzofrnt/AUTO-QCM/blob/main/auto_qcm/features/crud_qcm.feature) #TODO
+[Lien vers le fichier de test](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/auto_qcm/features/crud_qcm.feature)
 
 ### Problèmes rencontrés
 
@@ -114,6 +117,7 @@ Aucun sur ces tests.
 ### Intérêt des tests
 
 Ces tests BDD sont particulièrement importants car ils permettent de :
+
 1. Vérifier que seuls les enseignants et administrateurs peuvent créer/modifier/supprimer des QCM
 2. S'assurer que les étudiants peuvent uniquement consulter les QCM
 3. Garantir l'intégrité des données lors des opérations CRUD
