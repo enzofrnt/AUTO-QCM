@@ -61,7 +61,7 @@ Utilisateur :
 * Accès à la page de création de question
 * Accès aux pages sans authentification
 
-[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/281-cr%C3%A9er-les-test-bdd-relatif-%C3%A0-la-user-story-65/auto_qcm/features/control_access.feature)
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/281-cr%C3%A9er-les-test-bdd-relatif-%C3%A0-la-user-story-65/auto_qcm/features/control_access.feature) #TODO
 
 ### Problème rencontré
 
@@ -71,7 +71,7 @@ Aussi lors des test de connexion sur le tableau de bord admin, nous nous sommes 
 
 ### Intéret des tests
 
-Ces tests permettent de vérifier que l’application est correctement sécurisée et que les utilisateurs ont bien uniquement accès aux pages qui les concernent et non à celles des autres utilisateurs. On constate d’ailleurs que l’implémentation a mis en évidence des soucis de cohérence.
+Ces tests permettent de vérifier que l'application est correctement sécurisée et que les utilisateurs ont bien uniquement accès aux pages qui les concernent et non à celles des autres utilisateurs. On constate d'ailleurs que l'implémentation a mis en évidence des soucis de cohérence.
 
 ## User Story #6
 
@@ -80,3 +80,44 @@ Ces tests permettent de vérifier que l’application est correctement sécuris�
 ### Problème rencontré
 
 ### Intéret des tests
+
+## User Story #11
+
+En tant qu'enseignant, je souhaite agréger automatiquement des questions pour générer des QCM de contrôle afin de faciliter l'évaluation des étudiants.
+
+### Scénarios implémentés et résultats
+
+Nous avons mis en œuvre les tests suivants pour les différents utilisateurs :
+- prof (rôle enseignant)
+- Lois (rôle étudiant)
+- admin (rôle administrateur)
+
+Les scénarios testés sont :
+* Création de QCM
+* Modification de QCM
+* Suppression de QCM
+* Consultation de QCM
+
+Pour chaque scénario, nous vérifions :
+1. Les droits d'accès appropriés (403 pour les étudiants)
+2. La persistance des données
+3. La cohérence des informations affichées
+4. La gestion des plages horaires
+5. L'association des questions
+
+[Lien vers le fichier de test](https://github.com/enzofrnt/AUTO-QCM/blob/main/auto_qcm/features/crud_qcm.feature) #TODO
+
+### Problèmes rencontrés
+
+Aucun sur ces tests.
+
+### Intérêt des tests
+
+Ces tests BDD sont particulièrement importants car ils permettent de :
+1. Vérifier que seuls les enseignants et administrateurs peuvent créer/modifier/supprimer des QCM
+2. S'assurer que les étudiants peuvent uniquement consulter les QCM
+3. Garantir l'intégrité des données lors des opérations CRUD
+4. Valider la gestion des plages horaires et l'association des questions
+5. Maintenir une cohérence dans l'interface utilisateur
+
+Les tests ont également mis en évidence l'importance d'une bonne gestion des droits d'accès et de la validation des données pour garantir la fiabilité du système d'évaluation.
