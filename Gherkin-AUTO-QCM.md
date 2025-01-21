@@ -75,8 +75,21 @@ Ces tests permettent de vérifier que l’application est correctement sécuris�
 
 ## User Story #6
 
+En tant qu'utilisateur, Je veux pouvoir saisir des questions
+
 ### Scénarios implémentés et résultats
+
+Utilisateur :
+    prof - rôle enseignant
+    Lois - rôle étudiant
+    admin - role admin
+
+* Essayer de créer un question
+
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet-US6/auto_qcm/features/test-US6.feature) #TODO: FIX
 
 ### Problème rencontré
 
 ### Intéret des tests
+
+Ces tests permet de vérifier que les enseignants peuvent créer des questions.
