@@ -75,7 +75,18 @@ Ces tests permettent de vérifier que l'application est correctement sécurisée
 
 ## User Story #6
 
+En tant qu'utilisateur, Je veux pouvoir saisir des questions
+
 ### Scénarios implémentés et résultats
+
+Utilisateur :
+    prof - rôle enseignant
+    Lois - rôle étudiant
+    admin - role admin
+
+* Essayer de créer un question
+
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet-US6/auto_qcm/features/test-US6.feature) #TODO: FIX
 
 ### Problème rencontré
 
@@ -125,3 +136,28 @@ Ces tests BDD sont particulièrement importants car ils permettent de :
 5. Maintenir une cohérence dans l'interface utilisateur
 
 Les tests ont également mis en évidence l'importance d'une bonne gestion des droits d'accès et de la validation des données pour garantir la fiabilité du système d'évaluation.
+Ces tests permet de vérifier que les enseignants peuvent créer des questions.
+
+##  User Story #14
+
+En tant qu'enseignant, Je veux pouvoir générer des questions
+
+### Scénarios implémentés et résultats
+
+Utilisateur :
+    prof - rôle enseignant
+    Lois - rôle étudiant
+    admin - role admin
+
+* Essayer de générer des questions
+
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet-US6/auto_qcm/features/test-US12.feature) #TODO: FIX
+
+### Problème rencontré
+
+La fonction POST de Django ne suit pas le même comportement par défaut que la bibliothèque de requêtes de Python, nous avons donc dû demander explicitement un format multipart et lire le flux d'octets à la fonction avant qu'elle ne fonctionne.
+La fonction POST de génération de questions n'a pas été configurée pour exiger une authentification, ce qui a été corrigé avec un `@teacher_required` supplémentaire
+
+### Intéret des tests
+
+Ces tests permet de vérifier que les enseignants et seule les enseignants peuvent générer des questions à partir d'un pdf.
