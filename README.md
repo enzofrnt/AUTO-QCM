@@ -1,3 +1,5 @@
+![Tests Status](https://github.com/enzofrnt/AUTO-QCM/actions/workflows/test-django-gherkin.yml/badge.svg)
+
 ⚠️ CE PROJET EST EN COURS DE DEVELOPPEMENT ET N'EST PAS ENCORE COMPLETEMENT FONCTIONNEL
 # Auto-QCM
 

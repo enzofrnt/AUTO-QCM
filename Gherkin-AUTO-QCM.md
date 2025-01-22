@@ -11,13 +11,13 @@ cd deploiement-dev
 docker compose up -d --build
 ```
 
-## Execution des tests
+### Execution des tests
 
 ```bash
 docker compose exec -it auto_qcm_python python manage.py behave --noinput
 ```
 
-## Execution des test et génération du rapport
+### Execution des test et génération du rapport
 
 ```bash
 docker compose exec -it auto_qcm_python python manage.py behave --noinput -f behave_html_formatter:HTMLFormatter -o rapport_tests.html
@@ -29,16 +29,23 @@ Une CI gihtub a été mise en oeuve pour lancer les tests à chaque push. Elle p
 
 Le rapport générer par la CI est donc rendu disponible dans les artefacts de la CI sur github.
 
-Exemple : [CI]() #TODO
+Exemple : [CI](https://github.com/enzofrnt/AUTO-QCM/actions/runs/12906424839)
+
+
+## Ajout de badge dans le readme
+
+Dans le cadre du BDD et des test pour garantir que les tests passe nous avons ajoter un badge sur le [readme](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/README.md) du projet.
+
+![Tests Status](https://github.com/enzofrnt/AUTO-QCM/actions/workflows/test-django-gherkin.yml/badge.svg)
 
 ## User Story #65 et #63
 
-* **#65**
+* **[#65](https://github.com/enzofrnt/AUTO-QCM/issues/65)**
 
 En tant qu'étudiant je veux avoir accès à toutes les pages qui me sont destinées
 afin de pouvoir utiliser efficacement l'application.
 
-* **#63**
+* **[#63](https://github.com/enzofrnt/AUTO-QCM/issues/63)**
 
 En tant qu'enseignant je veux avoir accès à toutes les pages qui me sont destinée
 
@@ -63,17 +70,21 @@ Utilisateur :
 
 [Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/auto_qcm/features/control_access.feature)
 
-### Problème rencontré
+### Bug rencontré
 
 Lors des premier tests sur le tableau de bors étudiant, nous nous sommes rendu compte que entant qu'enseignant, nous avons accès à la page étudiant. Ce qui ne devrait pas être on a donc réalisé un fix pour que les enseignant ne puisse pas accéder à la page étudiant en ajoutant un décorateur `student_required` sur la vue concernée.
 
 Aussi lors des test de connexion sur le tableau de bord admin, nous nous sommes rendu compte qu'un utilisateur non administrateur était refirigé vers la page de connexion. Ce qui ne devrait pas être le cas. Nous avons donc réalisé un fix pour que les utilisateur non administrateur ne puisse pas accéder à la page de connexion en ajoutant un décorateur `admin_required` sur la vue concernée. Afin que l'erreur 403 soit renvoyée et que l'utilisateur soit redirigé vers la page de connexion.
 
+### Problème rencontré
+
+Aucun.
+
 ### Intéret des tests
 
 Ces tests permettent de vérifier que l'application est correctement sécurisée et que les utilisateurs ont bien uniquement accès aux pages qui les concernent et non à celles des autres utilisateurs. On constate d'ailleurs que l'implémentation a mis en évidence des soucis de cohérence.
 
-## User Story #6
+## User Story [#6](https://github.com/enzofrnt/AUTO-QCM/issues/6)
 
 En tant qu'utilisateur, Je veux pouvoir saisir des questions
 
@@ -86,13 +97,21 @@ Utilisateur :
 
 * Essayer de créer un question
 
-[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet-US6/auto_qcm/features/test-US6.feature) #TODO: FIX
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/auto_qcm/features/test-US6.feature)
+
+### Bug rencontré
+
+Aucun.
 
 ### Problème rencontré
 
+Aucun.
+
 ### Intéret des tests
 
-## User Story #11
+Ces tests permet de vérifier que les utilisateurs peuvent créer des questions.
+
+## User Story [#11](https://github.com/enzofrnt/AUTO-QCM/issues/11)
 
 En tant qu'enseignant, je souhaite agréger automatiquement des questions pour générer des QCM de contrôle afin de faciliter l'évaluation des étudiants.
 
@@ -121,6 +140,10 @@ Pour chaque scénario, nous vérifions :
 
 [Lien vers le fichier de test](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/auto_qcm/features/crud_qcm.feature)
 
+### Bug rencontré
+
+Aucun.
+
 ### Problèmes rencontrés
 
 Aucun sur ces tests.
@@ -138,7 +161,7 @@ Ces tests BDD sont particulièrement importants car ils permettent de :
 Les tests ont également mis en évidence l'importance d'une bonne gestion des droits d'accès et de la validation des données pour garantir la fiabilité du système d'évaluation.
 Ces tests permet de vérifier que les enseignants peuvent créer des questions.
 
-##  User Story #14
+## User Story [#14](https://github.com/enzofrnt/AUTO-QCM/issues/14)
 
 En tant qu'enseignant, Je veux pouvoir générer des questions
 
@@ -151,12 +174,15 @@ Utilisateur :
 
 * Essayer de générer des questions
 
-[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet-US6/auto_qcm/features/test-US12.feature) #TODO: FIX
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/auto_qcm/features/test-US12.feature)
+
+### Bug rencontré
+
+La fonction POST de génération de questions n'a pas été configurée pour exiger une authentification, ce qui a été corrigé avec un `@teacher_required` supplémentaire sur la vue concernée.
 
 ### Problème rencontré
 
-La fonction POST de Django ne suit pas le même comportement par défaut que la bibliothèque de requêtes de Python, nous avons donc dû demander explicitement un format multipart et lire le flux d'octets à la fonction avant qu'elle ne fonctionne.
-La fonction POST de génération de questions n'a pas été configurée pour exiger une authentification, ce qui a été corrigé avec un `@teacher_required` supplémentaire
+La fonction POST de Django ne suit pas le même comportement par défaut que la bibliothèque de requêtes de Python, ce qui a compliqué l'envoie du fichier pdf, nous avons donc dû définir explicitement un format multipart et utiliser la class `SimpleUploadedFile` fourni par django pour envoyer le fichier pdf correctement.
 
 ### Intéret des tests
 
