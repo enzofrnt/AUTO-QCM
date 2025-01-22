@@ -27,16 +27,16 @@ docker compose exec -it auto_qcm_python python manage.py behave --noinput -f beh
 
 Une CI gihtub a été mise en oeuve pour lancer les tests à chaque push. Elle permet un suivis sur l'évolution de nos tets et donc la qualité du code et de notre application.
 
-Le rapport générer par la CI est donc rendu disponible dans les artefacts de la CI sur github.
+Le rapport généré par la CI est donc rendu disponible dans les artefacts de la CI sur github.
 
 Exemple : [CI](https://github.com/enzofrnt/AUTO-QCM/actions/runs/12906424839)
 
 
 ## Ajout de badge dans le readme
 
-Dans le cadre du BDD et des test pour garantir que les tests passe nous avons ajoter un badge sur le [readme](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/README.md) du projet.
+Dans le cadre du BDD et des test pour garantir que les tests passe nous avons ajouté un badge dans le [readme](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet/README.md) du projet.
 
-![Tests Status](https://github.com/enzofrnt/AUTO-QCM/actions/workflows/test-django-gherkin.yml/badge.svg)
+[![Test Report Generation](https://github.com/enzofrnt/AUTO-QCM/actions/workflows/test-django-gherkin.yml/badge.svg)](https://github.com/enzofrnt/AUTO-QCM/actions/workflows/test-django-gherkin.yml)
 
 ## User Story #65 et #63
 
@@ -51,7 +51,7 @@ En tant qu'enseignant je veux avoir accès à toutes les pages qui me sont desti
 
 ---
 
-Ces deux user stories sont regrouper dans le même scénario car il sagit de vérifier que des utilisateur spécifque on correctemnt accées à l'applications donc plus globalement de vérifier que les droit d'accès sont correctement implémenté.
+Ces deux user stories sont regroupée dans le même scénario car il sagit de vérifier que des utilisateurs spécifques ont correctemnt accès à l'application donc plus globalement de vérifier que les droit d'accès sont correctement implémentés.
 
 ### Scénarios implémentés et résultats
 
