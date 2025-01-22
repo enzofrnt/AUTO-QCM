@@ -93,3 +93,27 @@ Utilisateur :
 ### Intéret des tests
 
 Ces tests permet de vérifier que les enseignants peuvent créer des questions.
+
+##  User Story #14
+
+En tant qu'enseignant, Je veux pouvoir générer des questions
+
+### Scénarios implémentés et résultats
+
+Utilisateur :
+    prof - rôle enseignant
+    Lois - rôle étudiant
+    admin - role admin
+
+* Essayer de générer des questions
+
+[Lien vers le fichier de test.](https://github.com/enzofrnt/AUTO-QCM/blob/QualDev-Teillol-Fournet-US6/auto_qcm/features/test-US12.feature) #TODO: FIX
+
+### Problème rencontré
+
+La fonction POST de Django ne suit pas le même comportement par défaut que la bibliothèque de requêtes de Python, nous avons donc dû demander explicitement un format multipart et lire le flux d'octets à la fonction avant qu'elle ne fonctionne.
+La fonction POST de génération de questions n'a pas été configurée pour exiger une authentification, ce qui a été corrigé avec un `@teacher_required` supplémentaire
+
+### Intéret des tests
+
+Ces tests permet de vérifier que les enseignants et seule les enseignants peuvent générer des questions à partir d'un pdf.

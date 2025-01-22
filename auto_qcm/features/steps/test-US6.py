@@ -1,9 +1,6 @@
-from django.utils import timezone
-from app.models import Question, QCM, Plage
+from app.models import Question
 from behave import given,when, then
-from behave.api.pending_step import StepNotImplementedError
 from django.urls import reverse
-from django.contrib.auth.models import Group
 
 
 @when('je crée un nouveau question')

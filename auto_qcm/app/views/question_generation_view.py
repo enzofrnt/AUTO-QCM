@@ -1,17 +1,20 @@
 import json
 import logging
 
+
 import PyPDF2
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from app.decorators import teacher_required
 from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
+@teacher_required
 def question_generation_view(request):
     if request.method == "POST" and request.FILES.get("file"):
         # Récupérer le fichier PDF uploadé
