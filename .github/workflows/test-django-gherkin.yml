@@ -7,9 +7,16 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI }}
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: setup OPEN_AI_TOKEN
+        run: |
+          sed -i "s/OPEN_AI_TOKEN=/OPEN_AI_TOKEN=${{ env.OPENAI_API_KEY }}/" ./deploiement-dev/.env
+          cat ./deploiement-dev/.env
 
       - name: Set up Docker Compose
         run: |
